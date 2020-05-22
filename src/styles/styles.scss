@@ -1,0 +1,13 @@
+@import './material';
+@import './variables';
+@import './global-styles/global-styles';
+
+html {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  body {
+    margin: 0;
+    font-family: $default-font;
+    background: white;
+  }
+}
