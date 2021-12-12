@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { File } from '@/core/type';
@@ -10,7 +10,7 @@ import { HeaderService } from '@/core/components/header';
   templateUrl: './data.component.html',
   styleUrls: ['./data.component.scss'],
 })
-export class DataComponent {
+export class DataComponent implements OnDestroy {
   subs: Subscription[] = [];
 
   constructor(
