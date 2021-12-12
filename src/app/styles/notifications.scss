@@ -1,5 +1,5 @@
 .notification-success {
-  background-color: #37d437;
+  background: #37d437;
   .mat-simple-snackbar {
     font-family: $default-font;
     color: black;
@@ -7,7 +7,7 @@
 }
 
 .notification-error {
-  background-color: #e83636;
+  background: #e83636;
   .mat-simple-snackbar {
     font-family: $default-font;
     color: black;
@@ -15,7 +15,7 @@
 }
 
 .notification-warning {
-  background-color: #ffb818;
+  background: #ffb818;
   .mat-simple-snackbar {
     font-family: $default-font;
     color: black;

@@ -1,0 +1,27 @@
+:host {
+  z-index: 15;
+  >.message {
+    margin-bottom: 18px;
+    text-align: center;
+    >pre {
+      font-size: 14px;
+      margin: 0;
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      font-family: 'Lato', sans-serif;
+      color: #b5b5b5;
+    }
+  }
+  >.buttons {
+    display: flex;
+    justify-content: center;
+    >.ok-button {
+      margin-left: 5px;
+    }
+    .mat-button {
+      width: 150px;
+      height: 27px;
+    }
+  }
+}

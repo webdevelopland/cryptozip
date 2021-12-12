@@ -1,0 +1,17 @@
+<header>
+  <div class="label">
+    <div class="cryptozip" [routerLink]="['/']" *ngIf="!dataService.isDecrypted">Cryptozip</div>
+    <div *ngIf="dataService.isDecrypted">{{ dataService.id }}</div>
+  </div>
+  <div class="manu" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
+    <mat-icon *ngIf="!headerService.isMenu">menu</mat-icon>
+    <mat-icon *ngIf="headerService.isMenu">menu_open</mat-icon>
+  </div>
+</header>
+<div class="popup-menu" *ngIf="headerService.isMenu">
+  <div class="option" (click)="headerService.edit()">Edit</div>
+  <div class="option" (click)="headerService.download()">Download</div>
+  <div class="option" (click)="headerService.save()">Save</div>
+  <div class="option" (click)="headerService.delete()">Delete</div>
+  <div class="option" (click)="exit()">Exit</div>
+</div>

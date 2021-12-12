@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { sha256 } from 'js-sha256';
-import * as AES from 'aes-js';
-import * as JSZip from 'jszip';
+import { Subscription } from 'rxjs';
 
-import { content, content2 } from './zip';
+import { File } from '@/core/type';
+import { DataService, ZipService } from '@/core/services';
+import { HeaderService } from '@/core/components/header';
 
 @Component({
   selector: 'page-data',
@@ -11,36 +11,45 @@ import { content, content2 } from './zip';
   styleUrls: ['./data.component.scss'],
 })
 export class DataComponent {
-  zip(): void {
-    var zip = new JSZip();
-    // { binary: true }
-    zip.file("lorem.txt", content2, { compression: "DEFLATE" });
-    zip.generateAsync({ type: "uint8array" }).then(res => {
-      console.log(res);
-    });
+  subs: Subscription[] = [];
+
+  constructor(
+    private dataService: DataService,
+    private headerService: HeaderService,
+    private zipService: ZipService,
+  ) {
+    console.log(this.dataService.data);
+    this.sub(this.headerService.editChanges.subscribe(() => {
+      // Meta editing. Archive id, password, etc
+      this.mockEdit();
+    }));
+    this.sub(this.headerService.downloadChanges.subscribe(() => {
+      this.dataService.update();
+      this.zipService.zip(this.dataService.data, this.dataService.password);
+    }));
+    this.sub(this.headerService.deleteChanges.subscribe(() => {
+      console.log('delete');
+    }));
+    this.sub(this.headerService.saveChanges.subscribe(() => {
+      this.dataService.update();
+      console.log(this.dataService.data);
+    }));
   }
 
-  testAES(): void {
-    // Password
-    const pass: string = 'mypass';
+  mockEdit(): void {
+    const file = this.dataService.data.root.nodes[1] as File;
+    if (file.name === 'hello.txt') {
+      file.text = 'New string';
+    } else {
+      throw new Error('Wrong node');
+    }
+  }
 
-    // Message
-    const msg: string = 'pepega';
-    const bytesMessage: Uint8Array = AES.utils.utf8.toBytes(msg);
+  sub(sub: Subscription): void {
+    this.subs.push(sub);
+  }
 
-    // Generate 256 key
-    const salt: string = 'aes256sha';
-    const hex: string = sha256(pass + salt);
-    const key: Uint8Array = AES.utils.hex.toBytes(hex);
-
-    // Encrypt
-    var aesCtr: AES.ModeOfOperation.ModeOfOperationCTR = new AES.ModeOfOperation.ctr(key);
-    var encryptedBytes: Uint8Array = aesCtr.encrypt(bytesMessage);
-
-    // Decrypt
-    var aesCtr: AES.ModeOfOperation.ModeOfOperationCTR = new AES.ModeOfOperation.ctr(key);
-    var decryptedBytes: Uint8Array = aesCtr.decrypt(encryptedBytes);
-    const decrypted: string = AES.utils.utf8.fromBytes(decryptedBytes);
-    console.log(decrypted);
+  ngOnDestroy() {
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 }

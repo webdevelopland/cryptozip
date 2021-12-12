@@ -2,12 +2,22 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { RootComponent, CreateComponent, DataComponent } from '@/routes';
+import {
+  HomeComponent,
+  CreateComponent,
+  DataComponent,
+  LoginComponent,
+  UploadComponent,
+  DownloadComponent,
+} from '@/routes';
 import { DataGuard } from '@/core/services';
 
 const appRoutes: Routes = [
-  { path: '', component: RootComponent },
+  { path: '', component: HomeComponent },
   { path: 'create', component: CreateComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'upload', component: UploadComponent },
+  { path: 'download', component: DownloadComponent },
   {
     path: '',
     canActivate: [DataGuard],
@@ -15,7 +25,7 @@ const appRoutes: Routes = [
       { path: 'data', component: DataComponent },
     ],
   },
-  { path: '**', component: RootComponent },
+  { path: '**', component: HomeComponent },
 ];
 
 @NgModule({

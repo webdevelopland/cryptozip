@@ -1,0 +1,10 @@
+<div class="page">
+  <div>
+    <input type="password" placeholder="Password" [(ngModel)]="password">
+  </div>
+  <input
+    id="file-upload"
+    type="file"
+    (change)="decrypt($event.target.files)"
+  />
+</div>

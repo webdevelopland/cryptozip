@@ -7,7 +7,7 @@ export class NotificationService {
 
   private snack(message: string, status: string): void {
     if (message) {
-      this.snackbar.open(message, null, {
+      this.snackbar.open(message, undefined, {
         duration: 3000,
         panelClass: [status],
       });
@@ -24,5 +24,10 @@ export class NotificationService {
 
   warning(message: string): void {
     this.snack(message, 'notification-warning');
+  }
+
+  crash(message: string): void {
+    this.error(message);
+    throw new Error(message);
   }
 }

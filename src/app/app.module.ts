@@ -4,21 +4,29 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { RootComponent, CreateComponent, DataModule } from '@/routes';
+import {
+  HomeComponent,
+  CreateComponent,
+  DataModule,
+  LoginComponent,
+  UploadComponent,
+  DownloadComponent,
+} from '@/routes';
 import { CoreModule } from './core/core.module';
-import { FirebaseModule } from './import';
 import { SharedModule } from './shared';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RootComponent,
+    HomeComponent,
     CreateComponent,
+    LoginComponent,
+    UploadComponent,
+    DownloadComponent,
   ],
   imports: [
     BrowserModule,
     CoreModule,
-    FirebaseModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     SharedModule,

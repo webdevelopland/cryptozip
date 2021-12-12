@@ -1,9 +1,12 @@
 <div class="page">
-  <div>Create</div>
   <div>
-    <a [href]="'/'">root</a>
+    <input type="text" readonly="true" [value]="id">
+    <button (click)="randomize()">Randomize</button>
   </div>
   <div>
-    <a [href]="'/data'">data</a>
+    <input type="password" placeholder="Password" [(ngModel)]="password">
+  </div>
+  <div>
+    <button (click)="create()">Create</button>
   </div>
 </div>
