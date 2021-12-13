@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
 
-import { File, Folder, Data, Parse } from '@/core/type';
+import { File, Folder, Data, DataMap, NodeMap, Parse } from '@/core/type';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { parsePath } from '@/core/functions';
@@ -22,7 +22,7 @@ export class ZipService {
     return randCustomString(numerals, 9);
   }
 
-  unzip(fileList: FileList, password: string): Observable<Data> {
+  unzip(fileList: FileList, password: string): Observable<DataMap> {
     return new Observable(observer => {
       const reader = new FileReader();
       reader.readAsArrayBuffer(fileList.item(0));
@@ -31,7 +31,7 @@ export class ZipService {
         const encrypted: Uint8Array = this.removeHeader(fileBinary);
         const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, password);
         this.binaryToData(decrypted).subscribe(
-          data => observer.next(data),
+          dataMap => observer.next(dataMap),
           () => observer.error(),
         );
       };
@@ -62,7 +62,7 @@ export class ZipService {
     saveAs(new Blob([czipHeaderLen, czipHeader, encrypted]), name + '.czip');
   }
 
-  private binaryToData(binary: Uint8Array): Observable<Data> {
+  private binaryToData(binary: Uint8Array): Observable<DataMap> {
     return new Observable(observer => {
       JSZip.loadAsync(binary).then(zipContent => {
         const fileList: any[] = [];
@@ -85,10 +85,11 @@ export class ZipService {
           nodeList.sort((a, b) => {
             const aNodeLength: number = a.path.split('/').length;
             const bNodeLength: number = b.path.split('/').length;
-            const aFolderStatus: number = a.isFolder() ? 1 : 0;
-            const bFolderStatus: number = b.isFolder() ? 1 : 0;
+            const aFolderStatus: number = a.isFolder ? 1 : 0;
+            const bFolderStatus: number = b.isFolder ? 1 : 0;
             return (aNodeLength - aFolderStatus) - (bNodeLength - bFolderStatus);
           });
+          const nodeMap: NodeMap = {};
           let metaJson: any;
           for (const node of nodeList) {
             // Get meta
@@ -98,6 +99,7 @@ export class ZipService {
             }
             // Convert list to tree
             this.addToTree(nodeList, node);
+            nodeMap[node.id] = node;
           }
           const data = new Data();
           data.root = nodeList[0] as Folder;
@@ -108,7 +110,10 @@ export class ZipService {
             createdTimestamp: metaJson.createdTimestamp,
             updatedTimestamp: metaJson.updatedTimestamp,
           };
-          observer.next(data);
+          observer.next({
+            data: data,
+            map: nodeMap,
+          });
         });
       }, () => {
         observer.error();
@@ -120,8 +125,8 @@ export class ZipService {
   addToTree(nodeList: (File | Folder)[], newNode: File | Folder): void {
     const parent: string = parsePath(newNode.path).parent;
     for (const node of nodeList) {
-      if (node.path === parent && node.isFolder()) {
-        (node as Folder).nodes.push(newNode);
+      if (node.path === parent && node instanceof Folder) {
+        node.nodes.push(newNode);
       }
     }
   }
@@ -197,9 +202,9 @@ export class ZipService {
 
   private addFolderToZip(jszip: JSZip, folder: Folder): void {
     for (const node of folder.nodes) {
-      if (node.isFolder()) {
+      if (node instanceof Folder) {
         const zipFolder: JSZip = jszip.folder(node.name);
-        this.addFolderToZip(zipFolder, node as Folder);
+        this.addFolderToZip(zipFolder, node);
       } else {
         const file = node as File;
         jszip.file(

@@ -10,6 +10,7 @@
 </header>
 <div class="popup-menu" *ngIf="headerService.isMenu">
   <div class="option" (click)="headerService.edit()">Edit</div>
+  <div class="option" (click)="print()">Print</div>
   <div class="option" (click)="headerService.download()">Download</div>
   <div class="option" (click)="headerService.save()">Save</div>
   <div class="option" (click)="headerService.delete()">Delete</div>

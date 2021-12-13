@@ -3,7 +3,7 @@
 :host {
   >header {
     height: 40px;
-    border-bottom: 1px solid #0366d6;
+    border-bottom: 1px solid $color-primary;
     position: relative;
     display: flex;
     align-items: center;
@@ -12,7 +12,7 @@
       >div {
         outline: none;
         font-size: 20px;
-        color: #0366d6;
+        color: $color-primary;
         text-decoration: none;
       }
       >.cryptozip {
@@ -38,7 +38,7 @@
     position: fixed;
     top: 50px;
     right: 10px;
-    border: 1px solid #0366d6;
+    border: 1px solid $color-primary;
     width: 200px;
     background: white;
     z-index: 10;
@@ -47,7 +47,7 @@
       white-space: nowrap;
       font-size: 14px;
       &:hover {
-        background: #0366d6;
+        background: $color-primary;
         color: white;
         cursor: pointer;
       }

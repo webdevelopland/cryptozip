@@ -1,8 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { randstr } from 'rndmjs';
 
-import { File } from '@/core/type';
+import { Node, File, Folder, Parse } from '@/core/type';
 import { DataService, ZipService } from '@/core/services';
+import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
 
 @Component({
@@ -11,17 +13,18 @@ import { HeaderService } from '@/core/components/header';
   styleUrls: ['./data.component.scss'],
 })
 export class DataComponent implements OnDestroy {
+  folder: Folder;
   subs: Subscription[] = [];
 
   constructor(
-    private dataService: DataService,
+    public dataService: DataService,
     private headerService: HeaderService,
     private zipService: ZipService,
   ) {
-    console.log(this.dataService.data);
+    this.folder = this.dataService.data.root;
     this.sub(this.headerService.editChanges.subscribe(() => {
       // Meta editing. Archive id, password, etc
-      this.mockEdit();
+      console.log('edit');
     }));
     this.sub(this.headerService.downloadChanges.subscribe(() => {
       this.dataService.update();
@@ -36,13 +39,49 @@ export class DataComponent implements OnDestroy {
     }));
   }
 
-  mockEdit(): void {
-    const file = this.dataService.data.root.nodes[1] as File;
-    if (file.name === 'hello.txt') {
-      file.text = 'New string';
-    } else {
-      throw new Error('Wrong node');
+  back(): void {
+    const parentPath: string = parsePath(this.folder.path).parent;
+    if (parentPath !== '/') {
+      const parentId: string = this.dataService.pathMap[parentPath];
+      const parent = this.dataService.nodeMap[parentId] as Folder;
+      this.unselectAll();
+      this.folder = parent;
     }
+  }
+
+  unselectAll(): void {
+    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
+  }
+
+  click(node: Node): void {
+    this.unselectAll();
+    node.isSelected = true;
+  }
+
+  dblclick(node: Node): void {
+    if (node instanceof Folder) {
+      this.unselectAll();
+      this.folder = node;
+    }
+  }
+
+  addFile(): void {
+    const name: string = randstr(12);
+    const file: File = this.zipService.getFile(this.folder.path + '/' + name + '.txt');
+    file.text = '';
+    this.folder.push(file);
+    this.dataService.nodeMap[file.id] = file;
+    this.dataService.pathMap[file.path] = file.id;
+    this.dataService.isModified = true;
+  }
+
+  addFolder(): void {
+    const name: string = randstr(12);
+    const folder: Folder = this.zipService.getFolder(this.folder.path + '/' + name);
+    this.folder.push(folder);
+    this.dataService.nodeMap[folder.id] = folder;
+    this.dataService.pathMap[folder.path] = folder.id;
+    this.dataService.isModified = true;
   }
 
   sub(sub: Subscription): void {

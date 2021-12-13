@@ -1,0 +1,22 @@
+body {
+  @mixin dark-input() {
+    padding: 4px 10px 5px 10px;
+    border-radius: 2px;
+    outline: none;
+    border: none;
+    font-family: $default-font;
+    font-size: 14px;
+    box-sizing: border-box;
+    // background: #35353a;
+    // color: #b5b5b5;
+    // &::placeholder {
+    //   color: #6f6f6f;
+    // }
+  }
+  input {
+    @include dark-input();
+  }
+  select {
+    @include dark-input();
+  }
+}

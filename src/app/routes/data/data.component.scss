@@ -1,2 +1,80 @@
+@import 'styles/variables';
+
 .page {
+  >.control {
+    background: #ccc;
+    padding: 10px;
+    width: 100%;
+    border-bottom: 1px solid $color-primary;
+    box-sizing: border-box;
+    >.buttons {
+      margin-bottom: 10px;
+      >button {
+        margin-right: 10px;
+      }
+    }
+    >.path {
+      >input {
+        width: 100%;
+      }
+    }
+  }
+  >.explorer {
+    width: 100%;
+    >.node {
+      width: 200px;
+      height: 200px;
+      border: 1px solid #ccc;
+      display: inline-block;
+      margin: 10px;
+      vertical-align: top;
+      >.icon {
+        width: 100%;
+        height: 144px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        >mat-icon {
+          color: #ccc;
+          $size: 120px;
+          font-size: $size;
+          width: $size;
+          height: $size;
+        }
+      }
+      >.name {
+        width: 100%;
+        height: 56px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        >span {
+          display: -webkit-box;
+          max-height: calc(100% - 20px);
+          max-width: calc(100% - 20px);
+          word-break: break-all;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          font-size: 16px;
+          color: #555;
+        }
+      }
+      &.selected {
+        border: 1px solid $color-primary;
+        >.icon {
+          border-bottom: 1px solid $color-primary;
+          >mat-icon {
+            color: $color-primary;
+          }
+        }
+        >.name {
+          >span {
+            color: #131313;
+          }
+        }
+      }
+    }
+  }
 }

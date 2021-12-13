@@ -19,6 +19,10 @@ export class HeaderComponent {
     this.dataService.destroy();
   }
 
+  print(): void {
+    console.log(this.dataService.data);
+  }
+
   toggleMenu(): void {
     this.headerService.isMenu = !this.headerService.isMenu;
   }

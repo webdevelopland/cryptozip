@@ -1,3 +1,32 @@
 <div class="page">
-  Data
+  <div class="control">
+    <div class="buttons">
+      <button (click)="back()">...</button>
+      <button (click)="addFile()">Create File</button>
+      <button (click)="addFolder()">Create Folder</button>
+      <button>Import Files</button>
+      <button>Import Folder</button>
+    </div>
+    <div class="path">
+      <!-- {{ folder.path }} -->
+      <input type="text" readonly="true" [value]="folder.path">
+    </div>
+  </div>
+  <div class="explorer">
+    <div
+      class="node"
+      *ngFor="let node of folder.nodes"
+      (click)="click(node)"
+      (dblclick)="dblclick(node)"
+      [ngClass]="{ selected: node.isSelected }"
+    >
+      <div class="icon">
+        <mat-icon *ngIf="node.isFolder">folder</mat-icon>
+        <mat-icon *ngIf="!node.isFolder">insert_drive_file</mat-icon>
+      </div>
+      <div class="name">
+        <span>{{ node.name }}</span>
+      </div>
+    </div>
+  </div>
 </div>

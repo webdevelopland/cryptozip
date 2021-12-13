@@ -19,11 +19,10 @@ export class UploadComponent {
   ) { }
 
   decrypt(fileList: FileList): void {
-    this.zipService.unzip(fileList, this.password).subscribe(data => {
+    this.zipService.unzip(fileList, this.password).subscribe(dataMap => {
       this.dataService.password = this.password;
-      this.dataService.data = data;
-      this.dataService.id = data.meta.id;
-      this.dataService.isDecrypted = true;
+      this.dataService.nodeMap = dataMap.map;
+      this.dataService.setData(dataMap.data);
       this.router.navigate(['/data']);
     }, () => {
       this.notificationService.error('Password is incorrect');

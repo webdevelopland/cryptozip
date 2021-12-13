@@ -1,13 +1,11 @@
 import { randstr64 } from 'rndmjs';
 
-class Node {
+export class Node {
   name: string;
   path: string;
   id: string = randstr64(20);
-
-  isFolder(): boolean {
-    return this instanceof Folder;
-  }
+  isSelected: boolean = false;
+  isFolder: boolean = false;
 }
 
 export class File extends Node {
@@ -18,6 +16,11 @@ export class File extends Node {
 
 export class Folder extends Node {
   nodes: (File | Folder)[] = [];
+
+  constructor() {
+    super();
+    this.isFolder = true;
+  }
 
   push(node: File | Folder): Folder {
     this.nodes.push(node);
@@ -38,12 +41,21 @@ export class Data {
   meta: Meta;
 }
 
+export interface DataMap {
+  data: Data;
+  map: NodeMap;
+}
+
 export class Password extends File {
   createdTimestamp: number;
 }
 
 export interface NodeMap {
   [id: string]: File | Folder;
+}
+
+export interface StringMap {
+  [id: string]: string;
 }
 
 export interface DialogData {
