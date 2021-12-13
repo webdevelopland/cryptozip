@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, Params } from '@angular/router';
 
-import { Folder } from '@/core/type';
 import { DataService, UrlService } from '@/core/services';
 
 @Component({

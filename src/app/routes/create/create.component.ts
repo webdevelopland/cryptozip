@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { randstr } from 'rndmjs';
 
 import { Folder, File, Data } from '@/core/type';
 import { DataService, ZipService } from '@/core/services';

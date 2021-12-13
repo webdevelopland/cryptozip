@@ -1,4 +1,4 @@
-import { randstr64, randstr } from 'rndmjs';
+import { randstr64 } from 'rndmjs';
 
 class Node {
   name: string;

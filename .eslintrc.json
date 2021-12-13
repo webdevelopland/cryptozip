@@ -1,0 +1,88 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "@typescript-eslint/indent": [
+          "error",
+          2
+        ],
+        "@typescript-eslint/quotes": [
+          "error",
+          "single",
+          { "avoidEscape": true }
+        ],
+        "max-len": [
+          "error",
+          { "code": 100 }
+        ],
+        "eol-last": ["error", "always"],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
+        "@typescript-eslint/no-unused-vars": "error",
+        "semi": "error",
+        "array-bracket-spacing": ["error", "never"],
+        "arrow-spacing": "error",
+        "brace-style": "error",
+        "comma-spacing": [
+          "error",
+          { "before": false, "after": true }
+        ],
+        "computed-property-spacing": ["error", "never"],
+        "dot-location": ["error", "property"],
+        "func-call-spacing": ["error", "never"],
+        "implicit-arrow-linebreak": ["error", "beside"],
+        "key-spacing": [
+          "error",
+          { "beforeColon": false }
+        ],
+        "keyword-spacing": [
+          "error",
+          { "before": true }
+        ],
+        "no-multi-spaces": "error",
+        "no-trailing-spaces": "error",
+        "no-whitespace-before-property": "error",
+        "prefer-const": "error",
+        "spaced-comment": ["error", "always"]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {
+        "eol-last": ["error", "always"]
+      }
+    },
+    {
+      "files": [
+        "*.scss"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {
+        "eol-last": ["error", "always"]
+      }
+    }
+  ]
+}

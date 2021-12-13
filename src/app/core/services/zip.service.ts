@@ -91,7 +91,7 @@ export class ZipService {
           for (const node of nodeList) {
             // Get meta
             if (node.path === '/meta.json') {
-              metaJson = JSON.parse((node as File).text)
+              metaJson = JSON.parse((node as File).text);
               continue;
             }
             // Convert list to tree
@@ -107,8 +107,8 @@ export class ZipService {
             updatedTimestamp: metaJson.updatedTimestamp,
           };
           observer.next(data);
-        })
-      }, error => {
+        });
+      }, () => {
         observer.error();
       });
     });
@@ -164,7 +164,7 @@ export class ZipService {
     zip.file(
       'meta.json',
       JSON.stringify(data.meta),
-      { compression: "DEFLATE" },
+      { compression: 'DEFLATE' },
     );
   }
 
@@ -179,7 +179,7 @@ export class ZipService {
         jszip.file(
           file.name,
           file.text,
-          { compression: "DEFLATE" },
+          { compression: 'DEFLATE' },
         );
       }
     }
