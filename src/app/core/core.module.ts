@@ -7,6 +7,7 @@ import {
   CryptoService,
   ZipService,
   UrlService,
+  MediaService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -24,6 +25,7 @@ import { HeaderModule } from './components/header';
     CryptoService,
     ZipService,
     UrlService,
+    MediaService,
   ],
 })
 export class CoreModule { }

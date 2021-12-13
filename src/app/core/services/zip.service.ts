@@ -7,6 +7,7 @@ import * as AES from 'aes-js';
 
 import { File, Folder, Data, Parse } from '@/core/type';
 import { CryptoService } from './crypto.service';
+import { MediaService } from './media.service';
 import { parsePath } from '@/core/functions';
 import { META } from '@/environments/meta';
 
@@ -14,6 +15,7 @@ import { META } from '@/environments/meta';
 export class ZipService {
   constructor(
     private cryptoService: CryptoService,
+    private mediaService: MediaService,
   ) { }
 
   generateId(): string {
@@ -131,17 +133,42 @@ export class ZipService {
       fileList.forEach(zipFile => {
         observableList.push(new Observable(observer => {
           const file: File = this.getFile(this.getPath(zipFile.name));
-          // TODO: handle binary
-          zipFile.async('string').then(data => {
-            file.text = data;
-            observer.next(file);
-          });
+          if (this.mediaService.isText(zipFile.name)) { // Based on extension
+            // Text
+            zipFile.async('string').then(data => {
+              file.text = data;
+              observer.next(file);
+            });
+          } else {
+            // Binary
+            this.decompressBinaryFile(file, zipFile).subscribe(() => {
+              observer.next(file);
+            });
+          }
         }));
       });
       return zip(...observableList);
     } else {
       return new Observable(observer => observer.next([]));
     }
+  }
+
+  private decompressBinaryFile(newFile: File, zipFile: any): Observable<void> {
+    return new Observable(observer => {
+      newFile.isBinary = true;
+      if (zipFile._data.compressedSize === zipFile._data.uncompressedSize) {
+        // File wasn't compressed, extract as is
+        const binary: Uint8Array = zipFile._data.compressedContent;
+        newFile.binary = binary;
+        observer.next();
+      } else {
+        // Decompress file
+        zipFile.async('uint8array').then(uint8array => {
+          newFile.binary = uint8array;
+          observer.next();
+        });
+      }
+    });
   }
 
   getPath(name: string): string {
@@ -175,11 +202,13 @@ export class ZipService {
         this.addFolderToZip(zipFolder, node as Folder);
       } else {
         const file = node as File;
-        // TODO: handle binary
         jszip.file(
           file.name,
-          file.text,
-          { compression: 'DEFLATE' },
+          file.isBinary ? file.binary : file.text,
+          {
+            binary: file.isBinary,
+            compression: 'DEFLATE',
+          },
         );
       }
     }
