@@ -8,6 +8,7 @@ import {
   ZipService,
   UrlService,
   MediaService,
+  EventService,
   TmpService,
 } from './services';
 import { HeaderModule } from './components/header';
@@ -27,6 +28,7 @@ import { HeaderModule } from './components/header';
     ZipService,
     UrlService,
     MediaService,
+    EventService,
     TmpService,
   ],
 })

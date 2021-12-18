@@ -1,11 +1,12 @@
 {
   "name": "cryptozip",
   "scripts": {
-    "start": "ng serve --live-reload false",
+    "start": "ng build --configuration development --watch",
     "live": "ng serve",
     "build": "ng build",
     "lint": "ng lint",
-    "lint-fix": "ng lint --fix"
+    "lint-fix": "ng lint --fix",
+    "deploy": "firebase deploy --only hosting"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.1.1",
@@ -36,6 +37,7 @@
     "aes-js": "~3.1.2",
     "eslint": "~8.2.0",
     "file-saver": "~2.0.5",
+    "firebase": "~9.6.1",
     "jasmine-core": "~3.10.0",
     "js-sha256": "~0.9.0",
     "jszip": "~3.7.1",

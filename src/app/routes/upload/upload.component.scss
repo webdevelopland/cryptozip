@@ -1,5 +1,8 @@
 .page {
-  input {
-    width: 300px;
+  >div {
+    padding: 10px;
+    >input {
+      width: 300px;
+    }
   }
 }

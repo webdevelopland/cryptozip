@@ -2,9 +2,11 @@
   <div>
     <input type="password" placeholder="Password" [(ngModel)]="password">
   </div>
-  <input
-    id="file-upload"
-    type="file"
-    (change)="decrypt($event.target.files)"
-  />
+  <div>
+    <input
+      id="file-upload"
+      type="file"
+      (change)="decrypt($event.target.files)"
+    />
+  </div>
 </div>

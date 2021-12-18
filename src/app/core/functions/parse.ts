@@ -7,5 +7,6 @@ export function parsePath(path: string): Parse {
     length: nodes.length, // 4
     name: nodes.pop(), // 'file.java'
     parent: '/' + nodes.join('/'), // '/root/path/to'
+    nodes: nodes,
   };
 }

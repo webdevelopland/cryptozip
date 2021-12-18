@@ -66,4 +66,5 @@ export interface Parse {
   name: string;
   parent: string;
   length: number;
+  nodes: string[];
 }

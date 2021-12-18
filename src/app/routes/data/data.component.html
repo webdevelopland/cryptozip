@@ -18,6 +18,9 @@
       *ngFor="let node of folder.nodes"
       (click)="click(node)"
       (dblclick)="dblclick(node)"
+      (contextmenu)="contextmenu($event, node)"
+      (touchstart)="touchstart(node)"
+      (touchend)="touchend()"
       [ngClass]="{ selected: node.isSelected }"
     >
       <div class="icon">
@@ -25,7 +28,7 @@
         <mat-icon *ngIf="!node.isFolder">insert_drive_file</mat-icon>
       </div>
       <div class="name">
-        <span>{{ node.name }}</span>
+        <span class="ellipsis">{{ node.name }}</span>
       </div>
     </div>
   </div>

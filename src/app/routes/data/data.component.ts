@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { randstr } from 'rndmjs';
 
 import { Node, File, Folder, Parse } from '@/core/type';
-import { DataService, ZipService } from '@/core/services';
+import { DataService, ZipService, NotificationService, EventService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
 
@@ -15,11 +15,14 @@ import { HeaderService } from '@/core/components/header';
 export class DataComponent implements OnDestroy {
   folder: Folder;
   subs: Subscription[] = [];
+  touchSub = new Subscription();
 
   constructor(
     public dataService: DataService,
     private headerService: HeaderService,
     private zipService: ZipService,
+    private notificationService: NotificationService,
+    private eventService: EventService,
   ) {
     this.folder = this.dataService.data.root;
     this.sub(this.headerService.editChanges.subscribe(() => {
@@ -54,15 +57,38 @@ export class DataComponent implements OnDestroy {
   }
 
   click(node: Node): void {
-    this.unselectAll();
-    node.isSelected = true;
-  }
-
-  dblclick(node: Node): void {
     if (node instanceof Folder) {
       this.unselectAll();
       this.folder = node;
     }
+  }
+
+  dblclick(node: Node): void {
+    // this.unselectAll();
+    // node.isSelected = true;
+  }
+
+  contextmenu(event: MouseEvent, node: Node): void {
+    event.preventDefault();
+    this.openContextmenu(node);
+  }
+
+  touchstart(node: Node): void {
+    if (this.eventService.isApple) {
+      this.touchSub.unsubscribe();
+      this.touchSub = timer(500).subscribe(() => {
+        this.openContextmenu(node);
+      });
+    }
+  }
+
+  touchend(): void {
+    this.touchSub.unsubscribe();
+  }
+
+  openContextmenu(node: Node): void {
+    this.unselectAll();
+    node.isSelected = true;
   }
 
   addFile(): void {
@@ -72,7 +98,7 @@ export class DataComponent implements OnDestroy {
     this.folder.push(file);
     this.dataService.nodeMap[file.id] = file;
     this.dataService.pathMap[file.path] = file.id;
-    this.dataService.isModified = true;
+    this.dataService.modify();
   }
 
   addFolder(): void {
@@ -81,7 +107,7 @@ export class DataComponent implements OnDestroy {
     this.folder.push(folder);
     this.dataService.nodeMap[folder.id] = folder;
     this.dataService.pathMap[folder.path] = folder.id;
-    this.dataService.isModified = true;
+    this.dataService.modify();
   }
 
   sub(sub: Subscription): void {
@@ -89,6 +115,7 @@ export class DataComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.touchSub.unsubscribe();
     this.subs.forEach(sub => sub.unsubscribe());
   }
 }
