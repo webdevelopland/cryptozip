@@ -1,0 +1,14 @@
+<div class="dialog">
+  <div class="title">{{ dialogData.message }}</div>
+  <div class="name">
+    <input
+      type="text"
+      placeholder="New name"
+      [(ngModel)]="newName"
+      spellcheck=false
+    >
+  </div>
+  <div class="button">
+    <button (click)="check()">Rename</button>
+  </div>
+</div>

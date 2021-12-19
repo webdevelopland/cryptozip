@@ -1,14 +1,12 @@
 <div class="message">
-  <pre [HTML]="dialogData.message"></pre>
+  {{ dialogData.message }}
 </div>
 <div class="buttons">
   <button
-    mat-button
     class="cancel-button"
     (click)="close()"
   >Cancel</button>
   <button
-    mat-button
     class="ok-button"
     (click)="ok()"
   >OK</button>

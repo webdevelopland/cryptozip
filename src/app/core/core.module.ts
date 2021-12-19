@@ -9,6 +9,7 @@ import {
   UrlService,
   MediaService,
   EventService,
+  ClipboardService,
   TmpService,
 } from './services';
 import { HeaderModule } from './components/header';
@@ -29,6 +30,7 @@ import { HeaderModule } from './components/header';
     UrlService,
     MediaService,
     EventService,
+    ClipboardService,
     TmpService,
   ],
 })

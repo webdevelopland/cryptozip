@@ -6,6 +6,7 @@ import { Node, File, Folder, Parse } from '@/core/type';
 import { DataService, ZipService, NotificationService, EventService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
+import { MouseService, FileService, GetService } from './services';
 
 @Component({
   selector: 'page-data',
@@ -13,9 +14,7 @@ import { HeaderService } from '@/core/components/header';
   styleUrls: ['./data.component.scss'],
 })
 export class DataComponent implements OnDestroy {
-  folder: Folder;
   subs: Subscription[] = [];
-  touchSub = new Subscription();
 
   constructor(
     public dataService: DataService,
@@ -23,8 +22,11 @@ export class DataComponent implements OnDestroy {
     private zipService: ZipService,
     private notificationService: NotificationService,
     private eventService: EventService,
+
+    public mouseService: MouseService,
+    public fileService: FileService,
+    public getService: GetService,
   ) {
-    this.folder = this.dataService.data.root;
     this.sub(this.headerService.editChanges.subscribe(() => {
       // Meta editing. Archive id, password, etc
       console.log('edit');
@@ -43,71 +45,16 @@ export class DataComponent implements OnDestroy {
   }
 
   back(): void {
-    const parentPath: string = parsePath(this.folder.path).parent;
+    const parentPath: string = parsePath(this.dataService.folder.path).parent;
     if (parentPath !== '/') {
       const parentId: string = this.dataService.pathMap[parentPath];
       const parent = this.dataService.nodeMap[parentId] as Folder;
-      this.unselectAll();
-      this.folder = parent;
+      this.getService.unselectAll();
+      if (!parent) {
+        this.notificationService.crash(parentPath + ': parent not found');
+      }
+      this.dataService.folder = parent;
     }
-  }
-
-  unselectAll(): void {
-    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
-  }
-
-  click(node: Node): void {
-    if (node instanceof Folder) {
-      this.unselectAll();
-      this.folder = node;
-    }
-  }
-
-  dblclick(node: Node): void {
-    // this.unselectAll();
-    // node.isSelected = true;
-  }
-
-  contextmenu(event: MouseEvent, node: Node): void {
-    event.preventDefault();
-    this.openContextmenu(node);
-  }
-
-  touchstart(node: Node): void {
-    if (this.eventService.isApple) {
-      this.touchSub.unsubscribe();
-      this.touchSub = timer(500).subscribe(() => {
-        this.openContextmenu(node);
-      });
-    }
-  }
-
-  touchend(): void {
-    this.touchSub.unsubscribe();
-  }
-
-  openContextmenu(node: Node): void {
-    this.unselectAll();
-    node.isSelected = true;
-  }
-
-  addFile(): void {
-    const name: string = randstr(12);
-    const file: File = this.zipService.getFile(this.folder.path + '/' + name + '.txt');
-    file.text = '';
-    this.folder.push(file);
-    this.dataService.nodeMap[file.id] = file;
-    this.dataService.pathMap[file.path] = file.id;
-    this.dataService.modify();
-  }
-
-  addFolder(): void {
-    const name: string = randstr(12);
-    const folder: Folder = this.zipService.getFolder(this.folder.path + '/' + name);
-    this.folder.push(folder);
-    this.dataService.nodeMap[folder.id] = folder;
-    this.dataService.pathMap[folder.path] = folder.id;
-    this.dataService.modify();
   }
 
   sub(sub: Subscription): void {
@@ -115,7 +62,7 @@ export class DataComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.touchSub.unsubscribe();
     this.subs.forEach(sub => sub.unsubscribe());
+    this.mouseService.destroy();
   }
 }

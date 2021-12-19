@@ -14,4 +14,9 @@ body {
   select {
     @include dark-input();
   }
+  .context-dialog {
+    >.mat-dialog-container {
+      padding: 0;
+    }
+  }
 }

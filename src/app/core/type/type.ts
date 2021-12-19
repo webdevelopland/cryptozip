@@ -15,14 +15,14 @@ export class File extends Node {
 }
 
 export class Folder extends Node {
-  nodes: (File | Folder)[] = [];
+  nodes: Node[] = [];
 
   constructor() {
     super();
     this.isFolder = true;
   }
 
-  push(node: File | Folder): Folder {
+  push(node: Node): Folder {
     this.nodes.push(node);
     return this;
   }
@@ -51,7 +51,7 @@ export class Password extends File {
 }
 
 export interface NodeMap {
-  [id: string]: File | Folder;
+  [id: string]: Node;
 }
 
 export interface StringMap {

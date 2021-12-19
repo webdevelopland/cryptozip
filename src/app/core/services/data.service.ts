@@ -11,6 +11,7 @@ export class DataService {
   id: string;
   password: string;
   data: Data;
+  folder: Folder; // Current folder
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
   exitChanges = new Subject<void>();
@@ -19,10 +20,21 @@ export class DataService {
 
   setData(data: Data): void {
     this.data = data;
+    this.folder = data.root;
     this.sort(this.data.root);
     this.id = data.meta.id;
     this.createPathMap();
     this.isDecrypted = true;
+  }
+
+  addNode(node: Node): void {
+    this.nodeMap[node.id] = node;
+    this.pathMap[node.path] = node.id;
+  }
+
+  removeNode(node: Node): void {
+    delete this.nodeMap[node.id];
+    delete this.pathMap[node.path];
   }
 
   createPathMap(): void {
@@ -44,6 +56,8 @@ export class DataService {
 
   sort(folder: Folder): void {
     folder.nodes.forEach(node => {
+      this.nodeMap[node.id] = node;
+      this.pathMap[node.path] = node.id;
       if (node instanceof Folder) {
         this.sort(node);
       }
@@ -67,6 +81,7 @@ export class DataService {
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
+    this.folder = undefined;
     this.router.navigate(['/']);
     this.exitChanges.next();
   }
