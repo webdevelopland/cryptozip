@@ -86,7 +86,7 @@ export class MouseService {
       data: { message: 'Delete the nodes?' }
     }).afterClosed().subscribe(res => {
       if (res) {
-        this.fileService.delete()
+        this.fileService.delete();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
@@ -11,7 +11,7 @@ import { GetService } from '../services/get.service';
   templateUrl: './rename-dialog.component.html',
   styleUrls: ['./rename-dialog.component.scss'],
 })
-export class RenameDialogComponent {
+export class RenameDialogComponent implements OnDestroy {
   newName: string;
   keySubscription = new Subscription();
 

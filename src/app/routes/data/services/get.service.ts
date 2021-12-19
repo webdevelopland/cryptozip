@@ -114,7 +114,6 @@ export class GetService {
       if (node instanceof Folder) {
         const folder: Folder = this.zipService.getFolder(newPath);
         folder.nodes = this.copyFolderNodes(node, newPath);
-        this.dataService.addNode(folder);
         children.push(folder);
       } else if (node instanceof File) {
         const file: File = this.zipService.getFile(newPath);
@@ -124,7 +123,6 @@ export class GetService {
         } else {
           file.text = node.text;
         }
-        this.dataService.addNode(file);
         children.push(file);
       }
     });

@@ -39,8 +39,8 @@ export class FileService {
     this.getSelectedList().forEach(node => {
       const index: number = this.dataService.folder.nodes.indexOf(node);
       this.dataService.folder.nodes.splice(index, 1);
-      this.dataService.removeNode(node);
     });
+    this.dataService.modify();
   }
 
   copy(): void {
@@ -108,13 +108,11 @@ export class FileService {
     });
     for (const node of copiedNodes) {
       this.dataService.folder.push(node);
-      this.dataService.addNode(node);
     }
     if (this.clipboardService.isCut) {
       this.clipboardService.clipboard.forEach(node => {
         const index: number = this.clipboardService.location.nodes.indexOf(node);
         this.clipboardService.location.nodes.splice(index, 1);
-        this.dataService.removeNode(node);
       });
     }
     this.dataService.modify();
@@ -129,5 +127,6 @@ export class FileService {
     if (node instanceof Folder) {
       this.getService.renameAllChildren(node);
     }
+    this.dataService.modify();
   }
 }

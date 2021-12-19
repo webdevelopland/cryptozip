@@ -23,25 +23,13 @@ export class DataService {
     this.folder = data.root;
     this.sort(this.data.root);
     this.id = data.meta.id;
-    this.createPathMap();
+    Object.values(this.nodeMap).forEach(node => this.pathMap[node.path] = node.id);
     this.isDecrypted = true;
   }
 
-  addNode(node: Node): void {
-    this.nodeMap[node.id] = node;
-    this.pathMap[node.path] = node.id;
-  }
-
-  removeNode(node: Node): void {
-    delete this.nodeMap[node.id];
-    delete this.pathMap[node.path];
-  }
-
-  createPathMap(): void {
-    Object.values(this.nodeMap).forEach(node => this.pathMap[node.path] = node.id);
-  }
-
   modify(): void {
+    this.nodeMap = {};
+    this.pathMap = {};
     this.sort(this.data.root);
     this.isModified = true;
   }
