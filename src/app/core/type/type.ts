@@ -41,11 +41,6 @@ export class Data {
   meta: Meta;
 }
 
-export interface DataMap {
-  data: Data;
-  map: NodeMap;
-}
-
 export class Password extends File {
   createdTimestamp: number;
 }

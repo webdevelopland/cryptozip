@@ -33,21 +33,17 @@ export class TmpService {
 
     const data = new Data();
     data.root = this.zipService.getFolder(root);
-    this.dataService.nodeMap[data.root.id] = data.root;
 
     const hello: File = this.zipService.getFile(root + '/hello.txt');
     hello.text = 'Hello czip';
     data.root.push(hello);
-    this.dataService.nodeMap[hello.id] = hello;
 
     const service: Folder = this.zipService.getFolder(root + '/service');
     data.root.push(service);
-    this.dataService.nodeMap[service.id] = service;
 
     const run: File = this.zipService.getFile(service.path + '/run.js');
     run.text = 'print("Run")';
     service.push(run);
-    this.dataService.nodeMap[run.id] = run;
 
     const now: number = Date.now();
     data.meta = {

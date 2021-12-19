@@ -6,7 +6,8 @@
   >.name {
     margin-bottom: 10px;
     >input {
-      width: 300px;
+      width: 250px;
+      box-sizing: border-box;
     }
   }
 }

@@ -21,9 +21,10 @@ export class DataService {
   setData(data: Data): void {
     this.data = data;
     this.folder = data.root;
+    this.nodeMap = {};
+    this.pathMap = {};
     this.sort(this.data.root);
     this.id = data.meta.id;
-    Object.values(this.nodeMap).forEach(node => this.pathMap[node.path] = node.id);
     this.isDecrypted = true;
   }
 
@@ -43,6 +44,8 @@ export class DataService {
   }
 
   sort(folder: Folder): void {
+    this.nodeMap[folder.id] = folder;
+    this.pathMap[folder.path] = folder.id;
     folder.nodes.forEach(node => {
       this.nodeMap[node.id] = node;
       this.pathMap[node.path] = node.id;
