@@ -1,8 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
-import { randstr } from 'rndmjs';
+import { Subscription } from 'rxjs';
 
-import { Node, File, Folder, Parse } from '@/core/type';
+import { Folder } from '@/core/type';
 import { DataService, ZipService, NotificationService, EventService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';

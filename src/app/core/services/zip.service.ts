@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
 
-import { Node, File, Folder, Data, NodeMap, Parse } from '@/core/type';
+import { Node, File, Folder, Data, Parse } from '@/core/type';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { parsePath } from '@/core/functions';

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 
-import { Node, File, Folder } from '@/core/type';
+import { Node, Folder } from '@/core/type';
 import { DataService, EventService } from '@/core/services';
-import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { FileService } from './file.service';
 import { GetService } from './get.service';
 import { DialogService } from './dialog.service';

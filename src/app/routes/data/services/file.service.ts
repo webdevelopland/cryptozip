@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { randstr } from 'rndmjs';
 
-import { Node, File, Folder, Parse, NodeMap } from '@/core/type';
+import { Node, File, Folder, NodeMap } from '@/core/type';
 import { DataService, ZipService, ClipboardService, NotificationService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { GetService } from './get.service';
@@ -158,6 +158,6 @@ export class FileService {
       this.branchService.connectNodeList(this.dataService.folder, nodeList);
       this.dataService.folder.push(nodeList[0]);
       this.dataService.modify();
-    })
+    });
   }
 }

@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Folder, File, Data } from '@/core/type';
 import { TmpService, DataService } from '@/core/services';
-import { META } from '@/environments/meta';
 
 @Component({
   selector: 'page-create',

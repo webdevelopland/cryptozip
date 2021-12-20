@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { Node, File, Folder } from '@/core/type';
+import { Node } from '@/core/type';
 import { DataService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from '../dialogs';
