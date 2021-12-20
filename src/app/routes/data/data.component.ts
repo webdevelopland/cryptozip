@@ -6,7 +6,7 @@ import { Node, File, Folder, Parse } from '@/core/type';
 import { DataService, ZipService, NotificationService, EventService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
-import { MouseService, FileService, GetService } from './services';
+import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @Component({
   selector: 'page-data',
@@ -26,7 +26,27 @@ export class DataComponent implements OnDestroy {
     public mouseService: MouseService,
     public fileService: FileService,
     public getService: GetService,
+    public dialogService: DialogService,
+    public branchService: BranchService,
   ) {
+    this.headerEvents();
+    this.keyboardEvents();
+  }
+
+  back(): void {
+    const parentPath: string = parsePath(this.dataService.folder.path).parent;
+    if (parentPath !== '/') {
+      const parentId: string = this.dataService.pathMap[parentPath];
+      const parent = this.dataService.nodeMap[parentId] as Folder;
+      this.branchService.unselectAll();
+      if (!parent) {
+        this.notificationService.crash(parentPath + ': parent not found');
+      }
+      this.dataService.folder = parent;
+    }
+  }
+
+  headerEvents(): void {
     this.sub(this.headerService.editChanges.subscribe(() => {
       // Meta editing. Archive id, password, etc
       console.log('edit');
@@ -44,17 +64,33 @@ export class DataComponent implements OnDestroy {
     }));
   }
 
-  back(): void {
-    const parentPath: string = parsePath(this.dataService.folder.path).parent;
-    if (parentPath !== '/') {
-      const parentId: string = this.dataService.pathMap[parentPath];
-      const parent = this.dataService.nodeMap[parentId] as Folder;
-      this.getService.unselectAll();
-      if (!parent) {
-        this.notificationService.crash(parentPath + ': parent not found');
+  keyboardEvents(): void {
+    this.subs.push(this.eventService.keydown.subscribe(event => {
+      if (event.code === 'KeyX' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.cut();
       }
-      this.dataService.folder = parent;
-    }
+      if (event.code === 'KeyC' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.copy();
+      }
+      if (event.code === 'KeyV' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.paste();
+      }
+      if (event.code === 'Delete') {
+        event.preventDefault();
+        this.dialogService.askToDelete();
+      }
+      if (event.code === 'Equal' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.addFile();
+      }
+      if (event.code === 'Minus' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.addFolder();
+      }
+    }));
   }
 
   sub(sub: Subscription): void {

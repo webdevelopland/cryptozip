@@ -1,2 +1,5 @@
 - proto instead of zip structure
 - .pwd & .table files
+- custom compression
+https://www.npmjs.com/package/compression
+https://www.npmjs.com/package/lzutf8

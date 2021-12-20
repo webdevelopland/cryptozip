@@ -5,6 +5,7 @@ import { Node, File, Folder, Parse, NodeMap } from '@/core/type';
 import { DataService, ZipService, ClipboardService, NotificationService } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { GetService } from './get.service';
+import { BranchService } from './branch.service';
 
 @Injectable()
 export class FileService {
@@ -14,6 +15,7 @@ export class FileService {
     private clipboardService: ClipboardService,
     private notificationService: NotificationService,
     private getService: GetService,
+    private branchService: BranchService,
   ) { }
 
   addFile(): void {
@@ -21,8 +23,6 @@ export class FileService {
     const file: File = this.zipService.getFile(this.dataService.folder.path + '/' + name + '.txt');
     file.text = '';
     this.dataService.folder.push(file);
-    this.dataService.nodeMap[file.id] = file;
-    this.dataService.pathMap[file.path] = file.id;
     this.dataService.modify();
   }
 
@@ -30,8 +30,6 @@ export class FileService {
     const name: string = 'new_folder_' + randstr(12);
     const folder: Folder = this.zipService.getFolder(this.dataService.folder.path + '/' + name);
     this.dataService.folder.push(folder);
-    this.dataService.nodeMap[folder.id] = folder;
-    this.dataService.pathMap[folder.path] = folder.id;
     this.dataService.modify();
   }
 
@@ -100,7 +98,7 @@ export class FileService {
       const newPath: string = this.dataService.folder.path + '/' + newName;
       if (node instanceof Folder) {
         const folder: Folder = this.zipService.getFolder(newPath, id);
-        folder.nodes = this.getService.copyFolderNodes(node, newPath);
+        folder.nodes = this.branchService.copyFolderNodes(node, newPath);
         return folder;
       } else {
         return this.zipService.getFile(newPath, id);
@@ -114,10 +112,10 @@ export class FileService {
         const index: number = this.clipboardService.location.nodes.indexOf(node);
         this.clipboardService.location.nodes.splice(index, 1);
       });
+      this.clipboardService.clearNodeCopyPaste();
     }
     this.dataService.modify();
-    this.clipboardService.clearNodeCopyPaste();
-    this.getService.unselectAll();
+    this.branchService.unselectAll();
   }
 
   rename(node: Node, newName: string): void {
@@ -125,8 +123,41 @@ export class FileService {
     node.path = this.dataService.folder.path + '/' + newName;
     this.dataService.pathMap[node.path] = node.id;
     if (node instanceof Folder) {
-      this.getService.renameAllChildren(node);
+      this.branchService.renameAllChildren(node);
     }
     this.dataService.modify();
+  }
+
+  importFiles(fileList: FileList): void {
+    this.branchService.getListOfFiles(fileList).subscribe(files => {
+      if (files.length > 0) {
+        files.map(file => {
+          const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
+          file.name = newName;
+          file.path = this.dataService.folder.path + '/' + newName;
+          return file;
+        });
+        for (const node of files) {
+          this.dataService.folder.push(node);
+        }
+        this.dataService.modify();
+      }
+    });
+  }
+
+  importFolder(fileList: FileList): void {
+    this.branchService.getListOfFiles(fileList).subscribe(files => {
+      // We get only file list from browser upload (not folders)
+      const folderList: Folder[] = this.branchService.createParentFolders(files);
+      if (folderList === undefined) {
+        this.notificationService.warning('Folder is too big');
+        return;
+      }
+      const nodeList: Node[] = files.slice();
+      nodeList.push(...folderList);
+      this.branchService.connectNodeList(this.dataService.folder, nodeList);
+      this.dataService.folder.push(nodeList[0]);
+      this.dataService.modify();
+    })
   }
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { Data, Node, Folder, NodeMap, StringMap } from '@/core/type';
+import { parsePath } from '@/core/functions';
 
 @Injectable()
 export class DataService {
@@ -23,7 +24,7 @@ export class DataService {
     this.folder = data.root;
     this.nodeMap = {};
     this.pathMap = {};
-    this.sort(this.data.root);
+    this.refresh(this.data.root);
     this.id = data.meta.id;
     this.isDecrypted = true;
   }
@@ -31,7 +32,7 @@ export class DataService {
   modify(): void {
     this.nodeMap = {};
     this.pathMap = {};
-    this.sort(this.data.root);
+    this.refresh(this.data.root);
     this.isModified = true;
   }
 
@@ -43,22 +44,32 @@ export class DataService {
     }
   }
 
-  sort(folder: Folder): void {
+  refresh(folder: Folder): void {
     this.nodeMap[folder.id] = folder;
     this.pathMap[folder.path] = folder.id;
     folder.nodes.forEach(node => {
       this.nodeMap[node.id] = node;
       this.pathMap[node.path] = node.id;
       if (node instanceof Folder) {
-        this.sort(node);
+        this.refresh(node);
       }
     });
-    folder.nodes.sort((a, b) => {
+    this.sort(folder.nodes);
+  }
+
+  sort(nodes: Node[]): void {
+    nodes.sort((a, b) => {
+      // Show parents before children
+      const aNodeLength: number = parsePath(a.path).length;
+      const bNodeLength: number = parsePath(b.path).length;
+      const lengthStatus: number = aNodeLength - bNodeLength;
       // Show folder before files
       const aFolderStatus: number = a.isFolder ? 1 : 0;
       const bFolderStatus: number = b.isFolder ? 1 : 0;
       const folderStatus: number = bFolderStatus - aFolderStatus;
-      if (folderStatus !== 0) {
+      if (lengthStatus !== 0) {
+        return lengthStatus;
+      } else if (folderStatus !== 0) {
         return folderStatus;
       } else {
         // Sort strings

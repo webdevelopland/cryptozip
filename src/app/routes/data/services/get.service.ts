@@ -1,17 +1,10 @@
 import { Injectable } from '@angular/core';
 import { randstr64 } from 'rndmjs';
 
-import { NotificationService, DataService, ZipService } from '@/core/services';
 import { Node, Folder, File, NodeMap } from '@/core/type';
 
 @Injectable()
 export class GetService {
-  constructor(
-    private notificationService: NotificationService,
-    private dataService: DataService,
-    private zipService: ZipService,
-  ) { }
-
   // Checks that node with the name is present in node list
   checkNodeAlreadyExists(name: string, nodes: Node[]): boolean {
     for (const node of nodes) {
@@ -60,7 +53,7 @@ export class GetService {
           // Let's just add random seed
           filename += randstr64(20);
           newName = filename + ext;
-          this.notificationService.warning('Too many copies');
+          console.warn('Too many copies');
           break;
         }
       }
@@ -101,41 +94,5 @@ export class GetService {
       }
     }
     return newNameMap;
-  }
-
-  unselectAll(): void {
-    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
-  }
-
-  copyFolderNodes(originFolder: Folder, path: string): Node[] {
-    const children: Node[] = [];
-    originFolder.nodes.forEach(node => {
-      const newPath: string = path + '/' + node.name;
-      if (node instanceof Folder) {
-        const folder: Folder = this.zipService.getFolder(newPath);
-        folder.nodes = this.copyFolderNodes(node, newPath);
-        children.push(folder);
-      } else if (node instanceof File) {
-        const file: File = this.zipService.getFile(newPath);
-        file.isBinary = node.isBinary;
-        if (file.isBinary) {
-          file.binary = node.binary;
-        } else {
-          file.text = node.text;
-        }
-        children.push(file);
-      }
-    });
-    return children;
-  }
-
-  renameAllChildren(folder: Folder): void {
-    folder.nodes.forEach(node => {
-      node.path = folder.path + '/' + node.name;
-      this.dataService.pathMap[node.path] = node.id;
-      if (node instanceof Folder) {
-        this.renameAllChildren(node);
-      }
-    });
   }
 }

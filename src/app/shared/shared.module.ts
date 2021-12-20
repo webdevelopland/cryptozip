@@ -7,12 +7,13 @@ import { AutosizeModule } from 'ngx-autosize';
 
 import { MaterialModule } from '@/import';
 import { InfoDialogComponent, ConfirmDialogComponent } from './dialogs';
-import { HtmlDirective } from './directives';
+import { HtmlDirective, FocusDirective } from './directives';
 
 const ExportDeclarations = [
   ConfirmDialogComponent,
   InfoDialogComponent,
   HtmlDirective,
+  FocusDirective,
 ];
 const ExportModules = [
   RouterModule,

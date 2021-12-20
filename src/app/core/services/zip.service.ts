@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
 
-import { File, Folder, Data, NodeMap, Parse } from '@/core/type';
+import { Node, File, Folder, Data, NodeMap, Parse } from '@/core/type';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { parsePath } from '@/core/functions';
@@ -117,7 +117,7 @@ export class ZipService {
   }
 
   // Adds a node to tree
-  addToTree(nodeList: (File | Folder)[], newNode: File | Folder): void {
+  addToTree(nodeList: Node[], newNode: Node): void {
     const parent: string = parsePath(newNode.path).parent;
     for (const node of nodeList) {
       if (node.path === parent && node instanceof Folder) {

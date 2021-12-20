@@ -2,9 +2,8 @@ import { NgModule } from '@angular/core';
 
 import { SharedModule } from '@/shared';
 import { DataComponent } from './data.component';
-import { ContextDialogComponent } from './context-dialog';
-import { RenameDialogComponent } from './rename-dialog';
-import { MouseService, FileService, GetService } from './services';
+import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from './dialogs';
+import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @NgModule({
   imports: [
@@ -14,7 +13,8 @@ import { MouseService, FileService, GetService } from './services';
     DataComponent,
     ContextDialogComponent,
     RenameDialogComponent,
+    AddDialogComponent,
   ],
-  providers: [MouseService, FileService, GetService],
+  providers: [MouseService, FileService, GetService, DialogService, BranchService],
 })
 export class DataModule { }

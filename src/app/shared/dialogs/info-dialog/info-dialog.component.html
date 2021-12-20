@@ -1,10 +1,8 @@
-<div class="message">
-  <pre>{{ dialogData.message }}</pre>
-</div>
+<div class="message">{{ dialogData.message }}</div>
 <div class="buttons">
   <button
-    mat-button
     class="ok-button"
     (click)="ok()"
+    focus=true
   >OK</button>
 </div>

@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { EventService, NotificationService, DataService } from '@/core/services';
 import { DialogData } from '@/core/type';
-import { GetService } from '../services/get.service';
+import { GetService } from '../../services/get.service';
 
 @Component({
   selector: 'rename-dialog',

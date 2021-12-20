@@ -2,12 +2,9 @@
   <div class="control">
     <div class="buttons">
       <button (click)="back()">...</button>
-      <button (click)="fileService.addFile()">Create File</button>
-      <button (click)="fileService.addFolder()">Create Folder</button>
-      <button>Import Files</button>
-      <button>Import Folder</button>
+      <button (click)="dialogService.showAddDialog()">+</button>
       <button (click)="fileService.paste()">Paste</button>
-      <button (click)="getService.unselectAll()">Clear Select</button>
+      <button (click)="branchService.unselectAll()">Clear Select</button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="dataService.folder.path">
