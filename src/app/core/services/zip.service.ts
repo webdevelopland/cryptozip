@@ -235,4 +235,31 @@ export class ZipService {
     folder.name = parse.name;
     return folder;
   }
+
+  export(node: Node): void {
+    const jszip = new JSZip();
+    if (node instanceof Folder) {
+      const root: JSZip = jszip.folder(node.name);
+      this.addFolderToZip(root, node);
+      jszip.generateAsync({ type: 'blob' }).then(blob => {
+        saveAs(blob, node.name + '.zip');
+      });
+    } else if (node instanceof File) {
+      let blob: Blob;
+      if (!node.isBinary) {
+        // Download as text
+        blob = new Blob(
+          [node.text],
+          { type: 'text/plain;charset=utf-8' },
+        );
+      } else {
+        // Download as binary
+        blob = new Blob(
+          [node.binary],
+          { type: this.mediaService.getMimeType(node.name) },
+        );
+      }
+      saveAs(blob, node.name);
+    }
+  }
 }

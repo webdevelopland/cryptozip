@@ -128,7 +128,7 @@ export class BranchService {
   private displaySizeLimitFiles(sizeLimitFileList: string[], size: string): void {
     if (sizeLimitFileList.length > 0) {
       let SIZE_LIMIT_MESSAGE: string = `Size of a file can't be more than ${size}.\n`;
-      SIZE_LIMIT_MESSAGE += 'Files below weren\'t uploaded because of the limit:\n\n';
+      SIZE_LIMIT_MESSAGE += "Files below weren't uploaded because of the limit:\n\n";
 
       const sizeLimitMessage: string = SIZE_LIMIT_MESSAGE + sizeLimitFileList.join('\n');
       this.notificationService.info(sizeLimitMessage);

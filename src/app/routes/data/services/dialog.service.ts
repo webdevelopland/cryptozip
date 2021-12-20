@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
-import { DataService } from '@/core/services';
+import { DataService, ZipService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from '../dialogs';
 import { FileService } from './file.service';
@@ -12,6 +12,7 @@ import { BranchService } from './branch.service';
 export class DialogService {
   constructor(
     public dataService: DataService,
+    public zipService: ZipService,
     public fileService: FileService,
     public branchService: BranchService,
     private matDialog: MatDialog,
@@ -29,6 +30,7 @@ export class DialogService {
           case 'copy': this.fileService.copy(); break;
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
+          case 'export': this.zipService.export(node); break;
         }
       });
   }

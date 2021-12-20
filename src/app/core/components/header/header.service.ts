@@ -8,6 +8,7 @@ export class HeaderService {
   downloadChanges = new Subject<void>();
   deleteChanges = new Subject<void>();
   saveChanges = new Subject<void>();
+  exportChanges = new Subject<void>();
 
   edit(): void {
     this.editChanges.next();
@@ -26,6 +27,11 @@ export class HeaderService {
 
   save(): void {
     this.saveChanges.next();
+    this.isMenu = false;
+  }
+
+  export(): void {
+    this.exportChanges.next();
     this.isMenu = false;
   }
 }

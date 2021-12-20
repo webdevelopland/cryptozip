@@ -27,6 +27,10 @@ export class ContextDialogComponent {
     this.dialogRef.close('rename');
   }
 
+  export(): void {
+    this.dialogRef.close('export');
+  }
+
   close(): void {
     this.dialogRef.close();
   }

@@ -63,4 +63,39 @@ export class MediaService {
         return false;
     }
   }
+
+  // Returns short form of mime type. Only type/subtype
+  getMime(filename: string): string {
+    switch (this.getExtension(filename)) {
+      // Binary
+      case 'jpg':
+      case 'jpeg': return 'image/jpeg';
+      case 'png': return 'image/png';
+      case 'gif': return 'image/gif';
+      case 'ico': return 'image/x-icon';
+      case 'webp': return 'image/webp';
+      case 'webm': return 'video/webm';
+      case 'mp3': return 'audio/mpeg';
+      case 'wav': return 'audio/wav';
+      case 'zip': return 'application/zip';
+      // Text
+      case 'html': return 'text/html';
+      case 'json': return 'application/json';
+      case 'js': return 'application/javascript';
+      case 'xml': return 'application/xml';
+      case 'proto': return 'application/protobuf';
+      case 'css': return 'text/css';
+      case 'scss': return 'text/scss';
+      default: return 'text/plain';
+    }
+  }
+
+  // Returns mime type. type/subtype[;parameter]
+  getMimeType(filename: string): string {
+    if (this.isText(filename)) {
+      return 'text/plain;charset=utf-8';
+    } else {
+      return this.getMime(filename);
+    }
+  }
 }

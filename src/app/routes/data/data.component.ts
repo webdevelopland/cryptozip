@@ -61,6 +61,9 @@ export class DataComponent implements OnDestroy {
       this.dataService.update();
       console.log(this.dataService.data);
     }));
+    this.sub(this.headerService.exportChanges.subscribe(() => {
+      this.zipService.export(this.dataService.data.root);
+    }));
   }
 
   keyboardEvents(): void {
