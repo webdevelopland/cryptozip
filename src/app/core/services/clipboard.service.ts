@@ -30,6 +30,11 @@ export class ClipboardService {
     this.location = undefined;
   }
 
+  clear(): void {
+    this.clearNodeCopyPaste();
+    navigator.clipboard.writeText('');
+  }
+
   destroy() {
     this.clearNodeCopyPaste();
   }

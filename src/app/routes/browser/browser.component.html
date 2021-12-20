@@ -5,6 +5,7 @@
       <button (click)="dialogService.showAddDialog()">+</button>
       <button (click)="fileService.paste()">Paste</button>
       <button (click)="branchService.unselectAll()">Clear Select</button>
+      <button (click)="clipboardService.clear()">Clear Clipboard</button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="dataService.folder.path">

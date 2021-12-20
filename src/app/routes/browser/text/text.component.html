@@ -1,0 +1,14 @@
+<div class="page">
+  <div class="flex">
+    <div class="path">
+      <input type="text" readonly="true" [value]="dataService.folder.path">
+    </div>
+    <div class="textarea">
+      <textarea [(ngModel)]="content"></textarea>
+    </div>
+    <div class="buttons">
+      <button (click)="close()">Close</button>
+      <button (click)="save()">Save</button>
+    </div>
+  </div>
+</div>

@@ -2,17 +2,19 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { Folder } from '@/core/type';
-import { DataService, ZipService, NotificationService, EventService } from '@/core/services';
+import {
+  DataService, ZipService, NotificationService, EventService, ClipboardService,
+} from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @Component({
-  selector: 'page-data',
-  templateUrl: './data.component.html',
-  styleUrls: ['./data.component.scss'],
+  selector: 'page-browser',
+  templateUrl: './browser.component.html',
+  styleUrls: ['./browser.component.scss'],
 })
-export class DataComponent implements OnDestroy {
+export class BrowserComponent implements OnDestroy {
   subs: Subscription[] = [];
 
   constructor(
@@ -21,6 +23,7 @@ export class DataComponent implements OnDestroy {
     private zipService: ZipService,
     private notificationService: NotificationService,
     private eventService: EventService,
+    public clipboardService: ClipboardService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -102,5 +105,6 @@ export class DataComponent implements OnDestroy {
   ngOnDestroy() {
     this.subs.forEach(sub => sub.unsubscribe());
     this.mouseService.destroy();
+    this.fileService.destroy();
   }
 }

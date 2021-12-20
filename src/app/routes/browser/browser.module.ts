@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 
 import { SharedModule } from '@/shared';
-import { DataComponent } from './data.component';
+import { BrowserComponent } from './browser.component';
+import { TextComponent } from './text';
+import { ImageComponent } from './image';
 import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from './dialogs';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
@@ -10,11 +12,13 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
     SharedModule,
   ],
   declarations: [
-    DataComponent,
+    BrowserComponent,
     ContextDialogComponent,
     RenameDialogComponent,
     AddDialogComponent,
+    TextComponent,
+    ImageComponent,
   ],
   providers: [MouseService, FileService, GetService, DialogService, BranchService],
 })
-export class DataModule { }
+export class BrowserDataModule { }

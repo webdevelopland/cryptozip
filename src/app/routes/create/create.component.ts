@@ -25,6 +25,6 @@ export class CreateComponent {
 
   create(): void {
     this.tmpService.create(this.password);
-    this.router.navigate(['/data']);
+    this.router.navigate(['/browser']);
   }
 }

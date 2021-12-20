@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { randstr } from 'rndmjs';
 
 import { Node, File, Folder, NodeMap } from '@/core/type';
@@ -9,6 +10,8 @@ import { BranchService } from './branch.service';
 
 @Injectable()
 export class FileService {
+  subs: Subscription[] = [];
+
   constructor(
     public dataService: DataService,
     public zipService: ZipService,
@@ -100,8 +103,15 @@ export class FileService {
         const folder: Folder = this.zipService.getFolder(newPath, id);
         folder.nodes = this.branchService.copyFolderNodes(node, newPath);
         return folder;
-      } else {
-        return this.zipService.getFile(newPath, id);
+      } else if (node instanceof File) {
+        const file: File = this.zipService.getFile(newPath, id);
+        file.isBinary = node.isBinary;
+        if (file.isBinary) {
+          file.binary = node.binary;
+        } else {
+          file.text = node.text;
+        }
+        return file;
       }
     });
     for (const node of copiedNodes) {
@@ -129,7 +139,7 @@ export class FileService {
   }
 
   importFiles(fileList: FileList): void {
-    this.branchService.getListOfFiles(fileList).subscribe(files => {
+    this.sub(this.branchService.getListOfFiles(fileList).subscribe(files => {
       if (files.length > 0) {
         files.map(file => {
           const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
@@ -142,11 +152,11 @@ export class FileService {
         }
         this.dataService.modify();
       }
-    });
+    }));
   }
 
   importFolder(fileList: FileList): void {
-    this.branchService.getListOfFiles(fileList).subscribe(files => {
+    this.sub(this.branchService.getListOfFiles(fileList).subscribe(files => {
       // We get only file list from browser upload (not folders)
       const folderList: Folder[] = this.branchService.createParentFolders(files);
       if (folderList === undefined) {
@@ -158,6 +168,14 @@ export class FileService {
       this.branchService.connectNodeList(this.dataService.folder, nodeList);
       this.dataService.folder.push(nodeList[0]);
       this.dataService.modify();
-    });
+    }));
+  }
+
+  sub(sub: Subscription): void {
+    this.subs.push(sub);
+  }
+
+  destroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 }

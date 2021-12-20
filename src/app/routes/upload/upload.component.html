@@ -1,12 +1,17 @@
 <div class="page">
-  <div>
-    <input type="password" placeholder="Password" [(ngModel)]="password">
+  <div class="upload" *ngIf="!isLoading">
+    <div>
+      <input type="password" placeholder="Password" [(ngModel)]="password">
+    </div>
+    <div>
+      <input
+        id="file-upload"
+        type="file"
+        (change)="decrypt($event.target.files)"
+      />
+    </div>
   </div>
-  <div>
-    <input
-      id="file-upload"
-      type="file"
-      (change)="decrypt($event.target.files)"
-    />
+  <div class="loading" *ngIf="isLoading">
+    <mat-spinner [diameter]="60"></mat-spinner>
   </div>
 </div>

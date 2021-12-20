@@ -1,7 +1,7 @@
 <header>
   <div class="label">
     <div class="cryptozip" [routerLink]="['/']" *ngIf="!dataService.isDecrypted">Cryptozip</div>
-    <div *ngIf="dataService.isDecrypted">{{ dataService.id }}</div>
+    <div *ngIf="dataService.isDecrypted" [routerLink]="['/browser']">{{ dataService.id }}</div>
   </div>
   <div class="manu" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
     <mat-icon *ngIf="!headerService.isMenu">menu</mat-icon>

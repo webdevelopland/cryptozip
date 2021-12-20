@@ -1,0 +1,12 @@
+.page {
+  box-sizing: border-box;
+  background: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  >img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}

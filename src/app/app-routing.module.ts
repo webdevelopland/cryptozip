@@ -5,10 +5,12 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   HomeComponent,
   CreateComponent,
-  DataComponent,
+  BrowserComponent,
   LoginComponent,
   UploadComponent,
   DownloadComponent,
+  TextComponent,
+  ImageComponent,
 } from '@/routes';
 import { DataGuard } from '@/core/services';
 
@@ -22,7 +24,9 @@ const appRoutes: Routes = [
     path: '',
     canActivate: [DataGuard],
     children: [
-      { path: 'data', component: DataComponent },
+      { path: 'browser', component: BrowserComponent },
+      { path: 'browser/text', component: TextComponent },
+      { path: 'browser/image', component: ImageComponent },
     ],
   },
   { path: '**', component: HomeComponent },

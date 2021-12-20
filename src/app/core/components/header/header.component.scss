@@ -9,15 +9,17 @@
     align-items: center;
     >.label {
       margin-left: 15px;
+      cursor: pointer;
       >div {
-        outline: none;
         font-size: 20px;
         color: $color-primary;
+        outline: none;
         text-decoration: none;
       }
       >.cryptozip {
         user-select: none;
-        cursor: pointer;
+        outline: none;
+        text-decoration: none;
       }
     }
     >.manu {

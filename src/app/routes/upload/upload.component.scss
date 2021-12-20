@@ -1,8 +1,13 @@
 .page {
-  >div {
-    padding: 10px;
-    >input {
-      width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  >.upload {
+    >div {
+      padding: 10px;
+      >input {
+        width: 300px;
+      }
     }
   }
 }

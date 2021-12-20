@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import {
   HomeComponent,
   CreateComponent,
-  DataModule,
+  BrowserDataModule,
   LoginComponent,
   UploadComponent,
   DownloadComponent,
@@ -30,7 +30,7 @@ import { SharedModule } from './shared';
     AppRoutingModule,
     BrowserAnimationsModule,
     SharedModule,
-    DataModule,
+    BrowserDataModule,
   ],
   bootstrap: [AppComponent],
 })

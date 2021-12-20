@@ -10,6 +10,7 @@ import { DataService, NotificationService, ZipService } from '@/core/services';
 })
 export class UploadComponent {
   password: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private router: Router,
@@ -19,13 +20,16 @@ export class UploadComponent {
   ) { }
 
   decrypt(fileList: FileList): void {
+    this.isLoading = true;
     this.zipService.unzip(fileList, this.password).subscribe(data => {
       this.dataService.password = this.password;
       this.dataService.setData(data);
-      this.router.navigate(['/data']);
+      this.router.navigate(['/browser']);
+      this.isLoading = false;
     }, () => {
       this.notificationService.error('Password is incorrect');
       this.router.navigate(['/']);
+      this.isLoading = false;
     });
   }
 }

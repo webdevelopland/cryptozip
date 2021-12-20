@@ -98,4 +98,14 @@ export class MediaService {
       return this.getMime(filename);
     }
   }
+
+  getMediaType(filename: string): string {
+    if (this.isText(filename)) {
+      return 'text';
+    } else if (this.isImage(filename)) {
+      return 'image';
+    } else {
+      return 'binary';
+    }
+  }
 }

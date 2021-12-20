@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
-import { Data, Node, Folder, NodeMap, StringMap } from '@/core/type';
+import { Data, Node, File, Folder, NodeMap, StringMap } from '@/core/type';
 import { parsePath } from '@/core/functions';
 
 @Injectable()
@@ -12,7 +12,8 @@ export class DataService {
   id: string;
   password: string;
   data: Data;
-  folder: Folder; // Current folder
+  folder: Folder; // Current folder (open in browser)
+  file: File; // Current file (open in editor)
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
   exitChanges = new Subject<void>();

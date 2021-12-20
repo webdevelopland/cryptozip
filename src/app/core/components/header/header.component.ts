@@ -21,6 +21,7 @@ export class HeaderComponent {
 
   print(): void {
     console.log(this.dataService.data);
+    this.headerService.isMenu = false;
   }
 
   toggleMenu(): void {
