@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
-import { DataService, ZipService } from '@/core/services';
+import { DataService, ZipService, NotificationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
-import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from '../dialogs';
+import {
+  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, PasswordDialogComponent,
+} from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
 
@@ -15,6 +17,7 @@ export class DialogService {
     public zipService: ZipService,
     public fileService: FileService,
     public branchService: BranchService,
+    public notificationService: NotificationService,
     private matDialog: MatDialog,
   ) { }
 
@@ -70,5 +73,15 @@ export class DialogService {
           }
         }
       });
+  }
+
+  openPasswordDialog(): void {
+    this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
+      if (newPass) {
+        this.dataService.password = newPass;
+        this.dataService.modify();
+        this.notificationService.success('Saved');
+      }
+    });
   }
 }

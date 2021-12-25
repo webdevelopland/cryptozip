@@ -27,10 +27,8 @@ export class ZipService {
       const reader = new FileReader();
       reader.readAsArrayBuffer(fileList.item(0));
       reader.onload = () => {
-        const fileBinary = new Uint8Array(reader.result as ArrayBuffer);
-        const encrypted: Uint8Array = this.removeHeader(fileBinary);
-        const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, password);
-        this.binaryToData(decrypted).subscribe(
+        const binary = new Uint8Array(reader.result as ArrayBuffer);
+        this.binaryToData(binary, password).subscribe(
           data => observer.next(data),
           () => observer.error(),
         );
@@ -42,29 +40,33 @@ export class ZipService {
   }
 
   zip(data: Data, password: string): void {
-    const jszip = new JSZip();
-    const root: JSZip = jszip.folder(data.root.name);
-    this.addFolderToZip(root, data.root);
-    this.addMeta(jszip, data);
-    jszip.generateAsync({ type: 'uint8array' }).then(binary => {
-      this.download(binary, password, data.meta.id);
+    this.dataToBinary(data, password).subscribe(blob => saveAs(blob, data.meta.id + '.czip'));
+  }
+
+  dataToBinary(data: Data, password: string): Observable<Blob> {
+    return new Observable(observer => {
+      const jszip = new JSZip();
+      const root: JSZip = jszip.folder(data.root.name);
+      this.addFolderToZip(root, data.root);
+      this.addMeta(jszip, data);
+      jszip.generateAsync({ type: 'uint8array' }).then(binary => {
+        // Encrypt
+        const encrypted: Uint8Array = this.cryptoService.enrypt(binary, password);
+        // Add header
+        const czipHeader: Uint8Array = AES.utils.utf8.toBytes(META.header + META.version);
+        const czipHeaderLen: Uint8Array = new Uint8Array(1);
+        czipHeaderLen[0] = czipHeader.length;
+        // Download
+        observer.next(new Blob([czipHeaderLen, czipHeader, encrypted]));
+      });
     });
   }
 
-  private download(binary: Uint8Array, password: string, name: string): void {
-    // Encrypt
-    const encrypted: Uint8Array = this.cryptoService.enrypt(binary, password);
-    // Add header
-    const czipHeader: Uint8Array = AES.utils.utf8.toBytes(META.header + META.version);
-    const czipHeaderLen: Uint8Array = new Uint8Array(1);
-    czipHeaderLen[0] = czipHeader.length;
-    // Download
-    saveAs(new Blob([czipHeaderLen, czipHeader, encrypted]), name + '.czip');
-  }
-
-  private binaryToData(binary: Uint8Array): Observable<Data> {
+  binaryToData(binary: Uint8Array, password: string): Observable<Data> {
+    const encrypted: Uint8Array = this.removeHeader(binary);
+    const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, password);
     return new Observable(observer => {
-      JSZip.loadAsync(binary).then(zipContent => {
+      JSZip.loadAsync(decrypted).then(zipContent => {
         const fileList: any[] = [];
         const folderList: Folder[] = [];
         const zipNodeList: any[] = Object.values(zipContent.files);

@@ -10,6 +10,7 @@ import {
   MediaService,
   EventService,
   ClipboardService,
+  FirebaseService,
   TmpService,
 } from './services';
 import { HeaderModule } from './components/header';
@@ -31,6 +32,7 @@ import { HeaderModule } from './components/header';
     MediaService,
     EventService,
     ClipboardService,
+    FirebaseService,
     TmpService,
   ],
 })

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DataService } from '@/core/services';
+import { DataService, EventService } from '@/core/services';
 import { HeaderService } from './header.service';
 
 @Component({
@@ -12,6 +12,7 @@ export class HeaderComponent {
   constructor(
     public dataService: DataService,
     public headerService: HeaderService,
+    private eventService: EventService,
   ) { }
 
   exit(): void {

@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { Folder } from '@/core/type';
 import {
-  DataService, ZipService, NotificationService, EventService, ClipboardService,
+  DataService, ZipService, NotificationService, EventService, ClipboardService, FirebaseService,
 } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { HeaderService } from '@/core/components/header';
@@ -24,6 +24,7 @@ export class BrowserComponent implements OnDestroy {
     private notificationService: NotificationService,
     private eventService: EventService,
     public clipboardService: ClipboardService,
+    public firebaseService: FirebaseService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -50,19 +51,18 @@ export class BrowserComponent implements OnDestroy {
 
   headerEvents(): void {
     this.sub(this.headerService.editChanges.subscribe(() => {
-      // Meta editing. Archive id, password, etc
-      console.log('edit');
+      this.dialogService.openPasswordDialog();
     }));
     this.sub(this.headerService.downloadChanges.subscribe(() => {
       this.dataService.update();
       this.zipService.zip(this.dataService.data, this.dataService.password);
     }));
     this.sub(this.headerService.deleteChanges.subscribe(() => {
-      console.log('delete');
+      this.firebaseService.remove(this.dataService.data.meta.id);
     }));
     this.sub(this.headerService.saveChanges.subscribe(() => {
       this.dataService.update();
-      console.log(this.dataService.data);
+      this.firebaseService.upload(this.dataService.data, this.dataService.password);
     }));
     this.sub(this.headerService.exportChanges.subscribe(() => {
       this.zipService.export(this.dataService.data.root);

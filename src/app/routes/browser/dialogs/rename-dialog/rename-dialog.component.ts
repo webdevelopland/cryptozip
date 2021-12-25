@@ -40,7 +40,7 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   check(): void {
-    if (!this.newName.trim()) {
+    if (!this.newName || !this.newName.trim()) {
       this.close();
     } else {
       this.checkSlash();

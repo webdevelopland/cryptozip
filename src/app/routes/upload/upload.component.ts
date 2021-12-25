@@ -25,7 +25,6 @@ export class UploadComponent {
       this.dataService.password = this.password;
       this.dataService.setData(data);
       this.router.navigate(['/browser']);
-      this.isLoading = false;
     }, () => {
       this.notificationService.error('Password is incorrect');
       this.router.navigate(['/']);

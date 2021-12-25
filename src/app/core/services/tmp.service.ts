@@ -12,8 +12,8 @@ export class TmpService {
     private zipService: ZipService,
   ) {
     /* TEMP */
-    this.randomize();
-    this.create('asd');
+    // this.randomize();
+    // this.create('asd');
   }
 
   randomize(): void {
