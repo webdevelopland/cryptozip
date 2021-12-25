@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { TmpService, EventService } from '@/core/services';
+import { EventService } from '@/core/services';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,6 @@ import { TmpService, EventService } from '@/core/services';
 })
 export class AppComponent {
   constructor(
-    private tmpService: TmpService,
     private eventService: EventService,
   ) { }
 }

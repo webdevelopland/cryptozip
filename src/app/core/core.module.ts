@@ -11,7 +11,6 @@ import {
   EventService,
   ClipboardService,
   FirebaseService,
-  TmpService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -33,7 +32,6 @@ import { HeaderModule } from './components/header';
     EventService,
     ClipboardService,
     FirebaseService,
-    TmpService,
   ],
 })
 export class CoreModule { }
