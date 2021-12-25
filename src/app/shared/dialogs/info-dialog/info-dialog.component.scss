@@ -1,0 +1,18 @@
+:host {
+  >.message {
+    margin-bottom: 25px;
+    width: 350px;
+    font-size: 14px;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  >.buttons {
+    display: flex;
+    justify-content: center;
+    >button {
+      width: 87px;
+      height: 28px;
+    }
+  }
+}

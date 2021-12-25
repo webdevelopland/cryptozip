@@ -1,0 +1,37 @@
+<div class="page" *ngIf="dataService.isDecrypted">
+  <div class="control">
+    <div class="buttons">
+      <button (click)="back()">...</button>
+      <button (click)="dialogService.showAddDialog()">+</button>
+      <button (click)="branchService.unselectAll()">Select</button>
+      <button (click)="clipboardService.clear()">Clipboard</button>
+      <button
+        (click)="fileService.paste()"
+        *ngIf="clipboardService.clipboard.length > 0"
+      >Paste</button>
+    </div>
+    <div class="path">
+      <input type="text" readonly="true" [value]="dataService.folder.path">
+    </div>
+  </div>
+  <div class="explorer">
+    <div
+      class="node"
+      *ngFor="let node of dataService.folder.nodes"
+      (click)="mouseService.click(node)"
+      (dblclick)="mouseService.dblclick(node)"
+      (contextmenu)="mouseService.contextmenu($event, node)"
+      (touchstart)="mouseService.touchstart(node)"
+      (touchend)="mouseService.touchend()"
+      [ngClass]="{ selected: node.isSelected }"
+    >
+      <div class="icon">
+        <mat-icon *ngIf="node.isFolder">folder</mat-icon>
+        <mat-icon *ngIf="!node.isFolder">insert_drive_file</mat-icon>
+      </div>
+      <div class="name">
+        <span class="ellipsis">{{ node.name }}</span>
+      </div>
+    </div>
+  </div>
+</div>

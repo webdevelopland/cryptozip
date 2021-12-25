@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 
 import { DataService } from './data.service';
 
 @Injectable()
 export class DataGuard implements CanActivate {
-  constructor(private dataService: DataService) { }
+  constructor(
+    private router: Router,
+    private dataService: DataService,
+  ) { }
 
   canActivate(): boolean {
+    if (!this.dataService.isDecrypted) {
+      this.dataService.destroy();
+      this.router.navigate(['/']);
+      // /* DEV */ this.dataService.create(this.dataService.generateId(), '');
+    }
     return this.dataService.isDecrypted;
   }
 }

@@ -1,0 +1,16 @@
+<div class="page">
+  <div class="flex" *ngIf="!isLoading">
+    <div class="id">
+      <input type="text" placeholder="id" [(ngModel)]="id">
+    </div>
+    <div class="pass">
+      <input type="password" placeholder="Password" [(ngModel)]="password">
+    </div>
+    <div class="button">
+      <button (click)="login()">Login</button>
+    </div>
+  </div>
+  <div class="loading" *ngIf="isLoading">
+    <mat-spinner [diameter]="60"></mat-spinner>
+  </div>
+</div>

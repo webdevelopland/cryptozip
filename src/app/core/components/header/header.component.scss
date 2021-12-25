@@ -1,0 +1,58 @@
+@import 'styles/variables';
+
+:host {
+  >header {
+    height: 40px;
+    border-bottom: 1px solid $color-primary;
+    position: relative;
+    display: flex;
+    align-items: center;
+    >.label {
+      margin-left: 15px;
+      cursor: pointer;
+      >div {
+        font-size: 20px;
+        color: $color-primary;
+        outline: none;
+        text-decoration: none;
+      }
+      >.cryptozip {
+        user-select: none;
+        outline: none;
+        text-decoration: none;
+      }
+    }
+    >.manu {
+      position: absolute;
+      right: 18px;
+      top: 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      >.mat-icon {
+        color: #0366d6;
+      }
+    }
+  }
+  >.popup-menu {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    border: 1px solid $color-primary;
+    width: 200px;
+    background: white;
+    z-index: 10;
+    >.option {
+      padding: 8px 15px;
+      white-space: nowrap;
+      font-size: 14px;
+      &:hover {
+        background: $color-primary;
+        color: white;
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -22,37 +22,26 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "aot": true,
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/app/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-               "includePaths": [
-                 "src"
-               ]
-             },
-            "scripts": []
+              "includePaths": [
+                "src/app"
+              ]
+            },
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "rndmjs"
+            ]
           },
           "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+            "prod": {
               "budgets": [
                 {
                   "type": "initial",
@@ -61,23 +50,42 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
                 }
-              ]
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environments/environment.ts",
+                  "with": "src/app/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "buildOptimizer": true,
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true
+            },
+            "dev": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": true
             }
-          }
+          },
+          "defaultConfiguration": "prod"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "cryptozip:build"
-          },
           "configurations": {
-            "production": {
-              "browserTarget": "cryptozip:build:production"
+            "prod": {
+              "browserTarget": "cryptozip:build:prod"
+            },
+            "dev": {
+              "browserTarget": "cryptozip:build:dev"
             }
-          }
+          },
+          "defaultConfiguration": "dev"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -86,12 +94,13 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/app/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -102,18 +111,20 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html",
+              "src/**/*.scss"
             ]
           }
         }
       }
-    }},
-  "defaultProject": "cryptozip"
+    }
+  },
+  "defaultProject": "cryptozip",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

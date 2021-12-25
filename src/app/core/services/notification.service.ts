@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+
+import { InfoDialogComponent } from '@/shared/dialogs';
 
 @Injectable()
 export class NotificationService {
-  constructor(private snackbar: MatSnackBar) { }
+  constructor(
+    private snackbar: MatSnackBar,
+    private matDialog: MatDialog,
+  ) { }
 
   private snack(message: string, status: string): void {
     if (message) {
-      this.snackbar.open(message, null, {
+      this.snackbar.open(message, undefined, {
         duration: 3000,
         panelClass: [status],
       });
@@ -24,5 +30,17 @@ export class NotificationService {
 
   warning(message: string): void {
     this.snack(message, 'notification-warning');
+  }
+
+  crash(message: string): void {
+    this.error(message);
+    throw new Error(message);
+  }
+
+  info(message: string): void {
+    this.matDialog.open(InfoDialogComponent, {
+      autoFocus: false,
+      data: { message: message },
+    });
   }
 }

@@ -1,0 +1,26 @@
+25 Dec 2021
+Firebase cloud
+
+20 Dec 2021
+File manager
+
+13 Dec 2021
+Angular 13
+
+1 Aug 2020
+Crypto algo is updated
+Basic UI
+
+22 May 2020
+v2.0
+Browser version is created
+New crypto algo based on AES-256-ctr and zip is created
+Angular 9
+
+20 Jul 2018
+v1.3
+General update of console version
+
+1 Jul 2018
+v1.0
+Console version based on Nodejs AES-256-cbc encryption is created

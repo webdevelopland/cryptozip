@@ -1,0 +1,7 @@
+- proto instead of zip structure
+- .pwd or .table files
+- custom compression
+https://www.npmjs.com/package/compression
+https://www.npmjs.com/package/lzutf8
+- separate map and files content.
+Read each block separatly. If archive is big, don't read everything. Only map first. Then small files. And a big file only when user opens it

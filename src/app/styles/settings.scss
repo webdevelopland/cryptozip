@@ -1,0 +1,14 @@
+body {
+  .page {
+    height: calc(100vh - 41px);
+  }
+  .preload {
+    position: absolute;
+    visibility: hidden;
+  }
+  .ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

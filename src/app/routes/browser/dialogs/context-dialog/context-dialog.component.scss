@@ -1,0 +1,14 @@
+.dialog {
+  >.option {
+    cursor: pointer;
+    width: 300px;
+    box-sizing: border-box;
+    padding: 8px 15px;
+    border-bottom: 1px solid #ccc;
+    white-space: nowrap;
+    font-size: 14px;
+    &:hover {
+      background: #ccc;
+    }
+  }
+}

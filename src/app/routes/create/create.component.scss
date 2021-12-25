@@ -1,2 +1,29 @@
 .page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  >.flex {
+    >.id {
+      >input {
+        width: 180px;
+        margin-right: 20px;
+      }
+    }
+    >.pass {
+      input {
+        width: 300px;
+      }
+    }
+    >div {
+      padding: 10px;
+    }
+    input {
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 4px;
+      width: 100px;
+      font-size: 14px;
+    }
+  }
 }

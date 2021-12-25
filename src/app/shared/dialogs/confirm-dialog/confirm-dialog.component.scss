@@ -1,0 +1,17 @@
+:host {
+  >.message {
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  >.buttons {
+    display: flex;
+    justify-content: center;
+    >.ok-button {
+      margin-left: 5px;
+    }
+    >button {
+      width: 150px;
+      height: 27px;
+    }
+  }
+}

@@ -6,8 +6,15 @@ import { RouterModule } from '@angular/router';
 import { AutosizeModule } from 'ngx-autosize';
 
 import { MaterialModule } from '@/import';
+import { InfoDialogComponent, ConfirmDialogComponent } from './dialogs';
+import { HtmlDirective, FocusDirective } from './directives';
 
-const ExportDeclarations = [];
+const ExportDeclarations = [
+  ConfirmDialogComponent,
+  InfoDialogComponent,
+  HtmlDirective,
+  FocusDirective,
+];
 const ExportModules = [
   RouterModule,
   FormsModule,
@@ -24,6 +31,10 @@ const ExportModules = [
   exports: [
     ...ExportDeclarations,
     ...ExportModules,
-  ]
+  ],
+  entryComponents: [
+    ConfirmDialogComponent,
+    InfoDialogComponent,
+  ],
 })
 export class SharedModule { }

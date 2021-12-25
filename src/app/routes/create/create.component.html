@@ -1,9 +1,14 @@
 <div class="page">
-  <div>Create</div>
-  <div>
-    <a [href]="'/'">root</a>
-  </div>
-  <div>
-    <a [href]="'/data'">data</a>
+  <div class="flex">
+    <div class="id">
+      <input type="text" readonly="true" [value]="id">
+      <button (click)="randomize()">Randomize</button>
+    </div>
+    <div class="pass">
+      <input type="password" placeholder="Password" [(ngModel)]="password">
+    </div>
+    <div class="button">
+      <button (click)="create()">Create</button>
+    </div>
   </div>
 </div>

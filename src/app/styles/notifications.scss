@@ -1,0 +1,23 @@
+.notification-success {
+  background: #37d437;
+  .mat-simple-snackbar {
+    font-family: $default-font;
+    color: black;
+  }
+}
+
+.notification-error {
+  background: #e83636;
+  .mat-simple-snackbar {
+    font-family: $default-font;
+    color: black;
+  }
+}
+
+.notification-warning {
+  background: #ffb818;
+  .mat-simple-snackbar {
+    font-family: $default-font;
+    color: black;
+  }
+}
