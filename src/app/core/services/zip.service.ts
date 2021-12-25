@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, zip } from 'rxjs';
-
 import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
