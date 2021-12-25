@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { randCustomString, numerals } from 'rndmjs';
 
 import { Data, Node, File, Folder, NodeMap, StringMap } from '@/core/type';
 import { parsePath } from '@/core/functions';
+import { META } from '@/environments/meta';
+import { ZipService } from './zip.service';
 
 @Injectable()
 export class DataService {
@@ -18,7 +21,10 @@ export class DataService {
   pathMap: StringMap = {};
   exitChanges = new Subject<void>();
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private zipService: ZipService,
+  ) { }
 
   setData(data: Data): void {
     this.data = data;
@@ -79,13 +85,41 @@ export class DataService {
     });
   }
 
+  generateId(): string {
+    return randCustomString(numerals, 9);
+  }
+
+  create(id: string, password: string): void {
+    this.id = id;
+    this.password = password;
+    this.setData(this.getNewData(this.id));
+    this.router.navigate(['/browser']);
+  }
+
+  private getNewData(id: string): Data {
+    const root = '/' + id;
+
+    const data = new Data();
+    data.root = this.zipService.getFolder(root);
+
+    const now: number = Date.now();
+    data.meta = {
+      id: id,
+      encryptorVersion: META.version,
+      updateVersion: 1,
+      createdTimestamp: now,
+      updatedTimestamp: now,
+    };
+
+    return data;
+  }
+
   destroy(): void {
     this.isDecrypted = false;
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
-    this.router.navigate(['/']);
     this.exitChanges.next();
   }
 }

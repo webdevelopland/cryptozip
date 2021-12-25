@@ -1,12 +1,12 @@
 <div class="page">
-  <div class="login" *ngIf="!isLoading">
-    <div>
+  <div class="flex" *ngIf="!isLoading">
+    <div class="id">
       <input type="text" placeholder="id" [(ngModel)]="id">
     </div>
-    <div>
+    <div class="pass">
       <input type="password" placeholder="Password" [(ngModel)]="password">
     </div>
-    <div>
+    <div class="button">
       <button (click)="login()">Login</button>
     </div>
   </div>

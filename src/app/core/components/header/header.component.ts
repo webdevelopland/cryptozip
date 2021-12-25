@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { DataService, EventService } from '@/core/services';
 import { HeaderService } from './header.service';
@@ -10,6 +11,7 @@ import { HeaderService } from './header.service';
 })
 export class HeaderComponent {
   constructor(
+    private router: Router,
     public dataService: DataService,
     public headerService: HeaderService,
     private eventService: EventService,
@@ -18,6 +20,7 @@ export class HeaderComponent {
   exit(): void {
     this.headerService.isMenu = false;
     this.dataService.destroy();
+    this.router.navigate(['/']);
   }
 
   print(): void {

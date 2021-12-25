@@ -1,11 +1,14 @@
-<div class="page">
+<div class="page" *ngIf="dataService.isDecrypted">
   <div class="control">
     <div class="buttons">
       <button (click)="back()">...</button>
       <button (click)="dialogService.showAddDialog()">+</button>
-      <button (click)="fileService.paste()">Paste</button>
-      <button (click)="branchService.unselectAll()">Clear Select</button>
-      <button (click)="clipboardService.clear()">Clear Clipboard</button>
+      <button (click)="branchService.unselectAll()">Select</button>
+      <button (click)="clipboardService.clear()">Clipboard</button>
+      <button
+        (click)="fileService.paste()"
+        *ngIf="clipboardService.clipboard.length > 0"
+      >Paste</button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="dataService.folder.path">

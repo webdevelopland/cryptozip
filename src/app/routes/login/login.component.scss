@@ -1,13 +1,19 @@
 .page {
   display: flex;
-  justify-content: center;
   align-items: center;
-  >.login {
+  justify-content: center;
+  >.flex {
     >div {
       padding: 10px;
-      >input {
-        width: 300px;
-      }
+    }
+    input {
+      width: 300px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 4px;
+      width: 100px;
+      font-size: 14px;
     }
   }
 }

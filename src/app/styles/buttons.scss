@@ -1,0 +1,32 @@
+@mixin button() {
+  border-radius: 6px;
+  border: 1px solid $color-primary;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  text-decoration: none;
+  color: $color-primary;
+  text-align: center;
+  background: white;
+  &:hover {
+    background: #e7f3ff;
+  }
+  &:active {
+    background: $color-primary;
+    color: white;
+  }
+  &:disabled {
+    cursor: auto;
+    color: #ccc;
+    border: 1px solid #ccc;
+  }
+}
+
+body {
+  button {
+    @include button();
+  }
+  .active-button {
+    @include button();
+  }
+}

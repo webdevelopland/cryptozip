@@ -41,7 +41,7 @@
             ]
           },
           "configurations": {
-            "production": {
+            "prod": {
               "budgets": [
                 {
                   "type": "initial",
@@ -61,32 +61,31 @@
                 }
               ],
               "outputHashing": "all",
+              "buildOptimizer": true,
               "optimization": true,
               "sourceMap": false,
-              "buildOptimizer": true
+              "extractLicenses": true
             },
-            "development": {
+            "dev": {
               "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "extractLicenses": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "prod"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "browserTarget": "cryptozip:build:production"
+            "prod": {
+              "browserTarget": "cryptozip:build:prod"
             },
-            "development": {
-              "browserTarget": "cryptozip:build:development"
+            "dev": {
+              "browserTarget": "cryptozip:build:dev"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "dev"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",

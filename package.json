@@ -1,9 +1,9 @@
 {
   "name": "cryptozip",
   "scripts": {
-    "start": "ng build --configuration development --watch",
+    "start": "ng build --configuration dev --watch",
     "live": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration prod",
     "lint": "ng lint",
     "lint-fix": "ng lint --fix",
     "deploy": "firebase deploy --only hosting"

@@ -22,7 +22,7 @@ export class LoginComponent {
   ) { }
 
   login(): void {
-    if (this.id.trim() && this.password) {
+    if (this.id && this.id.trim()) {
       this.isLoading = true;
       this.firebaseService.download(this.id).subscribe(binary => {
         this.zipService.binaryToData(binary, this.password).subscribe(
@@ -37,7 +37,12 @@ export class LoginComponent {
             this.isLoading = false;
           },
         );
+      }, () => {
+        this.notificationService.warning('Not found');
+        this.isLoading = false;
       });
+    } else {
+      this.notificationService.warning('id is empty');
     }
   }
 }

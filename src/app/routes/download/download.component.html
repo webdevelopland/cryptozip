@@ -1,8 +1,13 @@
 <div class="page">
-  <div>
-    <input type="text" placeholder="id" [(ngModel)]="id">
+  <div class="flex" *ngIf="!isLoading">
+    <div class="id">
+      <input type="text" placeholder="id" [(ngModel)]="id">
+    </div>
+    <div class="button">
+      <button (click)="download()">Download</button>
+    </div>
   </div>
-  <div>
-    <button (click)="download()">Download</button>
+  <div class="loading" *ngIf="isLoading">
+    <mat-spinner [diameter]="60"></mat-spinner>
   </div>
 </div>

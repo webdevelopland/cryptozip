@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, zip } from 'rxjs';
-import { randCustomString, numerals } from 'rndmjs';
+
 import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
@@ -17,10 +17,6 @@ export class ZipService {
     private cryptoService: CryptoService,
     private mediaService: MediaService,
   ) { }
-
-  generateId(): string {
-    return randCustomString(numerals, 9);
-  }
 
   unzip(fileList: FileList, password: string): Observable<Data> {
     return new Observable(observer => {

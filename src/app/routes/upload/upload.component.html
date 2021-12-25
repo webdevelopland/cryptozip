@@ -1,9 +1,12 @@
 <div class="page">
-  <div class="upload" *ngIf="!isLoading">
-    <div>
+  <div class="flex" *ngIf="!isLoading">
+    <div class="pass">
       <input type="password" placeholder="Password" [(ngModel)]="password">
     </div>
-    <div>
+    <div class="upload">
+      <label class="active-button" for="file-upload">
+        Upload
+      </label>
       <input
         id="file-upload"
         type="file"

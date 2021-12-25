@@ -1,9 +1,12 @@
+@import './buttons';
+
 body {
   @mixin dark-input() {
     padding: 4px 10px 5px 10px;
     border-radius: 2px;
     outline: none;
-    border: 1px solid #ccc;
+    // border: 1px solid #ccc;
+    border: none;
     font-family: $default-font;
     font-size: 14px;
     box-sizing: border-box;

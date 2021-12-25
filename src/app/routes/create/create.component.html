@@ -1,12 +1,14 @@
 <div class="page">
-  <div class="id">
-    <input type="text" readonly="true" [value]="id">
-    <button (click)="randomize()">Randomize</button>
-  </div>
-  <div>
-    <input type="password" placeholder="Password" [(ngModel)]="password">
-  </div>
-  <div>
-    <button (click)="create()">Create</button>
+  <div class="flex">
+    <div class="id">
+      <input type="text" readonly="true" [value]="id">
+      <button (click)="randomize()">Randomize</button>
+    </div>
+    <div class="pass">
+      <input type="password" placeholder="Password" [(ngModel)]="password">
+    </div>
+    <div class="button">
+      <button (click)="create()">Create</button>
+    </div>
   </div>
 </div>
