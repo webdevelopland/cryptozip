@@ -22,16 +22,22 @@ export class FileService {
   ) { }
 
   addFile(): void {
-    const name: string = 'new_file_' + randstr(12);
+    const name: string = 'new_file';
     const file: File = this.zipService.getFile(this.dataService.folder.path + '/' + name + '.txt');
     file.text = '';
+    const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
+    file.name = newName;
+    file.path = this.dataService.folder.path + '/' + newName;
     this.dataService.folder.push(file);
     this.dataService.modify();
   }
 
   addFolder(): void {
-    const name: string = 'new_folder_' + randstr(12);
+    const name: string = 'new_folder';
     const folder: Folder = this.zipService.getFolder(this.dataService.folder.path + '/' + name);
+    const newName: string = this.getService.getNewName(folder, this.dataService.folder.nodes);
+    folder.name = newName;
+    folder.path = this.dataService.folder.path + '/' + newName;
     this.dataService.folder.push(folder);
     this.dataService.modify();
   }

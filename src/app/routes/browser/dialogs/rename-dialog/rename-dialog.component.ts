@@ -48,11 +48,20 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   private checkSlash(): void {
-    if (this.newName.includes('/')) {
-      this.notificationService.warning('Names can not include "/"');
+    if (this.hasForbiddenChars(this.newName)) {
+      this.notificationService.warning('Forbidden chars: /, \\, <, >, :, ", |, ?, *');
     } else {
       this.checkNoChange();
     }
+  }
+
+  hasForbiddenChars(name: string): boolean {
+    for (const char of ['/', '\\', '<', '>', ':', '"', '|', '?', '*']) {
+      if (name.includes(char)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private checkNoChange(): void {
