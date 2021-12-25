@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { randstr } from 'rndmjs';
 
 import { Node, File, Folder, NodeMap } from '@/core/type';
 import { DataService, ZipService, ClipboardService, NotificationService } from '@/core/services';

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Observable } from 'rxjs';
 
-import { Node, File, Folder, Data, Parse } from '@/core/type';
+import { Data } from '@/core/type';
 import { ZipService } from './zip.service';
 import { NotificationService } from './notification.service';
 
@@ -45,12 +45,14 @@ export class FirebaseService {
             };
             fileReader.readAsArrayBuffer(blob);
           });
+        }, () => {
+          observer.error();
         });
     });
   }
 
   remove(id: string): void {
-    this.storage.ref(id).delete().subscribe(res => {
+    this.storage.ref(id).delete().subscribe(() => {
       this.notificationService.success('Deleted');
     }, () => {
       this.notificationService.warning('Not found');

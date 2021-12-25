@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { Router, Params } from '@angular/router';
+import { saveAs } from 'file-saver';
 
-import { DataService, UrlService } from '@/core/services';
+import { FirebaseService, NotificationService } from '@/core/services';
 
 @Component({
   selector: 'page-download',
@@ -9,21 +9,24 @@ import { DataService, UrlService } from '@/core/services';
   styleUrls: ['./download.component.scss'],
 })
 export class DownloadComponent {
-  id: string = '';
+  id: string;
+  isLoading: boolean = false;
 
   constructor(
-    private router: Router,
-    private dataService: DataService,
-    private urlService: UrlService,
-  ) {
-    const params: Params = this.urlService.getParam();
-    if (params.id) {
-      this.id = params.id;
-      this.download();
-    }
-  }
+    private notificationService: NotificationService,
+    private firebaseService: FirebaseService,
+  ) { }
 
   download(): void {
-    console.log('download: ' + this.id);
+    if (this.id.trim()) {
+      this.isLoading = true;
+      this.firebaseService.download(this.id).subscribe(binary => {
+        saveAs(new Blob([binary]), this.id + '.czip');
+        this.isLoading = false;
+      }, () => {
+        this.notificationService.warning('Not found');
+        this.isLoading = false;
+      });
+    }
   }
 }
