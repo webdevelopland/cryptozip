@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, zip } from 'rxjs';
 
-import { DataService, ZipService, MediaService, NotificationService } from '@/core/services';
+import {
+  DataService, ZipService, MediaService, NotificationService, ProtoService
+} from '@/core/services';
 import { Node, Folder, File, Parse } from '@/core/type';
 import { parsePath } from '@/core/functions';
 import { GetService } from './get.service';
@@ -11,6 +13,7 @@ export class BranchService {
   constructor(
     private notificationService: NotificationService,
     private dataService: DataService,
+    private protoService: ProtoService,
     private zipService: ZipService,
     private mediaService: MediaService,
     private getService: GetService,
@@ -21,7 +24,7 @@ export class BranchService {
     this.dataService.sort(nodeList);
     for (const node of nodeList) {
       // Convert list to tree
-      this.zipService.addToTree(nodeList, node);
+      this.protoService.addToTree(nodeList, node);
     }
     const localHead: Folder = nodeList[0] as Folder;
     // Add a number, if name is already taken
@@ -49,11 +52,11 @@ export class BranchService {
     originFolder.nodes.forEach(node => {
       const newPath: string = path + '/' + node.name;
       if (node instanceof Folder) {
-        const folder: Folder = this.zipService.getFolder(newPath);
+        const folder: Folder = this.dataService.getFolder(newPath);
         folder.nodes = this.copyFolderNodes(node, newPath);
         children.push(folder);
       } else if (node instanceof File) {
-        const file: File = this.zipService.getFile(newPath);
+        const file: File = this.dataService.getFile(newPath);
         file.isBinary = node.isBinary;
         if (file.isBinary) {
           file.binary = node.binary;
@@ -84,7 +87,7 @@ export class BranchService {
       // TODO: update, when webkitRelativePath will be standard.
       // https://developer.mozilla.org/en-US/docs/Web/API/File/webkitRelativePath
       const path: string = bitFile['webkitRelativePath'] || '';
-      if (bitFile.size > 10000000) {
+      if (bitFile.size > 30000000) {
         sizeLimitFileList.push(path || bitFile.name);
         continue;
       }
@@ -116,7 +119,7 @@ export class BranchService {
         }
       }));
     }
-    this.displaySizeLimitFiles(sizeLimitFileList, '10Mb');
+    this.displaySizeLimitFiles(sizeLimitFileList, '30Mb');
     if (observableList.length > 0) {
       return zip(...observableList);
     } else {

@@ -29,16 +29,16 @@ export class Folder extends Node {
 }
 
 export interface Meta {
+  id: string;
   createdTimestamp: number;
   updatedTimestamp: number;
-  id: string;
   encryptorVersion: string; // E.g. '2.47'
   updateVersion: number; // E.g. 6438
 }
 
 export class Data {
-  root: Folder;
   meta: Meta;
+  root: Folder;
 }
 
 export class Password extends File {

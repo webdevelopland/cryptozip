@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Observable } from 'rxjs';
 
-import { Data } from '@/core/type';
 import { ZipService } from './zip.service';
 import { NotificationService } from './notification.service';
+import { LoadingService } from './loading.service';
 
 @Injectable()
 export class FirebaseService {
@@ -14,15 +14,15 @@ export class FirebaseService {
     private http: HttpClient,
     private zipService: ZipService,
     private notificationService: NotificationService,
+    private loadingService: LoadingService,
   ) { }
 
-  upload(data: Data, password: string) {
-    this.zipService.dataToBinary(data, password).subscribe(blob => {
-      this.storage.upload(data.meta.id, blob).snapshotChanges().subscribe(res => {
-        if (res.state === 'success') {
-          this.notificationService.success('Saved');
-        }
-      });
+  upload(id: string): void {
+    this.storage.upload(id, this.zipService.pack()).snapshotChanges().subscribe(res => {
+      if (res.state === 'success') {
+        this.notificationService.success('Saved');
+        this.loadingService.loads--;
+      }
     });
   }
 
@@ -52,10 +52,13 @@ export class FirebaseService {
   }
 
   remove(id: string): void {
+    this.loadingService.loads++;
     this.storage.ref(id).delete().subscribe(() => {
       this.notificationService.success('Deleted');
+      this.loadingService.loads--;
     }, () => {
       this.notificationService.warning('Not found');
+      this.loadingService.loads--;
     });
   }
 }

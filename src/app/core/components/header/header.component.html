@@ -3,17 +3,26 @@
     <div class="cryptozip" [routerLink]="['/']" *ngIf="!dataService.isDecrypted">Cryptozip</div>
     <div *ngIf="dataService.isDecrypted" [routerLink]="['/browser']">{{ dataService.id }}</div>
   </div>
+  <div class="loading" *ngIf="loadingService.loads > 0">
+    <mat-spinner [diameter]="25"></mat-spinner>
+  </div>
   <div class="manu" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
     <mat-icon *ngIf="!headerService.isMenu">menu</mat-icon>
     <mat-icon *ngIf="headerService.isMenu">menu_open</mat-icon>
   </div>
 </header>
 <div class="popup-menu" *ngIf="headerService.isMenu">
-  <div class="option" (click)="headerService.edit()">Change password</div>
+  <div class="option" (click)="openPasswordDialog()">Change password</div>
   <div class="option" (click)="print()">Print</div>
   <div class="option" (click)="headerService.download()">Download</div>
   <div class="option" (click)="headerService.export()">Export Zip</div>
   <div class="option" (click)="headerService.save()">Save</div>
   <div class="option" (click)="headerService.delete()">Delete</div>
   <div class="option" (click)="exit()">Exit</div>
+</div>
+<div class="notification" *ngIf="notificationService.message">
+  <span
+    class="message"
+    [style.background]="notificationService.color"
+  >{{ notificationService.message }}</span>
 </div>

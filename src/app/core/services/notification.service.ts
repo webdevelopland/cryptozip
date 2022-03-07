@@ -1,35 +1,41 @@
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { timer, Subscription } from 'rxjs';
 
 import { InfoDialogComponent } from '@/shared/dialogs';
 
 @Injectable()
 export class NotificationService {
+  message: string;
+  color: string;
+  timerSub = new Subscription();
+
   constructor(
-    private snackbar: MatSnackBar,
     private matDialog: MatDialog,
   ) { }
 
-  private snack(message: string, status: string): void {
+  private snack(message: string, color: string): void {
     if (message) {
-      this.snackbar.open(message, undefined, {
-        duration: 3000,
-        panelClass: [status],
+      this.message = message;
+      this.color = color;
+      this.timerSub.unsubscribe();
+      this.timerSub = timer(2000).subscribe(() => {
+        this.message = undefined;
+        this.color = undefined;
       });
     }
   }
 
   success(message: string): void {
-    this.snack(message, 'notification-success');
+    this.snack(message, '#37d437');
   }
 
   error(message: string): void {
-    this.snack(message, 'notification-error');
+    this.snack(message, '#e83636');
   }
 
   warning(message: string): void {
-    this.snack(message, 'notification-warning');
+    this.snack(message, '#ffb818');
   }
 
   crash(message: string): void {

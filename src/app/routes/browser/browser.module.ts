@@ -4,9 +4,7 @@ import { SharedModule } from '@/shared';
 import { BrowserComponent } from './browser.component';
 import { TextComponent } from './text';
 import { ImageComponent } from './image';
-import {
-  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, PasswordDialogComponent,
-} from './dialogs';
+import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from './dialogs';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @NgModule({
@@ -18,7 +16,6 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
     ContextDialogComponent,
     RenameDialogComponent,
     AddDialogComponent,
-    PasswordDialogComponent,
     TextComponent,
     ImageComponent,
   ],

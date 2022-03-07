@@ -1,17 +1,21 @@
 <div class="page">
   <div class="flex" *ngIf="!isLoading">
-    <div class="pass">
-      <input type="password" placeholder="Password" [(ngModel)]="password">
-    </div>
     <div class="upload">
       <label class="active-button" for="file-upload">
-        Upload
+        Select
       </label>
       <input
         id="file-upload"
         type="file"
-        (change)="decrypt($event.target.files)"
+        (change)="setFile($event.target.files)"
       />
+      <span>{{ name }}</span>
+    </div>
+    <div class="pass">
+      <input type="password" placeholder="Password" [(ngModel)]="password">
+    </div>
+    <div class="button">
+      <button (click)="decrypt()">Upload</button>
     </div>
   </div>
   <div class="loading" *ngIf="isLoading">

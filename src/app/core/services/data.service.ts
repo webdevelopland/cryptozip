@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { randCustomString, numerals } from 'rndmjs';
 
-import { Data, Node, File, Folder, NodeMap, StringMap } from '@/core/type';
+import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
 import { parsePath } from '@/core/functions';
 import { META } from '@/environments/meta';
-import { ZipService } from './zip.service';
+import { LoadingService } from './loading.service';
 
 @Injectable()
 export class DataService {
@@ -19,11 +18,10 @@ export class DataService {
   file: File; // Current file (open in editor)
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
-  exitChanges = new Subject<void>();
 
   constructor(
     private router: Router,
-    private zipService: ZipService,
+    private loadingService: LoadingService,
   ) { }
 
   setData(data: Data): void {
@@ -100,7 +98,7 @@ export class DataService {
     const root = '/' + id;
 
     const data = new Data();
-    data.root = this.zipService.getFolder(root);
+    data.root = this.getFolder(root);
 
     const now: number = Date.now();
     data.meta = {
@@ -114,12 +112,34 @@ export class DataService {
     return data;
   }
 
+  getFile(path: string, id?: string): File {
+    const file = new File();
+    if (id) {
+      file.id = id;
+    }
+    file.path = path;
+    const parse: Parse = parsePath(path);
+    file.name = parse.name;
+    return file;
+  }
+
+  getFolder(path: string, id?: string): Folder {
+    const folder = new Folder();
+    if (id) {
+      folder.id = id;
+    }
+    folder.path = path;
+    const parse: Parse = parsePath(path);
+    folder.name = parse.name;
+    return folder;
+  }
+
   destroy(): void {
     this.isDecrypted = false;
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
-    this.exitChanges.next();
+    this.loadingService.loads = 0;
   }
 }

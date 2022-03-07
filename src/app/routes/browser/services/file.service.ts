@@ -22,7 +22,7 @@ export class FileService {
 
   addFile(): void {
     const name: string = 'new_file';
-    const file: File = this.zipService.getFile(this.dataService.folder.path + '/' + name + '.txt');
+    const file: File = this.dataService.getFile(this.dataService.folder.path + '/' + name + '.txt');
     file.text = '';
     const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
     file.name = newName;
@@ -33,7 +33,7 @@ export class FileService {
 
   addFolder(): void {
     const name: string = 'new_folder';
-    const folder: Folder = this.zipService.getFolder(this.dataService.folder.path + '/' + name);
+    const folder: Folder = this.dataService.getFolder(this.dataService.folder.path + '/' + name);
     const newName: string = this.getService.getNewName(folder, this.dataService.folder.nodes);
     folder.name = newName;
     folder.path = this.dataService.folder.path + '/' + newName;
@@ -105,11 +105,11 @@ export class FileService {
       const id: string = this.clipboardService.isCut ? node.id : undefined;
       const newPath: string = this.dataService.folder.path + '/' + newName;
       if (node instanceof Folder) {
-        const folder: Folder = this.zipService.getFolder(newPath, id);
+        const folder: Folder = this.dataService.getFolder(newPath, id);
         folder.nodes = this.branchService.copyFolderNodes(node, newPath);
         return folder;
       } else if (node instanceof File) {
-        const file: File = this.zipService.getFile(newPath, id);
+        const file: File = this.dataService.getFile(newPath, id);
         file.isBinary = node.isBinary;
         if (file.isBinary) {
           file.binary = node.binary;

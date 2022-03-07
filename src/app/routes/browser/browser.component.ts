@@ -2,11 +2,8 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { Folder } from '@/core/type';
-import {
-  DataService, ZipService, NotificationService, EventService, ClipboardService, FirebaseService,
-} from '@/core/services';
+import { DataService, NotificationService, EventService, ClipboardService } from '@/core/services';
 import { parsePath } from '@/core/functions';
-import { HeaderService } from '@/core/components/header';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @Component({
@@ -19,12 +16,9 @@ export class BrowserComponent implements OnDestroy {
 
   constructor(
     public dataService: DataService,
-    private headerService: HeaderService,
-    private zipService: ZipService,
     private notificationService: NotificationService,
     private eventService: EventService,
     public clipboardService: ClipboardService,
-    public firebaseService: FirebaseService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -32,7 +26,6 @@ export class BrowserComponent implements OnDestroy {
     public dialogService: DialogService,
     public branchService: BranchService,
   ) {
-    this.headerEvents();
     this.keyboardEvents();
   }
 
@@ -47,26 +40,6 @@ export class BrowserComponent implements OnDestroy {
       }
       this.dataService.folder = parent;
     }
-  }
-
-  headerEvents(): void {
-    this.sub(this.headerService.editChanges.subscribe(() => {
-      this.dialogService.openPasswordDialog();
-    }));
-    this.sub(this.headerService.downloadChanges.subscribe(() => {
-      this.dataService.update();
-      this.zipService.zip(this.dataService.data, this.dataService.password);
-    }));
-    this.sub(this.headerService.deleteChanges.subscribe(() => {
-      this.firebaseService.remove(this.dataService.data.meta.id);
-    }));
-    this.sub(this.headerService.saveChanges.subscribe(() => {
-      this.dataService.update();
-      this.firebaseService.upload(this.dataService.data, this.dataService.password);
-    }));
-    this.sub(this.headerService.exportChanges.subscribe(() => {
-      this.zipService.export(this.dataService.data.root);
-    }));
   }
 
   keyboardEvents(): void {

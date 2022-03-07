@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
-import { DataService, EventService } from '@/core/services';
+import { DataService, EventService, LoadingService, NotificationService } from '@/core/services';
+import { PasswordDialogComponent } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 
 @Component({
@@ -14,7 +16,10 @@ export class HeaderComponent {
     private router: Router,
     public dataService: DataService,
     public headerService: HeaderService,
+    public loadingService: LoadingService,
     private eventService: EventService,
+    public notificationService: NotificationService,
+    private matDialog: MatDialog,
   ) { }
 
   exit(): void {
@@ -30,5 +35,16 @@ export class HeaderComponent {
 
   toggleMenu(): void {
     this.headerService.isMenu = !this.headerService.isMenu;
+  }
+
+  openPasswordDialog(): void {
+    this.headerService.isMenu = false;
+    this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
+      if (newPass) {
+        this.dataService.password = newPass;
+        this.dataService.modify();
+        this.notificationService.success('Saved');
+      }
+    });
   }
 }
