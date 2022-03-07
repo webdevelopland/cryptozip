@@ -1,3 +1,6 @@
+8 Mar 2021
+Proto instead of zip structure
+
 25 Dec 2021
 Firebase cloud
 

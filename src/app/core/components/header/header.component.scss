@@ -10,6 +10,7 @@
     >.label {
       margin-left: 15px;
       cursor: pointer;
+      display: flex;
       >div {
         font-size: 20px;
         color: $color-primary;
@@ -21,6 +22,9 @@
         outline: none;
         text-decoration: none;
       }
+    }
+    >.loading {
+      margin-left: 10px;
     }
     >.manu {
       position: absolute;
@@ -53,6 +57,26 @@
         color: white;
         cursor: pointer;
       }
+    }
+  }
+  >.notification {
+    position: fixed;
+    bottom: 55px;
+    left: 15px;
+    width: calc(100vw - 30px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    >.message {
+      width: 100%;
+      max-width: 400px;
+      font-family: $default-font;
+      font-size: 14px;
+      color: black;
+      box-sizing: border-box;
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-align: center;
     }
   }
 }

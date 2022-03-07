@@ -11,6 +11,9 @@ import {
   EventService,
   ClipboardService,
   FirebaseService,
+  ProtoService,
+  TimerService,
+  LoadingService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -32,6 +35,9 @@ import { HeaderModule } from './components/header';
     EventService,
     ClipboardService,
     FirebaseService,
+    ProtoService,
+    TimerService,
+    LoadingService,
   ],
 })
 export class CoreModule { }

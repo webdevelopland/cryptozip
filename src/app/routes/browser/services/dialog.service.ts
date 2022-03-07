@@ -4,9 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
-import {
-  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, PasswordDialogComponent,
-} from '../dialogs';
+import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
 
@@ -73,15 +71,5 @@ export class DialogService {
           }
         }
       });
-  }
-
-  openPasswordDialog(): void {
-    this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
-      if (newPass) {
-        this.dataService.password = newPass;
-        this.dataService.modify();
-        this.notificationService.success('Saved');
-      }
-    });
   }
 }

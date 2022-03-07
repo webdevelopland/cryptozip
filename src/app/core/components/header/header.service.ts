@@ -1,37 +1,46 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+
+import { DataService, ZipService, FirebaseService, LoadingService } from '@/core/services';
 
 @Injectable()
 export class HeaderService {
   isMenu: boolean = false;
-  editChanges = new Subject<void>();
-  downloadChanges = new Subject<void>();
-  deleteChanges = new Subject<void>();
-  saveChanges = new Subject<void>();
-  exportChanges = new Subject<void>();
 
-  edit(): void {
-    this.editChanges.next();
-    this.isMenu = false;
-  }
+  constructor(
+    private dataService: DataService,
+    private zipService: ZipService,
+    private firebaseService: FirebaseService,
+    private loadingService: LoadingService,
+  ) { }
 
   download(): void {
-    this.downloadChanges.next();
     this.isMenu = false;
+    this.loadingService.loads++;
+    this.dataService.update();
+    setTimeout(() => {
+      this.zipService.zip();
+      this.loadingService.loads--;
+    }, 0);
   }
 
   delete(): void {
-    this.deleteChanges.next();
     this.isMenu = false;
+    this.firebaseService.remove(this.dataService.data.meta.id);
   }
 
   save(): void {
-    this.saveChanges.next();
     this.isMenu = false;
+    this.loadingService.loads++;
+    this.dataService.update();
+    setTimeout(() => {
+      this.firebaseService.upload(this.dataService.data.meta.id);
+    }, 0);
   }
 
   export(): void {
-    this.exportChanges.next();
     this.isMenu = false;
+    setTimeout(() => {
+      this.zipService.export(this.dataService.data.root);
+    }, 0);
   }
 }

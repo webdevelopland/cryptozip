@@ -6,12 +6,13 @@ import { RouterModule } from '@angular/router';
 import { AutosizeModule } from 'ngx-autosize';
 
 import { MaterialModule } from '@/import';
-import { InfoDialogComponent, ConfirmDialogComponent } from './dialogs';
+import { InfoDialogComponent, ConfirmDialogComponent, PasswordDialogComponent } from './dialogs';
 import { HtmlDirective, FocusDirective } from './directives';
 
 const ExportDeclarations = [
   ConfirmDialogComponent,
   InfoDialogComponent,
+  PasswordDialogComponent,
   HtmlDirective,
   FocusDirective,
 ];

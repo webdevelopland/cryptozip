@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package wakka.common.node;
+
+message Data {
+  Meta meta = 1;
+  repeated Folder folder = 2;
+  repeated File file = 3;
+}
+
+message Folder {
+  string path = 1;
+}
+
+message File {
+  string path = 1;
+  bool is_binary = 2;
+  string text = 3;
+  bytes binary = 4;
+}
+
+message Meta {
+  string id = 1;
+  int64 created_timestamp = 2;
+  int64 updated_timestamp = 3;
+  string encryptor_version = 4;
+  int64 update_version = 5;
+}

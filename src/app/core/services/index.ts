@@ -8,3 +8,6 @@ export * from './media.service';
 export * from './event.service';
 export * from './clipboard.service';
 export * from './firebase.service';
+export * from './proto.service';
+export * from './timer.service';
+export * from './loading.service';
