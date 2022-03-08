@@ -1,0 +1,75 @@
+<div class="page">
+  <div class="control">
+    <div class="buttons">
+      <button (click)="close()">...</button>
+      <button [routerLink]="['/browser/grid']">Preview</button>
+      <button (click)="add()">Add</button>
+      <button (click)="save()">Save</button>
+    </div>
+    <div class="path">
+      <input type="text" readonly="true" [value]="dataService.file.path">
+    </div>
+  </div>
+  <div class="flex">
+    <div class="grid">
+      <div class="row" *ngFor="let row of grid.rows">
+        <div class="header">
+          <span>{{ row.type }}</span>
+          <div class="arrows">
+            <mat-icon class="delete active-button" (click)="delete(row)">delete_outline</mat-icon>
+            <mat-icon class="up active-button" (click)="up(row)">upload</mat-icon>
+            <mat-icon class="down active-button" (click)="down(row)">download</mat-icon>
+          </div>
+        </div>
+
+        <textarea
+          [(ngModel)]="row.value"
+          spellcheck="false"
+          autosize
+          *ngIf="row.type === 'textblock'"
+        ></textarea>
+
+        <ng-container *ngIf="row.type === 'input'">
+          <input type="text"[(ngModel)]="row.label">
+          <input type="text"[(ngModel)]="row.value">
+        </ng-container>
+
+        <ng-container *ngIf="row.type === 'password'">
+          <input type="text"[(ngModel)]="row.label">
+          <div class="pwd">
+            <input [type]="row.visibility" [(ngModel)]="row.value">
+            <mat-icon class="active-button" (click)="togglePass(row)">visibility</mat-icon>
+          </div>
+          <div class="key">
+            <mat-icon
+              class="active-button"
+              (click)="generateKey(row, length.value, dict.value)"
+            >vpn_key</mat-icon>
+            <input type="number" value=12 #length>
+            <select #dict>
+              <option value="number">1234</option>
+              <option value="small_text">password</option>
+              <option value="small_text_number">password99</option>
+              <option value="mixed_text_number" selected>PassWord99</option>
+              <option value="mixed_text_number_64">Pass_Word-99</option>
+              <option value="mixed_text_number_special">P@s$_#ord_99!</option>
+              <option value="extra">P@s$_/#0^d_[99]!</option>
+              <option value="unicode">Pas©_Wo®d∞9</option>
+              <option value="emoji">Pass😎Word_99</option>
+              <option value="max">∞🧐W&[s™3@!</option>
+            </select>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="row.type === 'textarea'">
+          <input type="text"[(ngModel)]="row.label">
+          <textarea
+            [(ngModel)]="row.value"
+            spellcheck="false"
+            autosize
+          ></textarea>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

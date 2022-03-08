@@ -12,5 +12,7 @@ html {
     font-family: $default-font;
     background: white;
     height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
   }
 }

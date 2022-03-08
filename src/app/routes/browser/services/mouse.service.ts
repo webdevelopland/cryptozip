@@ -40,6 +40,7 @@ export class MouseService {
       switch (this.mediaService.getMediaType(node.name)) {
         case 'text': this.router.navigate(['/browser/text']); break;
         case 'image': this.router.navigate(['/browser/image']); break;
+        case 'grid': this.router.navigate(['/browser/grid']); break;
         default: this.notificationService.warning("Binary file can't be opened");
       }
     }

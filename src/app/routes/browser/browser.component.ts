@@ -1,8 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { Folder } from '@/core/type';
-import { DataService, NotificationService, EventService, ClipboardService } from '@/core/services';
+import { Folder, Node } from '@/core/type';
+import {
+  DataService, NotificationService, EventService, ClipboardService, MediaService
+} from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
@@ -19,6 +21,7 @@ export class BrowserComponent implements OnDestroy {
     private notificationService: NotificationService,
     private eventService: EventService,
     public clipboardService: ClipboardService,
+    public mediaService: MediaService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -31,7 +34,7 @@ export class BrowserComponent implements OnDestroy {
 
   back(): void {
     const parentPath: string = parsePath(this.dataService.folder.path).parent;
-    if (parentPath !== '/') {
+    if (this.dataService.folder.path !== '/') {
       const parentId: string = this.dataService.pathMap[parentPath];
       const parent = this.dataService.nodeMap[parentId] as Folder;
       this.branchService.unselectAll();
@@ -44,6 +47,10 @@ export class BrowserComponent implements OnDestroy {
 
   keyboardEvents(): void {
     this.subs.push(this.eventService.keydown.subscribe(event => {
+      if (this.eventService.isDialog) {
+        // Disable, if dialog is open
+        return;
+      }
       if (event.code === 'KeyX' && event.ctrlKey) {
         event.preventDefault();
         this.fileService.cut();
@@ -68,7 +75,23 @@ export class BrowserComponent implements OnDestroy {
         event.preventDefault();
         this.fileService.addFolder();
       }
+      if (event.code === 'BracketRight' && event.ctrlKey) {
+        event.preventDefault();
+        this.fileService.addGrid();
+      }
     }));
+  }
+
+  getIcon(node: Node): string {
+    if (node.isFolder) {
+      return 'folder';
+    } else {
+      switch (this.mediaService.getMediaType(node.name)) {
+        case 'text': return 'insert_drive_file';
+        case 'grid': return 'grid_view';
+        default: return 'category';
+      }
+    }
   }
 
   sub(sub: Subscription): void {

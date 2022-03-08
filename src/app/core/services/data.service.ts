@@ -99,6 +99,7 @@ export class DataService {
 
     const data = new Data();
     data.root = this.getFolder(root);
+    data.root.path = '/';
 
     const now: number = Date.now();
     data.meta = {

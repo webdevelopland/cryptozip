@@ -19,6 +19,10 @@ export class AddDialogComponent {
     this.dialogRef.close({ type: 'add-folder' });
   }
 
+  addGrid(): void {
+    this.dialogRef.close({ type: 'add-grid' });
+  }
+
   importFile(fileList: FileList): void {
     this.dialogRef.close({
       type: 'import-file',

@@ -41,7 +41,7 @@ export class ProtoService {
   }
 
   setProto(binary: Uint8Array): void {
-    const protoData = Proto.Data.deserializeBinary(binary);
+    const protoData: Proto.Data = Proto.Data.deserializeBinary(binary);
     const data = new Data();
     data.meta = {
       id: protoData.getMeta().getId(),
@@ -85,7 +85,11 @@ export class ProtoService {
   addToTree(nodeList: Node[], newNode: Node): void {
     const parent: string = parsePath(newNode.path).parent;
     for (const node of nodeList) {
-      if (node.path === parent && node instanceof Folder) {
+      if (
+        node.path !== newNode.path &&
+        node.path === parent &&
+        node instanceof Folder
+      ) {
         node.nodes.push(newNode);
       }
     }

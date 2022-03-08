@@ -17,6 +17,7 @@ export class PasswordDialogComponent implements OnDestroy {
     private dialogRef: MatDialogRef<PasswordDialogComponent>,
     private eventService: EventService,
   ) {
+    this.eventService.isDialog = true;
     this.subscribeOnKeydown();
   }
 
@@ -38,5 +39,6 @@ export class PasswordDialogComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.keySubscription.unsubscribe();
+    this.eventService.isDialog = false;
   }
 }

@@ -23,6 +23,7 @@ export class RenameDialogComponent implements OnDestroy {
     private getService: GetService,
     private dataService: DataService,
   ) {
+    this.eventService.isDialog = true;
     this.newName = dialogData.message;
     this.subscribeOnKeydown();
   }
@@ -86,5 +87,6 @@ export class RenameDialogComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.keySubscription.unsubscribe();
+    this.eventService.isDialog = false;
   }
 }

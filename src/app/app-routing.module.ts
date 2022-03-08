@@ -11,6 +11,7 @@ import {
   DownloadComponent,
   TextComponent,
   ImageComponent,
+  GridViewComponent, GridEditComponent,
 } from '@/routes';
 import { DataGuard } from '@/core/services';
 
@@ -27,6 +28,8 @@ const appRoutes: Routes = [
       { path: 'browser', component: BrowserComponent },
       { path: 'browser/text', component: TextComponent },
       { path: 'browser/image', component: ImageComponent },
+      { path: 'browser/grid', component: GridViewComponent },
+      { path: 'browser/grid-edit', component: GridEditComponent },
     ],
   },
   { path: '**', component: HomeComponent },
