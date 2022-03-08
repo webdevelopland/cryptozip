@@ -10,5 +10,3 @@ binary in general: ?
 Speed optimization.
 Decrypt only the file that user is openning.
 Then if archive is really big with many files, we don't need to wait forever to see files structure.
-
-- PWA
