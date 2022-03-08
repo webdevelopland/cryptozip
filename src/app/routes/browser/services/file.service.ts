@@ -35,12 +35,16 @@ export class FileService {
     const file: File = this.getFile('new_file', '.txt');
     this.dataService.folder.push(file);
     this.dataService.modify();
+    this.branchService.unselectAll();
+    file.isSelected = true;
   }
 
   addGrid(): void {
     const file: File = this.getFile('new_grid', '.grid');
     this.dataService.folder.push(file);
     this.dataService.modify();
+    this.branchService.unselectAll();
+    file.isSelected = true;
   }
 
   addFolder(): void {
@@ -52,6 +56,8 @@ export class FileService {
     folder.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(folder);
     this.dataService.modify();
+    this.branchService.unselectAll();
+    folder.isSelected = true;
   }
 
   delete(): void {
@@ -132,8 +138,10 @@ export class FileService {
         return file;
       }
     });
+    this.branchService.unselectAll();
     for (const node of copiedNodes) {
       this.dataService.folder.push(node);
+      node.isSelected = true;
     }
     if (this.clipboardService.isCut) {
       this.clipboardService.clipboard.forEach(node => {
@@ -143,7 +151,6 @@ export class FileService {
       this.clipboardService.clearNodeCopyPaste();
     }
     this.dataService.modify();
-    this.branchService.unselectAll();
   }
 
   rename(node: Node, newName: string): void {
@@ -153,6 +160,7 @@ export class FileService {
     if (node instanceof Folder) {
       this.branchService.renameAllChildren(node);
     }
+    node.update();
     this.dataService.modify();
   }
 

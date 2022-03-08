@@ -1,5 +1,5 @@
 <div class="page">
-  <div class="control">
+  <div class="controls">
     <div class="buttons">
       <button (click)="close()">...</button>
       <button [routerLink]="['/browser/grid']">Preview</button>
@@ -30,14 +30,19 @@
         ></textarea>
 
         <ng-container *ngIf="row.type === 'input'">
-          <input type="text"[(ngModel)]="row.label">
-          <input type="text"[(ngModel)]="row.value">
+          <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
+          <input type="text"[(ngModel)]="row.value" placeholder="Value" spellcheck="false">
         </ng-container>
 
         <ng-container *ngIf="row.type === 'password'">
-          <input type="text"[(ngModel)]="row.label">
+          <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <div class="pwd">
-            <input [type]="row.visibility" [(ngModel)]="row.value">
+            <input
+              [type]="row.visibility"
+              [(ngModel)]="row.value"
+              placeholder="Password"
+              spellcheck="false"
+            >
             <mat-icon class="active-button" (click)="togglePass(row)">visibility</mat-icon>
           </div>
           <div class="key">
@@ -62,7 +67,16 @@
         </ng-container>
 
         <ng-container *ngIf="row.type === 'textarea'">
-          <input type="text"[(ngModel)]="row.label">
+          <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
+          <textarea
+            [(ngModel)]="row.value"
+            spellcheck="false"
+            autosize
+          ></textarea>
+        </ng-container>
+
+        <ng-container *ngIf="row.type === 'hiddenblock'">
+          <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <textarea
             [(ngModel)]="row.value"
             spellcheck="false"

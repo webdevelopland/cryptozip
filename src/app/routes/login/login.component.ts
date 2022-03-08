@@ -12,8 +12,8 @@ import {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnDestroy {
-  id: string;
-  password: string;
+  id: string = '';
+  password: string = '';
   isLoading: boolean = false;
   keySubscription = new Subscription();
 

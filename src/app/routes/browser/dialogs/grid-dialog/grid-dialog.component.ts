@@ -27,6 +27,10 @@ export class GridDialogComponent {
     this.dialogRef.close({ type: 'add-textblock' });
   }
 
+  addHiddenblock(): void {
+    this.dialogRef.close({ type: 'add-hiddenblock' });
+  }
+
   close(): void {
     this.dialogRef.close();
   }

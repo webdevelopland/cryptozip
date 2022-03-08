@@ -24,6 +24,8 @@ export class ProtoService {
       if (node.isFolder) {
         const folder = new Proto.Folder();
         folder.setPath(node.path);
+        folder.setCreatedTimestamp(node.createdTimestamp);
+        folder.setUpdatedTimestamp(node.updatedTimestamp);
         data.addFolder(folder);
       } else if (node instanceof File) {
         const file = new Proto.File();
@@ -34,6 +36,8 @@ export class ProtoService {
         } else {
           file.setText(node.text);
         }
+        file.setCreatedTimestamp(node.createdTimestamp);
+        file.setUpdatedTimestamp(node.updatedTimestamp);
         data.addFile(file);
       }
     }
@@ -53,6 +57,8 @@ export class ProtoService {
     const nodeList: (File | Folder)[] = [];
     for (const protoFolder of protoData.getFolderList()) {
       const folder: Folder = this.dataService.getFolder(protoFolder.getPath());
+      folder.createdTimestamp = protoFolder.getCreatedTimestamp();
+      folder.updatedTimestamp = protoFolder.getUpdatedTimestamp();
       nodeList.push(folder);
     }
     for (const protoFile of protoData.getFileList()) {
@@ -63,6 +69,8 @@ export class ProtoService {
       } else {
         file.text = protoFile.getText();
       }
+      file.createdTimestamp = protoFile.getCreatedTimestamp();
+      file.updatedTimestamp = protoFile.getUpdatedTimestamp();
       nodeList.push(file);
     }
     nodeList.sort((a, b) => {
@@ -76,6 +84,7 @@ export class ProtoService {
       // Convert list to tree
       this.addToTree(nodeList, node);
     }
+
     data.root = nodeList[0] as Folder;
     data.root.id = protoData.getMeta().getId();
     this.dataService.setData(data);

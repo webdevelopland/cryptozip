@@ -44,7 +44,9 @@ export class DataService {
   update(): void {
     if (this.isModified) {
       this.data.meta.updateVersion++;
-      this.data.meta.updatedTimestamp = Date.now();
+      const now = Date.now();
+      this.data.meta.updatedTimestamp = now;
+      this.data.root.updatedTimestamp = now;
       this.isModified = false;
     }
   }

@@ -47,6 +47,7 @@ export class GridEditComponent implements OnDestroy {
           case 'add-textarea': this.addTextarea(); break;
           case 'add-pwd': this.addPassword(); break;
           case 'add-textblock': this.addTextblock(); break;
+          case 'add-hiddenblock': this.addHiddenblock(); break;
         }
       });
   }
@@ -65,6 +66,7 @@ export class GridEditComponent implements OnDestroy {
 
   addPassword(): void {
     const row = new GridRow();
+    row.label = 'password';
     row.type = GridType.Password;
     this.grid.rows.push(row);
   }
@@ -72,6 +74,12 @@ export class GridEditComponent implements OnDestroy {
   addTextblock(): void {
     const row = new GridRow();
     row.type = GridType.Textblock;
+    this.grid.rows.push(row);
+  }
+
+  addHiddenblock(): void {
+    const row = new GridRow();
+    row.type = GridType.Hiddenblock;
     this.grid.rows.push(row);
   }
 
@@ -155,6 +163,8 @@ export class GridEditComponent implements OnDestroy {
 
   save(): void {
     this.saveJSON();
+    this.dataService.file.update();
+    this.dataService.modify();
     this.notificationService.success('Saved');
   }
 
