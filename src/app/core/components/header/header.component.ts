@@ -5,8 +5,9 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   DataService, EventService, LoadingService, NotificationService, ClipboardService
 } from '@/core/services';
-import { PasswordDialogComponent } from '@/shared/dialogs';
+import { PasswordDialogComponent, IdDialogComponent } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
+import { META } from '@/environments/meta';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,8 @@ import { HeaderService } from './header.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+  version: string = META.version;
+
   constructor(
     private router: Router,
     public dataService: DataService,
@@ -52,6 +55,21 @@ export class HeaderComponent {
         this.dataService.password = newPass;
         this.dataService.modify();
         this.notificationService.success('Saved');
+      }
+    });
+  }
+
+  openIdDialog(): void {
+    this.headerService.isMenu = false;
+    this.matDialog.open(IdDialogComponent).afterClosed().subscribe(newId => {
+      if (newId) {
+        const oldId: string = this.dataService.id;
+        this.dataService.id = newId;
+        this.dataService.data.root.id = newId;
+        this.dataService.data.root.name = newId;
+        this.dataService.data.meta.id = newId;
+        this.dataService.modify();
+        this.headerService.update(oldId);
       }
     });
   }

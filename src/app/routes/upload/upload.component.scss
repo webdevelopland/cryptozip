@@ -1,11 +1,5 @@
 .page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   >.flex {
-    >div {
-      padding: 10px;
-    }
     >.upload {
       label {
         display: inline-block;
@@ -21,15 +15,6 @@
         font-size: 14px;
         margin-left: 10px;
       }
-    }
-    input {
-      width: 300px;
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 4px;
-      width: 100px;
-      font-size: 14px;
     }
   }
 }

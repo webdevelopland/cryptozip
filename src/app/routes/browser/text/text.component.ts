@@ -29,6 +29,8 @@ export class TextComponent implements OnDestroy {
 
   save(): void {
     this.dataService.file.text = this.content;
+    this.dataService.file.update();
+    this.dataService.modify();
     this.notificationService.success('Saved');
   }
 

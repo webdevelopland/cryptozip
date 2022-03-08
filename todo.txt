@@ -9,4 +9,12 @@ Speed optimization.
 Decrypt only the file that user is openning.
 Then if archive is really big with many files, we don't need to wait forever to see files structure.
 
-- change id dialog
+- search
+
+- sort
+
+- tags view
+
+- symbolic link or shortcut
+
+- index (To be able to sort by the index. To set order manually)

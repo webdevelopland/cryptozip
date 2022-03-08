@@ -61,4 +61,18 @@ export class FirebaseService {
       this.loadingService.loads--;
     });
   }
+
+  replace(newId: string, oldId: string): void {
+    this.storage.upload(newId, this.zipService.pack()).snapshotChanges().subscribe(res => {
+      if (res.state === 'success') {
+        this.storage.ref(oldId).delete().subscribe(() => {
+          this.notificationService.success('Saved');
+          this.loadingService.loads--;
+        }, () => {
+          this.notificationService.warning('Unable to remove old version');
+          this.loadingService.loads--;
+        });
+      }
+    });
+  }
 }

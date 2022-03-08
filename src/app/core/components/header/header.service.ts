@@ -37,6 +37,11 @@ export class HeaderService {
     }, 0);
   }
 
+  update(oldId: string): void {
+    this.loadingService.loads++;
+    this.firebaseService.replace(this.dataService.data.meta.id, oldId);
+  }
+
   export(): void {
     this.isMenu = false;
     setTimeout(() => {

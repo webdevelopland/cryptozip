@@ -1,5 +1,5 @@
 <div class="page">
-  <div class="control">
+  <div class="controls">
     <div class="buttons">
       <button (click)="close()">...</button>
       <button [routerLink]="['/browser/grid-edit']">Edit</button>
@@ -14,7 +14,7 @@
         <span *ngIf="row.type === 'textblock'">{{ row.value }}</span>
 
         <div class="line key-line" *ngIf="row.type === 'input'">
-          <div class="label">{{ row.label }}:</div>
+          <div class="label" *ngIf="row.label">{{ row.label }}:</div>
           <div
             class="value key active-button"
             (click)="copy(row.value)"
@@ -23,7 +23,7 @@
         </div>
 
         <div class="line key-line" *ngIf="row.type === 'password'">
-          <div class="label">{{ row.label }}:</div>
+          <div class="label" *ngIf="row.label">{{ row.label }}:</div>
           <div
             class="value key active-button"
             (click)="copy(row.value)"
@@ -34,6 +34,10 @@
         <div class="line" *ngIf="row.type === 'textarea'">
           <div class="label">{{ row.label }}:</div>
           <span class="value">{{ row.value }}</span>
+        </div>
+
+        <div class="hiddenblock" *ngIf="row.type === 'hiddenblock'">
+          <div class="label">{{ row.label }}</div>
         </div>
       </div>
     </div>

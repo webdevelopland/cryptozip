@@ -6,6 +6,18 @@ export class Node {
   id: string = randstr64(20);
   isSelected: boolean = false;
   isFolder: boolean = false;
+  createdTimestamp: number;
+  updatedTimestamp: number;
+
+  constructor() {
+    const now = Date.now();
+    this.createdTimestamp = now;
+    this.updatedTimestamp = now;
+  }
+
+  update(): void {
+    this.updatedTimestamp = Date.now();
+  }
 }
 
 export class File extends Node {
@@ -73,6 +85,7 @@ export enum GridType {
   Textarea = 'textarea',
   Password = 'password',
   Textblock = 'textblock',
+  Hiddenblock = 'hiddenblock',
 }
 
 export class GridRow {

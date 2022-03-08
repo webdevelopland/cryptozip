@@ -1,0 +1,19 @@
+.home-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  >.flex {
+    input {
+      width: 300px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 4px;
+      width: 100px;
+      font-size: 14px;
+    }
+    >div {
+      padding: 10px;
+    }
+  }
+}
