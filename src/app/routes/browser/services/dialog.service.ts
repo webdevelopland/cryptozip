@@ -31,7 +31,7 @@ export class DialogService {
           case 'copy': this.fileService.copy(); break;
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
-          case 'export': this.zipService.export(node); break;
+          case 'export': this.zipService.export(node, node.name); break;
         }
       });
   }
@@ -66,6 +66,7 @@ export class DialogService {
           switch (res.type) {
             case 'add-file': this.fileService.addFile(); break;
             case 'add-folder': this.fileService.addFolder(); break;
+            case 'add-grid': this.fileService.addGrid(); break;
             case 'import-file': this.fileService.importFiles(res.list); break;
             case 'import-folder': this.fileService.importFolder(res.list); break;
           }

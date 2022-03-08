@@ -6,6 +6,7 @@ import { isApple } from '@/core/functions';
 @Injectable()
 export class EventService {
   isApple: boolean;
+  isDialog: boolean = false;
   keydown = new Subject<KeyboardEvent>();
   mouseup = new Subject<MouseEvent>();
 

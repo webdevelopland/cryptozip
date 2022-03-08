@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { DataService, EventService, LoadingService, NotificationService } from '@/core/services';
+import {
+  DataService, EventService, LoadingService, NotificationService, ClipboardService
+} from '@/core/services';
 import { PasswordDialogComponent } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 
@@ -19,6 +21,7 @@ export class HeaderComponent {
     public loadingService: LoadingService,
     private eventService: EventService,
     public notificationService: NotificationService,
+    private clipboardService: ClipboardService,
     private matDialog: MatDialog,
   ) { }
 
@@ -30,6 +33,11 @@ export class HeaderComponent {
 
   print(): void {
     console.log(this.dataService.data);
+    this.headerService.isMenu = false;
+  }
+
+  clearClipboard(): void {
+    this.clipboardService.clear();
     this.headerService.isMenu = false;
   }
 

@@ -1,5 +1,3 @@
-- .pwd or .table files
-
 - custom compression
 text: https://www.npmjs.com/package/lzutf8
 jpg, png, gif: ?
@@ -10,3 +8,5 @@ binary in general: ?
 Speed optimization.
 Decrypt only the file that user is openning.
 Then if archive is really big with many files, we don't need to wait forever to see files structure.
+
+- change id dialog

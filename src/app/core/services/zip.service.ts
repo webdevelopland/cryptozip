@@ -75,14 +75,14 @@ export class ZipService {
     return binary.slice(length + 1);
   }
 
-  export(node: Node): void {
+  export(node: Node, name: string): void {
     this.loadingService.loads++;
     const jszip = new JSZip();
     if (node instanceof Folder) {
-      const root: JSZip = jszip.folder(node.name);
+      const root: JSZip = jszip.folder(name);
       this.addFolderToZip(root, node);
       jszip.generateAsync({ type: 'blob' }).then(blob => {
-        saveAs(blob, node.name + '.zip');
+        saveAs(blob, name + '.zip');
         this.loadingService.loads--;
       });
     } else if (node instanceof File) {

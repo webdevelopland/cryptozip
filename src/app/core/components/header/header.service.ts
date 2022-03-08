@@ -40,7 +40,7 @@ export class HeaderService {
   export(): void {
     this.isMenu = false;
     setTimeout(() => {
-      this.zipService.export(this.dataService.data.root);
+      this.zipService.export(this.dataService.data.root, this.dataService.id);
     }, 0);
   }
 }

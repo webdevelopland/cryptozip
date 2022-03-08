@@ -4,7 +4,10 @@ import { SharedModule } from '@/shared';
 import { BrowserComponent } from './browser.component';
 import { TextComponent } from './text';
 import { ImageComponent } from './image';
-import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from './dialogs';
+import { GridViewComponent, GridEditComponent } from './grid';
+import {
+  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, GridDialogComponent
+} from './dialogs';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @NgModule({
@@ -16,8 +19,10 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
     ContextDialogComponent,
     RenameDialogComponent,
     AddDialogComponent,
+    GridDialogComponent,
     TextComponent,
     ImageComponent,
+    GridViewComponent, GridEditComponent,
   ],
   providers: [MouseService, FileService, GetService, DialogService, BranchService],
 })

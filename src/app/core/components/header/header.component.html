@@ -1,7 +1,7 @@
 <header>
   <div class="label">
     <div class="cryptozip" [routerLink]="['/']" *ngIf="!dataService.isDecrypted">Cryptozip</div>
-    <div *ngIf="dataService.isDecrypted" [routerLink]="['/browser']">{{ dataService.id }}</div>
+    <div *ngIf="dataService.isDecrypted">{{ dataService.id }}</div>
   </div>
   <div class="loading" *ngIf="loadingService.loads > 0">
     <mat-spinner [diameter]="25"></mat-spinner>
@@ -12,7 +12,8 @@
   </div>
 </header>
 <div class="popup-menu" *ngIf="headerService.isMenu">
-  <div class="option" (click)="openPasswordDialog()">Change password</div>
+  <div class="option" (click)="clearClipboard()">Clear Clipboard</div>
+  <div class="option" (click)="openPasswordDialog()">Change Password</div>
   <div class="option" (click)="print()">Print</div>
   <div class="option" (click)="headerService.download()">Download</div>
   <div class="option" (click)="headerService.export()">Export Zip</div>

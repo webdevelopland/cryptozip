@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { Node, File, Folder, NodeMap } from '@/core/type';
 import { DataService, ZipService, ClipboardService, NotificationService } from '@/core/services';
-import { parsePath } from '@/core/functions';
+import { parsePath, Path } from '@/core/functions';
 import { GetService } from './get.service';
 import { BranchService } from './branch.service';
 
@@ -20,23 +20,36 @@ export class FileService {
     private branchService: BranchService,
   ) { }
 
-  addFile(): void {
-    const name: string = 'new_file';
-    const file: File = this.dataService.getFile(this.dataService.folder.path + '/' + name + '.txt');
+  private getFile(name: string, ext: string): File {
+    const path: string = Path.join(this.dataService.folder.path, name) + ext;
+    const file: File = this.dataService.getFile(path);
     file.text = '';
     const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
     file.name = newName;
-    file.path = this.dataService.folder.path + '/' + newName;
+    file.path = Path.join(this.dataService.folder.path, newName);
+    file.isBinary = false;
+    return file;
+  }
+
+  addFile(): void {
+    const file: File = this.getFile('new_file', '.txt');
+    this.dataService.folder.push(file);
+    this.dataService.modify();
+  }
+
+  addGrid(): void {
+    const file: File = this.getFile('new_grid', '.grid');
     this.dataService.folder.push(file);
     this.dataService.modify();
   }
 
   addFolder(): void {
     const name: string = 'new_folder';
-    const folder: Folder = this.dataService.getFolder(this.dataService.folder.path + '/' + name);
+    const path: string = Path.join(this.dataService.folder.path, name);
+    const folder: Folder = this.dataService.getFolder(path);
     const newName: string = this.getService.getNewName(folder, this.dataService.folder.nodes);
     folder.name = newName;
-    folder.path = this.dataService.folder.path + '/' + newName;
+    folder.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(folder);
     this.dataService.modify();
   }
@@ -103,7 +116,7 @@ export class FileService {
     copiedNodes = copiedNodes.map(node => {
       const newName: string = newNameMap[node.id].name;
       const id: string = this.clipboardService.isCut ? node.id : undefined;
-      const newPath: string = this.dataService.folder.path + '/' + newName;
+      const newPath: string = Path.join(this.dataService.folder.path, newName);
       if (node instanceof Folder) {
         const folder: Folder = this.dataService.getFolder(newPath, id);
         folder.nodes = this.branchService.copyFolderNodes(node, newPath);
@@ -135,7 +148,7 @@ export class FileService {
 
   rename(node: Node, newName: string): void {
     node.name = newName;
-    node.path = this.dataService.folder.path + '/' + newName;
+    node.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.pathMap[node.path] = node.id;
     if (node instanceof Folder) {
       this.branchService.renameAllChildren(node);
@@ -149,7 +162,7 @@ export class FileService {
         files.map(file => {
           const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
           file.name = newName;
-          file.path = this.dataService.folder.path + '/' + newName;
+          file.path = Path.join(this.dataService.folder.path, newName);
           return file;
         });
         for (const node of files) {

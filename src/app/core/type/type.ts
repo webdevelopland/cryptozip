@@ -63,3 +63,21 @@ export interface Parse {
   length: number;
   nodes: string[];
 }
+
+export class Grid {
+  rows: GridRow[] = [];
+}
+
+export enum GridType {
+  Input = 'input',
+  Textarea = 'textarea',
+  Password = 'password',
+  Textblock = 'textblock',
+}
+
+export class GridRow {
+  label: string = '';
+  value: string = '';
+  type: GridType = GridType.Input;
+  visibility: string = 'password';
+}

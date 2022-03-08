@@ -104,6 +104,8 @@ export class MediaService {
       return 'text';
     } else if (this.isImage(filename)) {
       return 'image';
+    } else if (this.getExtension(filename) === 'grid') {
+      return 'grid';
     } else {
       return 'binary';
     }

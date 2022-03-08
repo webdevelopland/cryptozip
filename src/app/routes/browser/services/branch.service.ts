@@ -5,7 +5,7 @@ import {
   DataService, ZipService, MediaService, NotificationService, ProtoService
 } from '@/core/services';
 import { Node, Folder, File, Parse } from '@/core/type';
-import { parsePath } from '@/core/functions';
+import { parsePath, Path } from '@/core/functions';
 import { GetService } from './get.service';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class BranchService {
 
   // Updates paths and lengths of all nodes in the branch to match new tree.
   connectBranch(node: Node, parent: Folder): void {
-    node.path = parent.path + '/' + node.name;
+    node.path = Path.join(parent.path, node.name);
     if (node.isFolder) {
       const folder = node as Folder;
       folder.nodes.forEach(child => {
@@ -50,7 +50,7 @@ export class BranchService {
   copyFolderNodes(originFolder: Folder, path: string): Node[] {
     const children: Node[] = [];
     originFolder.nodes.forEach(node => {
-      const newPath: string = path + '/' + node.name;
+      const newPath: string = Path.join(path, node.name);
       if (node instanceof Folder) {
         const folder: Folder = this.dataService.getFolder(newPath);
         folder.nodes = this.copyFolderNodes(node, newPath);
@@ -71,7 +71,7 @@ export class BranchService {
 
   renameAllChildren(folder: Folder): void {
     folder.nodes.forEach(node => {
-      node.path = folder.path + '/' + node.name;
+      node.path = Path.join(folder.path, node.name);
       this.dataService.pathMap[node.path] = node.id;
       if (node instanceof Folder) {
         this.renameAllChildren(node);

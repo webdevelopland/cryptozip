@@ -1,3 +1,13 @@
 <div class="page">
-  <img [src]="base64">
+  <div class="control">
+    <div class="buttons">
+      <button (click)="close()">...</button>
+    </div>
+    <div class="path">
+      <input type="text" readonly="true" [value]="dataService.file.path">
+    </div>
+  </div>
+  <div class="image">
+    <img [src]="base64">
+  </div>
 </div>
