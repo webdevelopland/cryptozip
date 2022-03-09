@@ -56,6 +56,16 @@
             display: inline-block;
             width: calc(100% - 40px);
           }
+          .text {
+            background: $color-primary;
+            color: white;
+          }
+          .password {
+            color: $color-primary;
+            &:active {
+              color: white;
+            }
+          }
         }
         >.key {
           display: flex;

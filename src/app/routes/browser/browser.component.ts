@@ -41,6 +41,7 @@ export class BrowserComponent implements OnDestroy {
       if (!parent) {
         this.notificationService.crash(parentPath + ': parent not found');
       }
+      this.dataService.folder.isSelected = true;
       this.dataService.folder = parent;
     }
   }

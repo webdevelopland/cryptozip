@@ -24,11 +24,19 @@
 
         <div class="line key-line" *ngIf="row.type === 'password'">
           <div class="label" *ngIf="row.label">{{ row.label }}:</div>
+          <mat-icon
+            class="active-button"
+            [ngClass]="row.visibility"
+            (click)="togglePass(row)"
+          >visibility</mat-icon>
           <div
             class="value key active-button"
             (click)="copy(row.value)"
             *ngIf="row.value"
-          >********</div>
+          >
+            <ng-container *ngIf="row.visibility === 'password'">********</ng-container>
+            <ng-container *ngIf="row.visibility === 'text'">{{ row.value }}</ng-container>
+          </div>
         </div>
 
         <div class="line" *ngIf="row.type === 'textarea'">

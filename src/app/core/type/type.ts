@@ -94,3 +94,10 @@ export class GridRow {
   type: GridType = GridType.Input;
   visibility: string = 'password';
 }
+
+export interface NodeInfo {
+  size: number; // Amount of bytes
+  files: number; // Total amount of files
+  folders: number; // Total amount of folders
+  depth: number; // Amount of folder on longest branch
+}

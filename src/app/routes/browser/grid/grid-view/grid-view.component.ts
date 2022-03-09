@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Grid } from '@/core/type';
+import { Grid, GridRow } from '@/core/type';
 import { DataService, NotificationService } from '@/core/services';
 
 @Component({
@@ -20,8 +20,7 @@ export class GridViewComponent {
     if (this.dataService.file) {
       try {
         if (this.dataService.file.text) {
-          const jsonGrid = JSON.parse(this.dataService.file.text);
-          this.grid = jsonGrid;
+          this.loadJSON(JSON.parse(this.dataService.file.text));
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
@@ -29,6 +28,26 @@ export class GridViewComponent {
       }
     } else {
       this.close();
+    }
+  }
+
+  loadJSON(jsonGrid: any): void {
+    if (jsonGrid && jsonGrid.rows && jsonGrid.rows.length > 0) {
+      jsonGrid.rows.forEach(jsonRow => {
+        const row = new GridRow();
+        row.type = jsonRow.type;
+        row.label = jsonRow.label;
+        row.value = jsonRow.value;
+        this.grid.rows.push(row);
+      });
+    }
+  }
+
+  togglePass(row: GridRow): void {
+    if (row.visibility === 'text') {
+      row.visibility = 'password';
+    } else {
+      row.visibility = 'text';
     }
   }
 

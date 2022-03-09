@@ -1,8 +1,8 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
-      <button (click)="close()">...</button>
-      <button [routerLink]="['/browser/grid']">Preview</button>
+      <button (click)="tryClose()">...</button>
+      <button (click)="tryPreview()">Preview</button>
       <button (click)="add()">Add</button>
       <button (click)="save()">Save</button>
     </div>
@@ -43,25 +43,28 @@
               placeholder="Password"
               spellcheck="false"
             >
-            <mat-icon class="active-button" (click)="togglePass(row)">visibility</mat-icon>
+            <mat-icon
+              class="active-button"
+              [ngClass]="row.visibility"
+              (click)="togglePass(row)"
+            >visibility</mat-icon>
           </div>
           <div class="key">
             <mat-icon
               class="active-button"
               (click)="generateKey(row, length.value, dict.value)"
             >vpn_key</mat-icon>
-            <input type="number" value=12 #length>
+            <input type="number" value=16 #length>
             <select #dict>
               <option value="number">1234</option>
-              <option value="small_text">password</option>
-              <option value="small_text_number">password99</option>
-              <option value="mixed_text_number" selected>PassWord99</option>
-              <option value="mixed_text_number_64">Pass_Word-99</option>
-              <option value="mixed_text_number_special">P@s$_#ord_99!</option>
-              <option value="extra">P@s$_/#0^d_[99]!</option>
-              <option value="unicode">Pas©_Wo®d∞9</option>
-              <option value="emoji">Pass😎Word_99</option>
-              <option value="max">∞🧐W&[s™3@!</option>
+              <option value="text">password</option>
+              <option value="text_number">password99</option>
+              <option value="simple" selected>pAss99</option>
+              <option value="mixed_text_number">PassWord99</option>
+              <option value="string64">Pass_Word-99</option>
+              <option value="special">P@ss_Word-99</option>
+              <option value="unicode">P@ss_Wo®d-99</option>
+              <option value="emoji">P@ss😎Wo®d-99</option>
             </select>
           </div>
         </ng-container>

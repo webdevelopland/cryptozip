@@ -32,6 +32,7 @@ export class DialogService {
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
           case 'export': this.zipService.export(node, node.name); break;
+          case 'properties': this.fileService.showProperties(node); break;
         }
       });
   }
@@ -40,7 +41,7 @@ export class DialogService {
     this.branchService.unselectAll();
     node.isSelected = true;
     this.matDialog.open(RenameDialogComponent, {
-      data: { message: node.name }
+      data: node
     }).afterClosed().subscribe(newName => {
       if (newName) {
         this.fileService.rename(node, newName);
