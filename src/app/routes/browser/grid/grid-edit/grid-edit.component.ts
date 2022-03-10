@@ -26,6 +26,7 @@ export class GridEditComponent implements OnDestroy {
     private eventService: EventService,
     private matDialog: MatDialog,
   ) {
+    this.eventService.isEditing = true;
     if (this.dataService.file) {
       try {
         if (this.dataService.file.text) {
@@ -163,7 +164,7 @@ export class GridEditComponent implements OnDestroy {
     this.dataService.file.text = this.getJSON();
     this.dataService.file.update();
     this.dataService.modify();
-    this.notificationService.success('Saved');
+    this.notificationService.success('Grid saved');
   }
 
   keyboardEvents(): void {
@@ -208,6 +209,7 @@ export class GridEditComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.eventService.isEditing = false;
     this.keySub.unsubscribe();
   }
 }

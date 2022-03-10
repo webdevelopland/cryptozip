@@ -6,6 +6,7 @@ import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type
 import { parsePath } from '@/core/functions';
 import { META } from '@/environments/meta';
 import { LoadingService } from './loading.service';
+import { EventService } from './event.service';
 
 @Injectable()
 export class DataService {
@@ -22,6 +23,7 @@ export class DataService {
   constructor(
     private router: Router,
     private loadingService: LoadingService,
+    private eventService: EventService,
   ) { }
 
   setData(data: Data): void {
@@ -143,6 +145,8 @@ export class DataService {
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
+    this.eventService.isDialog = false;
+    this.eventService.isEditing = false;
     this.loadingService.loads = 0;
   }
 }
