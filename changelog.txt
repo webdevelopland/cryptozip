@@ -1,3 +1,8 @@
+10 Mar 2021
+Properies
+Confirmations
+GeneratePassword()
+
 8 Mar 2021
 Proto instead of zip structure
 PWA

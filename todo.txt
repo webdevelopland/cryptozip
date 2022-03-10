@@ -18,3 +18,7 @@ Then if archive is really big with many files, we don't need to wait forever to 
 - symbolic link or shortcut
 
 - index (To be able to sort by the index. To set order manually)
+
+- ability to open folders by path bar
+
+- close header menu by overlay click

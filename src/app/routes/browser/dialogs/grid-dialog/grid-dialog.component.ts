@@ -12,23 +12,23 @@ export class GridDialogComponent {
   ) { }
 
   addInput(): void {
-    this.dialogRef.close({ type: 'add-input' });
+    this.dialogRef.close('add-input');
   }
 
   addTextarea(): void {
-    this.dialogRef.close({ type: 'add-textarea' });
+    this.dialogRef.close('add-textarea');
   }
 
   addPassword(): void {
-    this.dialogRef.close({ type: 'add-pwd' });
+    this.dialogRef.close('add-pwd');
   }
 
   addTextblock(): void {
-    this.dialogRef.close({ type: 'add-textblock' });
+    this.dialogRef.close('add-textblock');
   }
 
   addHiddenblock(): void {
-    this.dialogRef.close({ type: 'add-hiddenblock' });
+    this.dialogRef.close('add-hiddenblock');
   }
 
   close(): void {

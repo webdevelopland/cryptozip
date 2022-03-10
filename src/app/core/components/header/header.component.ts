@@ -2,10 +2,13 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
+import { NodeInfo } from '@/core/type';
 import {
-  DataService, EventService, LoadingService, NotificationService, ClipboardService
+  DataService, EventService, LoadingService, NotificationService, ClipboardService, NodeService
 } from '@/core/services';
-import { PasswordDialogComponent, IdDialogComponent } from '@/shared/dialogs';
+import {
+  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent
+} from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 import { META } from '@/environments/meta';
 
@@ -23,15 +26,21 @@ export class HeaderComponent {
     public headerService: HeaderService,
     public loadingService: LoadingService,
     private eventService: EventService,
+    private nodeService: NodeService,
     public notificationService: NotificationService,
     private clipboardService: ClipboardService,
     private matDialog: MatDialog,
-  ) { }
+  ) {
+    this.keyboardEvents();
+  }
 
-  exit(): void {
-    this.headerService.isMenu = false;
-    this.dataService.destroy();
-    this.router.navigate(['/']);
+  keyboardEvents(): void {
+    this.eventService.keydown.subscribe(event => {
+      if (event.code === 'KeyS' && event.ctrlKey) {
+        event.preventDefault();
+        this.headerService.save();
+      }
+    });
   }
 
   print(): void {
@@ -42,10 +51,45 @@ export class HeaderComponent {
   clearClipboard(): void {
     this.clipboardService.clear();
     this.headerService.isMenu = false;
+    this.notificationService.success('Clipboard cleared');
   }
 
   toggleMenu(): void {
     this.headerService.isMenu = !this.headerService.isMenu;
+  }
+
+  exportZip(): void {
+    this.headerService.isMenu = false;
+    this.matDialog.open(ConfirmDialogComponent, {
+      data: { message: 'Export as zip?' },
+      autoFocus: false,
+    }).afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.headerService.export();
+      }
+    });
+  }
+
+  showProperties(): void {
+    this.headerService.isMenu = false;
+    const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.data.root);
+    this.nodeService.showProperties(
+      nodeInfo,
+      this.dataService.data.meta.createdTimestamp,
+      this.dataService.data.meta.updatedTimestamp,
+    );
+  }
+
+  delete(): void {
+    this.headerService.isMenu = false;
+    this.matDialog.open(ConfirmDialogComponent, {
+      data: { message: 'Delete from server cloud?' },
+      autoFocus: false,
+    }).afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.headerService.delete();
+      }
+    });
   }
 
   openPasswordDialog(): void {
@@ -72,5 +116,26 @@ export class HeaderComponent {
         this.headerService.update(oldId);
       }
     });
+  }
+
+  askToExit(): void {
+    this.headerService.isMenu = false;
+    if (this.dataService.isModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved progress. Close czip?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.exit();
+        }
+      });
+    } else {
+      this.exit();
+    }
+  }
+
+  exit(): void {
+    this.dataService.destroy();
+    this.router.navigate(['/']);
   }
 }

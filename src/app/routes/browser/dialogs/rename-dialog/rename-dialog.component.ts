@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 import { EventService, NotificationService, DataService } from '@/core/services';
-import { DialogData } from '@/core/type';
+import { Node } from '@/core/type';
 import { GetService } from '../../services/get.service';
 
 @Component({
@@ -17,14 +17,14 @@ export class RenameDialogComponent implements OnDestroy {
 
   constructor(
     private dialogRef: MatDialogRef<RenameDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
+    @Inject(MAT_DIALOG_DATA) public node: Node,
     private eventService: EventService,
     private notificationService: NotificationService,
     private getService: GetService,
     private dataService: DataService,
   ) {
     this.eventService.isDialog = true;
-    this.newName = dialogData.message;
+    this.newName = node.name;
     this.subscribeOnKeydown();
   }
 
@@ -66,7 +66,7 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   private checkNoChange(): void {
-    if (this.newName === this.dialogData.message) {
+    if (this.newName === this.node.name) {
       this.close();
     } else {
       this.checkAlreadyExists();
@@ -74,7 +74,8 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   private checkAlreadyExists(): void {
-    if (this.getService.checkNodeAlreadyExists(this.newName, this.dataService.folder.nodes)) {
+    const nodes: Node[] = this.dataService.folder.nodes.filter(node => node.id !== this.node.id);
+    if (this.getService.checkNodeAlreadyExists(this.newName, nodes)) {
       this.notificationService.warning('"' + this.newName + '" already exists');
     } else {
       this.rename();

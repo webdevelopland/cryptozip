@@ -6,14 +6,15 @@
   >.id {
     margin-bottom: 10px;
     >input {
-      width: 180px;
-      margin-right: 20px;
+      width: 190px;
+      box-sizing: border-box;
       border: 1px solid #ccc;
     }
   }
   button {
     padding: 4px;
-    width: 100px;
+    width: 90px;
     font-size: 14px;
+    margin-right: 10px;
   }
 }

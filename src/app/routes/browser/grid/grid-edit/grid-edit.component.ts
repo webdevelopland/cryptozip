@@ -2,11 +2,13 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { randCustomString, numerals, alphabet, Alphabet, dict64 } from 'rndmjs';
+import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 'rndmjs';
 
 import { Grid, GridType, GridRow } from '@/core/type';
 import { DataService, NotificationService, EventService } from '@/core/services';
+import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
+import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT } from './dict';
 
 @Component({
   selector: 'page-grid-edit',
@@ -42,7 +44,7 @@ export class GridEditComponent implements OnDestroy {
   add(): void {
     this.matDialog.open(GridDialogComponent, { panelClass: 'context-dialog' })
       .afterClosed().subscribe(res => {
-        switch (res.type) {
+        switch (res) {
           case 'add-input': this.addInput(); break;
           case 'add-textarea': this.addTextarea(); break;
           case 'add-pwd': this.addPassword(); break;
@@ -106,27 +108,23 @@ export class GridEditComponent implements OnDestroy {
     }
   }
 
-  generateKey(row: GridRow, length: string, dictLabel: string): void {
-    const special: string[] = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '=', '+'];
-    const extra: string[] = ['/', '\\', '[', ']', '.', ';', ':', '`', '"', "'", ',', '<', '>', '?'];
-    const unicode: string[] = ['©', '®', '™', '∞', '€', '♂', '♀', '⌘', '±'];
-    const emoji: string[] = ['😎', '🤓', '🧐', '😛', '🙂', '💩', ' 😭'];
-    let dict: string[];
+  generateKey(row: GridRow, lengthInput: string, dictLabel: string): void {
+    const length: number = parseInt(lengthInput);
+    let dicts: string[][];
     switch (dictLabel) {
-      case 'number': dict = numerals; break;
-      case 'small_text': dict = alphabet; break;
-      case 'small_text_number': dict = alphabet.concat(numerals); break;
-      case 'mixed_text_number': dict = Alphabet.concat(alphabet, numerals); break;
-      case 'mixed_text_number_64': dict = dict64; break;
-      case 'mixed_text_number_special': dict = dict64.concat(special); break;
-      case 'extra': dict = dict64.concat(special, extra); break;
-      case 'unicode': dict = dict64.concat(unicode); break;
-      case 'emoji': dict = dict64.concat(emoji); break;
-      case 'max': dict = dict64.concat(special, extra, unicode, emoji); break;
+      case 'number': dicts = [numerals]; break;
+      case 'text': dicts = [alphabet]; break;
+      case 'text_number': dicts = [numerals, alphabet]; break;
+      case 'simple': dicts = [SIMPLE_INT, SIMPLE_SMALL, SIMPLE_BIG]; break;
+      case 'mixed_text_number': dicts = [numerals, alphabet, Alphabet]; break;
+      case 'string64': dicts = [numerals, alphabet, Alphabet, ['-', '_']]; break;
+      case 'special': dicts = [numerals, alphabet, Alphabet, special]; break;
+      case 'unicode': dicts = [numerals, alphabet, Alphabet, special, UNICODE]; break;
+      case 'emoji': dicts = [numerals, alphabet, Alphabet, special, UNICODE, EMOJI]; break;
 
-      default: dict = dict64;
+      default: dicts = [dict64];
     }
-    row.value = randCustomString(dict, parseInt(length));
+    row.value = generatePassword(length, ...dicts);
   }
 
   togglePass(row: GridRow): void {
@@ -149,7 +147,7 @@ export class GridEditComponent implements OnDestroy {
     }
   }
 
-  saveJSON(): void {
+  getJSON(): string {
     const jsonGrid = { rows: [] };
     jsonGrid.rows = this.grid.rows.map(row => {
       return {
@@ -158,11 +156,11 @@ export class GridEditComponent implements OnDestroy {
         value: row.value,
       };
     });
-    this.dataService.file.text = JSON.stringify(jsonGrid);
+    return JSON.stringify(jsonGrid);
   }
 
   save(): void {
-    this.saveJSON();
+    this.dataService.file.text = this.getJSON();
     this.dataService.file.update();
     this.dataService.modify();
     this.notificationService.success('Saved');
@@ -176,6 +174,34 @@ export class GridEditComponent implements OnDestroy {
       }
     });
   }
+
+  tryClose(): void {
+    this.checkSave(() => this.close());
+  }
+
+  tryPreview(): void {
+    this.checkSave(() => this.preview());
+  }
+
+  checkSave(callback: Function): void {
+    if (this.dataService.file.text === this.getJSON()) {
+      callback();
+    } else {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved progress. Close?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          callback();
+        }
+      });
+    }
+  }
+
+  preview(): void {
+    this.router.navigate(['/browser/grid']);
+  }
+
   close(): void {
     this.dataService.file = undefined;
     this.router.navigate(['/browser']);
