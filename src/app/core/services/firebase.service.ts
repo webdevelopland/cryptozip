@@ -66,7 +66,7 @@ export class FirebaseService {
     this.storage.upload(newId, this.zipService.pack()).snapshotChanges().subscribe(res => {
       if (res.state === 'success') {
         this.storage.ref(oldId).delete().subscribe(() => {
-          this.notificationService.success('Saved');
+          this.notificationService.success('id updated');
           this.loadingService.loads--;
         }, () => {
           this.notificationService.warning('Unable to remove old version');

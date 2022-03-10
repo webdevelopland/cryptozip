@@ -22,6 +22,7 @@ export class TextComponent implements OnDestroy {
     private eventService: EventService,
     private matDialog: MatDialog,
   ) {
+    this.eventService.isEditing = true;
     if (this.dataService.file) {
       this.content = this.dataService.file.text;
     } else {
@@ -34,7 +35,7 @@ export class TextComponent implements OnDestroy {
     this.dataService.file.text = this.content;
     this.dataService.file.update();
     this.dataService.modify();
-    this.notificationService.success('Saved');
+    this.notificationService.success('File saved');
   }
 
   checkSave(): void {
@@ -67,6 +68,7 @@ export class TextComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.dataService.file = undefined;
+    this.eventService.isEditing = false;
     this.keySub.unsubscribe();
   }
 }

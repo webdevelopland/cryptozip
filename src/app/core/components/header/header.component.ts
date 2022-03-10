@@ -36,7 +36,7 @@ export class HeaderComponent {
 
   keyboardEvents(): void {
     this.eventService.keydown.subscribe(event => {
-      if (event.code === 'KeyS' && event.ctrlKey) {
+      if (event.code === 'KeyS' && event.ctrlKey && !this.eventService.isEditing) {
         event.preventDefault();
         this.headerService.save();
       }
@@ -98,7 +98,7 @@ export class HeaderComponent {
       if (newPass) {
         this.dataService.password = newPass;
         this.dataService.modify();
-        this.notificationService.success('Saved');
+        this.notificationService.success('Password updated');
       }
     });
   }

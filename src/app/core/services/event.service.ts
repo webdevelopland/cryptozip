@@ -7,6 +7,7 @@ import { isApple } from '@/core/functions';
 export class EventService {
   isApple: boolean;
   isDialog: boolean = false;
+  isEditing: boolean = false;
   keydown = new Subject<KeyboardEvent>();
   mouseup = new Subject<MouseEvent>();
 
