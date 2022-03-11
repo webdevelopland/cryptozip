@@ -26,7 +26,7 @@
     >.loading {
       margin-left: 10px;
     }
-    >.manu {
+    >.menu-button {
       position: absolute;
       right: 18px;
       top: 0;
@@ -48,6 +48,7 @@
     width: 200px;
     background: white;
     z-index: 10;
+    user-select: none;
     >.option {
       padding: 8px 15px;
       white-space: nowrap;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -12,6 +12,13 @@ import {
 import { HeaderService } from './header.service';
 import { META } from '@/environments/meta';
 
+interface Overlay {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -19,6 +26,8 @@ import { META } from '@/environments/meta';
 })
 export class HeaderComponent {
   version: string = META.version;
+  overlay: Overlay;
+  @ViewChild('menu') menuRef: ElementRef<HTMLDivElement>;
 
   constructor(
     private router: Router,
@@ -31,14 +40,26 @@ export class HeaderComponent {
     private clipboardService: ClipboardService,
     private matDialog: MatDialog,
   ) {
-    this.keyboardEvents();
+    this.events();
   }
 
-  keyboardEvents(): void {
+  events(): void {
     this.eventService.keydown.subscribe(event => {
       if (event.code === 'KeyS' && event.ctrlKey && !this.eventService.isEditing) {
         event.preventDefault();
         this.headerService.save();
+      }
+    });
+    this.eventService.mouseup.subscribe(event => {
+      if (this.overlay) {
+        if (
+          event.pageX < this.overlay.x || event.pageX > this.overlay.x + this.overlay.width ||
+          event.pageY < this.overlay.y || event.pageY > this.overlay.y + this.overlay.height
+        ) {
+          this.headerService.isMenu = false;
+        }
+      } else {
+        this.headerService.isMenu = false;
       }
     });
   }
@@ -56,6 +77,22 @@ export class HeaderComponent {
 
   toggleMenu(): void {
     this.headerService.isMenu = !this.headerService.isMenu;
+    if (this.headerService.isMenu) {
+      setTimeout(() => {
+        this.setMenuOverlay();
+      }, 0);
+    }
+  }
+
+  setMenuOverlay(): void {
+    if (this.menuRef.nativeElement) {
+      this.overlay = {
+        x: this.menuRef.nativeElement.offsetLeft,
+        y: this.menuRef.nativeElement.offsetTop,
+        width: this.menuRef.nativeElement.offsetWidth,
+        height: this.menuRef.nativeElement.offsetHeight,
+      };
+    }
   }
 
   exportZip(): void {

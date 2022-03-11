@@ -10,12 +10,12 @@
   <div class="loading" *ngIf="loadingService.loads > 0">
     <mat-spinner [diameter]="25"></mat-spinner>
   </div>
-  <div class="manu" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
+  <div class="menu-button" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
     <mat-icon *ngIf="!headerService.isMenu">menu</mat-icon>
     <mat-icon *ngIf="headerService.isMenu">menu_open</mat-icon>
   </div>
 </header>
-<div class="popup-menu" *ngIf="headerService.isMenu">
+<div class="popup-menu" *ngIf="headerService.isMenu" #menu>
   <div class="option" (click)="clearClipboard()">Clear Clipboard</div>
   <div class="option" (click)="openIdDialog()">Change id</div>
   <div class="option" (click)="openPasswordDialog()">Change Password</div>
