@@ -3,3 +3,4 @@ export * from './browser.module';
 export * from './text';
 export * from './image';
 export * from './grid';
+export * from './search';

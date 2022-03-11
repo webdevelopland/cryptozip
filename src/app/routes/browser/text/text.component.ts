@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 import { DataService, NotificationService, EventService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
@@ -53,10 +53,6 @@ export class TextComponent implements OnDestroy {
     }
   }
 
-  close(): void {
-    this.router.navigate(['/browser']);
-  }
-
   keyboardEvents(): void {
     this.keySub = this.eventService.keydown.subscribe(event => {
       if (event.code === 'KeyS' && event.ctrlKey) {
@@ -64,6 +60,10 @@ export class TextComponent implements OnDestroy {
         this.save();
       }
     });
+  }
+
+  close(): void {
+    this.router.navigate(['/browser']);
   }
 
   ngOnDestroy() {

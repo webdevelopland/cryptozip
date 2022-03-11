@@ -7,6 +7,7 @@ import { parsePath } from '@/core/functions';
 import { META } from '@/environments/meta';
 import { LoadingService } from './loading.service';
 import { EventService } from './event.service';
+import { SearchService } from './search.service';
 
 @Injectable()
 export class DataService {
@@ -24,6 +25,7 @@ export class DataService {
     private router: Router,
     private loadingService: LoadingService,
     private eventService: EventService,
+    private searchService: SearchService,
   ) { }
 
   setData(data: Data): void {
@@ -140,13 +142,13 @@ export class DataService {
   }
 
   destroy(): void {
+    this.searchService.destroy();
+    this.eventService.destroy();
     this.isDecrypted = false;
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
-    this.eventService.isDialog = false;
-    this.eventService.isEditing = false;
     this.loadingService.loads = 0;
   }
 }

@@ -1,9 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Folder, Node } from '@/core/type';
+import { Folder } from '@/core/type';
 import {
-  DataService, NotificationService, EventService, ClipboardService, MediaService
+  DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
 } from '@/core/services';
 import { parsePath } from '@/core/functions';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
@@ -17,11 +18,13 @@ export class BrowserComponent implements OnDestroy {
   subs: Subscription[] = [];
 
   constructor(
+    public router: Router,
     public dataService: DataService,
     private notificationService: NotificationService,
     private eventService: EventService,
     public clipboardService: ClipboardService,
     public mediaService: MediaService,
+    private searchService: SearchService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -53,16 +56,19 @@ export class BrowserComponent implements OnDestroy {
         return;
       }
       if (event.code === 'KeyX' && event.ctrlKey) {
-        event.preventDefault();
         this.fileService.cut();
       }
       if (event.code === 'KeyC' && event.ctrlKey) {
-        event.preventDefault();
         this.fileService.copy();
       }
       if (event.code === 'KeyV' && event.ctrlKey) {
         event.preventDefault();
         this.fileService.paste();
+      }
+      if (event.code === 'KeyF' && event.ctrlKey) {
+        event.preventDefault();
+        this.searchService.destroy();
+        this.router.navigate(['/browser/search']);
       }
       if (event.code === 'Delete') {
         event.preventDefault();
@@ -80,19 +86,16 @@ export class BrowserComponent implements OnDestroy {
         event.preventDefault();
         this.fileService.addGrid();
       }
-    }));
-  }
-
-  getIcon(node: Node): string {
-    if (node.isFolder) {
-      return 'folder';
-    } else {
-      switch (this.mediaService.getMediaType(node.name)) {
-        case 'text': return 'insert_drive_file';
-        case 'grid': return 'grid_view';
-        default: return 'category';
+      if (event.code === 'F2') {
+        event.preventDefault();
+        for (const node of this.dataService.folder.nodes) {
+          if (node.isSelected) {
+            this.dialogService.openRenameDialog(node);
+            break;
+          }
+        }
       }
-    }
+    }));
   }
 
   sub(sub: Subscription): void {

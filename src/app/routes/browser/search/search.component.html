@@ -1,0 +1,31 @@
+<div class="page">
+  <div class="controls">
+    <div class="buttons">
+      <button (click)="close()">...</button>
+      <button (click)="search()">Search</button>
+    </div>
+    <div class="path">
+      <input type="text" readonly="true" placeholder="Where" [(ngModel)]="searchService.where">
+    </div>
+    <div class="path">
+      <input type="text" placeholder="What" [(ngModel)]="searchService.what" focus=true>
+    </div>
+    <div class="path">
+      <input type="text" placeholder="Tags" [(ngModel)]="searchService.tagString">
+    </div>
+  </div>
+  <div class="explorer">
+    <div
+      class="node"
+      *ngFor="let searchResult of searchService.searchResults"
+      (click)="open(searchResult)"
+    >
+      <div class="icon">
+        <mat-icon>{{ searchResult.icon }}</mat-icon>
+      </div>
+      <div class="name">
+        <span class="ellipsis">{{ searchResult.node.path }}</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { Node } from '@/core/type';
+
 @Injectable()
 export class MediaService {
   getExtension(filename: string): string {
@@ -108,6 +110,18 @@ export class MediaService {
       return 'grid';
     } else {
       return 'binary';
+    }
+  }
+
+  getIcon(node: Node): string {
+    if (node.isFolder) {
+      return 'folder';
+    } else {
+      switch (this.getMediaType(node.name)) {
+        case 'text': return 'insert_drive_file';
+        case 'grid': return 'grid_view';
+        default: return 'category';
+      }
     }
   }
 }

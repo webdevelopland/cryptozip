@@ -69,6 +69,11 @@ export class HeaderComponent {
     this.headerService.isMenu = false;
   }
 
+  search(): void {
+    this.headerService.isMenu = false;
+    this.router.navigate(['/browser/search']);
+  }
+
   clearClipboard(): void {
     this.clipboardService.clear();
     this.headerService.isMenu = false;

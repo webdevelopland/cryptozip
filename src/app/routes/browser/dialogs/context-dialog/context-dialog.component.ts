@@ -31,6 +31,10 @@ export class ContextDialogComponent {
     this.dialogRef.close('export');
   }
 
+  tags(): void {
+    this.dialogRef.close('tags');
+  }
+
   properties(): void {
     this.dialogRef.close('properties');
   }

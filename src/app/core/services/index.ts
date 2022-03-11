@@ -12,3 +12,4 @@ export * from './proto.service';
 export * from './timer.service';
 export * from './loading.service';
 export * from './node.service';
+export * from './search.service';

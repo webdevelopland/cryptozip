@@ -25,7 +25,7 @@
       [ngClass]="{ selected: node.isSelected }"
     >
       <div class="icon">
-        <mat-icon>{{ getIcon(node) }}</mat-icon>
+        <mat-icon>{{ mediaService.getIcon(node) }}</mat-icon>
       </div>
       <div class="name">
         <span class="ellipsis">{{ node.name }}</span>

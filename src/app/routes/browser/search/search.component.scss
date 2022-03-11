@@ -1,0 +1,12 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  >.controls {
+    >.path {
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
