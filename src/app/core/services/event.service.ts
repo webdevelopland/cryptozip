@@ -22,4 +22,9 @@ export class EventService {
       }
     });
   }
+
+  destroy(): void {
+    this.isDialog = false;
+    this.isEditing = false;
+  }
 }

@@ -4,7 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
-import { ContextDialogComponent, RenameDialogComponent, AddDialogComponent } from '../dialogs';
+import {
+  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, TagDialogComponent
+} from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
 
@@ -32,6 +34,7 @@ export class DialogService {
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
           case 'export': this.zipService.export(node, node.name); break;
+          case 'tags': this.openTagsDialog(node); break;
           case 'properties': this.fileService.showProperties(node); break;
         }
       });
@@ -57,6 +60,14 @@ export class DialogService {
       if (res) {
         this.fileService.delete();
       }
+    });
+  }
+
+  openTagsDialog(node: Node): void {
+    this.branchService.unselectAll();
+    node.isSelected = true;
+    this.matDialog.open(TagDialogComponent, {
+      data: node
     });
   }
 

@@ -8,6 +8,7 @@ export class Node {
   isFolder: boolean = false;
   createdTimestamp: number;
   updatedTimestamp: number;
+  tags: string[] = [];
 
   constructor() {
     const now = Date.now();
@@ -100,4 +101,16 @@ export interface NodeInfo {
   files: number; // Total amount of files
   folders: number; // Total amount of folders
   depth: number; // Amount of folder on longest branch
+}
+
+export class SearchResult {
+  node: Node;
+  icon: string;
+  rank: number = 0;
+  isName: boolean = false;
+  isContent: boolean = false;
+
+  constructor(node: Node) {
+    this.node = node;
+  }
 }

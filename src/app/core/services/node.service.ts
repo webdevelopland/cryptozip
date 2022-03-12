@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Node, File, Folder, NodeInfo } from '@/core/type';
 import { round, timestampToDate } from '@/core/functions';
-import { NotificationService } from '@/core/services';
+import { NotificationService } from './notification.service';
 
 @Injectable()
 export class NodeService {

@@ -5,8 +5,13 @@ import { BrowserComponent } from './browser.component';
 import { TextComponent } from './text';
 import { ImageComponent } from './image';
 import { GridViewComponent, GridEditComponent } from './grid';
+import { SearchComponent } from './search';
 import {
-  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, GridDialogComponent
+  ContextDialogComponent,
+  RenameDialogComponent,
+  AddDialogComponent,
+  GridDialogComponent,
+  TagDialogComponent,
 } from './dialogs';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
@@ -20,9 +25,11 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
     RenameDialogComponent,
     AddDialogComponent,
     GridDialogComponent,
+    TagDialogComponent,
     TextComponent,
     ImageComponent,
     GridViewComponent, GridEditComponent,
+    SearchComponent,
   ],
   providers: [MouseService, FileService, GetService, DialogService, BranchService],
 })

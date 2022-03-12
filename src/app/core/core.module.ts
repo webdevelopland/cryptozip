@@ -15,6 +15,7 @@ import {
   TimerService,
   LoadingService,
   NodeService,
+  SearchService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -40,6 +41,7 @@ import { HeaderModule } from './components/header';
     TimerService,
     LoadingService,
     NodeService,
+    SearchService,
   ],
 })
 export class CoreModule { }
