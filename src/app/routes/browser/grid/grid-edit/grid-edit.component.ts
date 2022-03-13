@@ -162,8 +162,7 @@ export class GridEditComponent implements OnDestroy {
 
   save(): void {
     this.dataService.file.text = this.getJSON();
-    this.dataService.file.update();
-    this.dataService.modify();
+    this.dataService.updateNode(this.dataService.file);
     this.notificationService.success('Grid saved');
   }
 
@@ -204,7 +203,6 @@ export class GridEditComponent implements OnDestroy {
   }
 
   close(): void {
-    this.dataService.file = undefined;
     this.router.navigate(['/browser']);
   }
 

@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 
 import { File, Folder, SearchResult } from '@/core/type';
 import { DataService, SearchService, MediaService, EventService } from '@/core/services';
-import { parsePath } from '@/core/functions';
 
 @Component({
   selector: 'page-search',
@@ -21,11 +20,7 @@ export class SearchComponent implements OnDestroy {
     private mediaService: MediaService,
     private eventService: EventService,
   ) {
-    if (!this.searchService.isStarted) {
-      this.searchService.folder = this.dataService.folder;
-      this.searchService.where = this.dataService.folder.path;
-      this.searchService.isStarted = true;
-    }
+    this.dataService.folder = this.searchService.folder;
     this.keyboardEvents();
   }
 
@@ -45,7 +40,7 @@ export class SearchComponent implements OnDestroy {
 
   open(searchResult: SearchResult): void {
     if (searchResult.node instanceof Folder) {
-      this.dataService.folder = this.searchService.folder;
+      this.dataService.folder = searchResult.node;
       this.router.navigate(['/browser']);
     } else {
       this.openFile(searchResult.node as File);
@@ -54,7 +49,7 @@ export class SearchComponent implements OnDestroy {
 
   openFile(file: File): void {
     this.dataService.file = file;
-    this.back(file);
+    this.setParentFolder(file);
     switch (this.mediaService.getMediaType(file.name)) {
       case 'text': this.router.navigate(['/browser/text']); break;
       case 'image': this.router.navigate(['/browser/image']); break;
@@ -62,11 +57,18 @@ export class SearchComponent implements OnDestroy {
     }
   }
 
-  private back(file: File): void {
-    const parentPath: string = parsePath(file.path).parent;
-    const parentId: string = this.dataService.pathMap[parentPath];
-    const parent = this.dataService.nodeMap[parentId] as Folder;
-    this.dataService.folder = parent;
+  private setParentFolder(file: File): void {
+    const parent: Folder = this.dataService.getParent(file);
+    if (parent) {
+      this.dataService.folder = parent;
+    }
+  }
+
+  clear(): void {
+    this.searchService.what = '';
+    this.searchService.tagString = '';
+    this.searchService.tags = [];
+    this.searchService.searchResults = [];
   }
 
   close(): void {

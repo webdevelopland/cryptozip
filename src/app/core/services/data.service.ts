@@ -5,9 +5,6 @@ import { randCustomString, numerals } from 'rndmjs';
 import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
 import { parsePath } from '@/core/functions';
 import { META } from '@/environments/meta';
-import { LoadingService } from './loading.service';
-import { EventService } from './event.service';
-import { SearchService } from './search.service';
 
 @Injectable()
 export class DataService {
@@ -23,9 +20,6 @@ export class DataService {
 
   constructor(
     private router: Router,
-    private loadingService: LoadingService,
-    private eventService: EventService,
-    private searchService: SearchService,
   ) { }
 
   setData(data: Data): void {
@@ -52,6 +46,31 @@ export class DataService {
       this.data.meta.updatedTimestamp = now;
       this.data.root.updatedTimestamp = now;
       this.isModified = false;
+    }
+  }
+
+  updateNode(node: Node): void {
+    node.update();
+    const now: number = Date.now();
+    for (let i = 0; i < 100; i++) {
+      const parent: Folder = this.getParent(node);
+      if (!parent || parent.path === '/') {
+        break;
+      }
+      parent.updatedTimestamp = now;
+      node = parent;
+    }
+    this.modify();
+  }
+
+  getParent(node: Node): Folder {
+    const parentPath: string = parsePath(node.path).parent;
+    const parentId: string = this.pathMap[parentPath];
+    const parent = this.nodeMap[parentId] as Folder;
+    if (parent) {
+      return parent;
+    } else {
+      console.error('Parent folder not found');
     }
   }
 
@@ -142,13 +161,10 @@ export class DataService {
   }
 
   destroy(): void {
-    this.searchService.destroy();
-    this.eventService.destroy();
     this.isDecrypted = false;
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
-    this.loadingService.loads = 0;
   }
 }

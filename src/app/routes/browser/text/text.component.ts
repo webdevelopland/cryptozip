@@ -33,8 +33,7 @@ export class TextComponent implements OnDestroy {
 
   save(): void {
     this.dataService.file.text = this.content;
-    this.dataService.file.update();
-    this.dataService.modify();
+    this.dataService.updateNode(this.dataService.file);
     this.notificationService.success('File saved');
   }
 
@@ -67,7 +66,6 @@ export class TextComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.dataService.file = undefined;
     this.eventService.isEditing = false;
     this.keySub.unsubscribe();
   }

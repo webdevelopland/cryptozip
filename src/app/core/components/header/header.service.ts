@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { DataService, ZipService, FirebaseService, LoadingService } from '@/core/services';
+import {
+  DataService, ZipService, FirebaseService, LoadingService, SearchService
+} from '@/core/services';
 
 @Injectable()
 export class HeaderService {
@@ -11,7 +13,16 @@ export class HeaderService {
     private zipService: ZipService,
     private firebaseService: FirebaseService,
     private loadingService: LoadingService,
+    private searchService: SearchService,
   ) { }
+
+  search(): void {
+    this.searchService.folder = this.dataService.folder;
+    this.searchService.where = this.dataService.folder.path;
+    this.searchService.what = '';
+    this.searchService.tagString = '';
+    this.searchService.tags = [];
+  }
 
   download(): void {
     this.isMenu = false;
