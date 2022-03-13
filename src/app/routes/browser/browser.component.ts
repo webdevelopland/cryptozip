@@ -6,7 +6,7 @@ import { Folder } from '@/core/type';
 import {
   DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
 } from '@/core/services';
-import { parsePath } from '@/core/functions';
+import { HeaderService } from '@/core/components/header';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
 @Component({
@@ -25,6 +25,7 @@ export class BrowserComponent implements OnDestroy {
     public clipboardService: ClipboardService,
     public mediaService: MediaService,
     private searchService: SearchService,
+    private headerService: HeaderService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -36,14 +37,9 @@ export class BrowserComponent implements OnDestroy {
   }
 
   back(): void {
-    const parentPath: string = parsePath(this.dataService.folder.path).parent;
-    if (this.dataService.folder.path !== '/') {
-      const parentId: string = this.dataService.pathMap[parentPath];
-      const parent = this.dataService.nodeMap[parentId] as Folder;
+    const parent: Folder = this.dataService.getParent(this.dataService.folder);
+    if (parent && this.dataService.folder.path !== '/') {
       this.branchService.unselectAll();
-      if (!parent) {
-        this.notificationService.crash(parentPath + ': parent not found');
-      }
       this.dataService.folder.isSelected = true;
       this.dataService.folder = parent;
     }
@@ -67,7 +63,7 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'KeyF' && event.ctrlKey) {
         event.preventDefault();
-        this.searchService.destroy();
+        this.headerService.search();
         this.router.navigate(['/browser/search']);
       }
       if (event.code === 'Delete') {
@@ -76,7 +72,7 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'Equal' && event.ctrlKey) {
         event.preventDefault();
-        this.fileService.addFile();
+        this.fileService.addTxtFile();
       }
       if (event.code === 'Minus' && event.ctrlKey) {
         event.preventDefault();

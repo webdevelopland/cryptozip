@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DataService, MediaService } from '@/core/services';
@@ -8,7 +8,7 @@ import { DataService, MediaService } from '@/core/services';
   templateUrl: './image.component.html',
   styleUrls: ['./image.component.scss'],
 })
-export class ImageComponent implements OnDestroy {
+export class ImageComponent {
   base64: string;
 
   constructor(
@@ -37,9 +37,5 @@ export class ImageComponent implements OnDestroy {
 
   close(): void {
     this.router.navigate(['/browser']);
-  }
-
-  ngOnDestroy() {
-    this.dataService.file = undefined;
   }
 }

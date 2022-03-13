@@ -49,4 +49,10 @@ export class NotificationService {
       data: { message: message },
     });
   }
+
+  destroy(): void {
+    this.timerSub.unsubscribe();
+    this.message = undefined;
+    this.color = undefined;
+  }
 }

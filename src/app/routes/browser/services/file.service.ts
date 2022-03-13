@@ -23,7 +23,7 @@ export class FileService {
     private nodeService: NodeService,
   ) { }
 
-  private getFile(name: string, ext: string): File {
+  private addFile(name: string, ext: string): void {
     const path: string = Path.join(this.dataService.folder.path, name) + ext;
     const file: File = this.dataService.getFile(path);
     file.text = '';
@@ -31,23 +31,18 @@ export class FileService {
     file.name = newName;
     file.path = Path.join(this.dataService.folder.path, newName);
     file.isBinary = false;
-    return file;
-  }
-
-  addFile(): void {
-    const file: File = this.getFile('new_file', '.txt');
     this.dataService.folder.push(file);
-    this.dataService.modify();
+    this.dataService.updateNode(file);
     this.branchService.unselectAll();
     file.isSelected = true;
+  }
+
+  addTxtFile(): void {
+    this.addFile('new_file', '.txt');
   }
 
   addGrid(): void {
-    const file: File = this.getFile('new_grid', '.grid');
-    this.dataService.folder.push(file);
-    this.dataService.modify();
-    this.branchService.unselectAll();
-    file.isSelected = true;
+    this.addFile('new_grid', '.grid');
   }
 
   addFolder(): void {
@@ -58,7 +53,7 @@ export class FileService {
     folder.name = newName;
     folder.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(folder);
-    this.dataService.modify();
+    this.dataService.updateNode(folder);
     this.branchService.unselectAll();
     folder.isSelected = true;
   }
@@ -68,7 +63,7 @@ export class FileService {
       const index: number = this.dataService.folder.nodes.indexOf(node);
       this.dataService.folder.nodes.splice(index, 1);
     });
-    this.dataService.modify();
+    this.dataService.updateNode(this.dataService.folder);
   }
 
   copy(): void {
@@ -153,7 +148,7 @@ export class FileService {
       });
       this.clipboardService.clearNodeCopyPaste();
     }
-    this.dataService.modify();
+    this.dataService.updateNode(this.dataService.folder);
   }
 
   rename(node: Node, newName: string): void {
@@ -163,8 +158,7 @@ export class FileService {
     if (node instanceof Folder) {
       this.branchService.renameAllChildren(node);
     }
-    node.update();
-    this.dataService.modify();
+    this.dataService.updateNode(node);
   }
 
   importFiles(fileList: FileList): void {
@@ -179,7 +173,7 @@ export class FileService {
         for (const node of files) {
           this.dataService.folder.push(node);
         }
-        this.dataService.modify();
+        this.dataService.updateNode(this.dataService.folder);
       }
     }));
   }
@@ -196,7 +190,7 @@ export class FileService {
       nodeList.push(...folderList);
       this.branchService.connectNodeList(this.dataService.folder, nodeList);
       this.dataService.folder.push(nodeList[0]);
-      this.dataService.modify();
+      this.dataService.updateNode(this.dataService.folder);
     }));
   }
 

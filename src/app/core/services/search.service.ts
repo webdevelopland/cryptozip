@@ -5,7 +5,6 @@ import { MediaService } from './media.service';
 
 @Injectable()
 export class SearchService {
-  isStarted: boolean = false;
   where: string;
   what: string = '';
   tagString: string = '';
@@ -128,7 +127,6 @@ export class SearchService {
   }
 
   destroy(): void {
-    this.isStarted = false;
     this.folder = undefined;
     this.where = undefined;
     this.what = '';

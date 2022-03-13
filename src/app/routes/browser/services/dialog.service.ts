@@ -68,6 +68,8 @@ export class DialogService {
     node.isSelected = true;
     this.matDialog.open(TagDialogComponent, {
       data: node
+    }).afterClosed().subscribe(() => {
+      this.dataService.updateNode(node);
     });
   }
 
@@ -76,7 +78,7 @@ export class DialogService {
       .afterClosed().subscribe(res => {
         if (res) {
           switch (res.type) {
-            case 'add-file': this.fileService.addFile(); break;
+            case 'add-file': this.fileService.addTxtFile(); break;
             case 'add-folder': this.fileService.addFolder(); break;
             case 'add-grid': this.fileService.addGrid(); break;
             case 'import-file': this.fileService.importFiles(res.list); break;

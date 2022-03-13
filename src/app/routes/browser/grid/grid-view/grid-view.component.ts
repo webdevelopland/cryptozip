@@ -57,7 +57,6 @@ export class GridViewComponent {
   }
 
   close(): void {
-    this.dataService.file = undefined;
     this.router.navigate(['/browser']);
   }
 }

@@ -4,7 +4,13 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { NodeInfo } from '@/core/type';
 import {
-  DataService, EventService, LoadingService, NotificationService, ClipboardService, NodeService
+  DataService,
+  EventService,
+  LoadingService,
+  NotificationService,
+  ClipboardService,
+  NodeService,
+  SearchService,
 } from '@/core/services';
 import {
   PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent
@@ -38,6 +44,7 @@ export class HeaderComponent {
     private nodeService: NodeService,
     public notificationService: NotificationService,
     private clipboardService: ClipboardService,
+    private searchService: SearchService,
     private matDialog: MatDialog,
   ) {
     this.events();
@@ -71,6 +78,7 @@ export class HeaderComponent {
 
   search(): void {
     this.headerService.isMenu = false;
+    this.headerService.search();
     this.router.navigate(['/browser/search']);
   }
 
@@ -177,7 +185,13 @@ export class HeaderComponent {
   }
 
   exit(): void {
+    this.headerService.isMenu = false;
     this.dataService.destroy();
+    this.clipboardService.destroy();
+    this.eventService.destroy();
+    this.searchService.destroy();
+    this.loadingService.destroy();
+    this.notificationService.destroy();
     this.router.navigate(['/']);
   }
 }
