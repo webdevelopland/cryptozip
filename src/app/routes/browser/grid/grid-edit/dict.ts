@@ -156,3 +156,14 @@ export const SIMPLE_INT: string[] = [
   '8',
   '9',
 ];
+
+export const SHIFT_SPECIAL: string[] = [
+  '!',
+  '@',
+  '#',
+  '$',
+  '%',
+  '^',
+  '&',
+  '*',
+];
