@@ -8,7 +8,7 @@ import { Grid, GridType, GridRow } from '@/core/type';
 import { DataService, NotificationService, EventService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
-import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT } from './dict';
+import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from './dict';
 
 @Component({
   selector: 'page-grid-edit',
@@ -119,6 +119,7 @@ export class GridEditComponent implements OnDestroy {
       case 'simple': dicts = [SIMPLE_INT, SIMPLE_SMALL, SIMPLE_BIG]; break;
       case 'mixed_text_number': dicts = [numerals, alphabet, Alphabet]; break;
       case 'string64': dicts = [numerals, alphabet, Alphabet, ['-', '_']]; break;
+      case 'hard': dicts = [numerals, alphabet, Alphabet, SHIFT_SPECIAL]; break;
       case 'special': dicts = [numerals, alphabet, Alphabet, special]; break;
       case 'unicode': dicts = [numerals, alphabet, Alphabet, special, UNICODE]; break;
       case 'emoji': dicts = [numerals, alphabet, Alphabet, special, UNICODE, EMOJI]; break;

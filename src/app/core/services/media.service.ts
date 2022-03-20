@@ -5,6 +5,7 @@ import { Node } from '@/core/type';
 @Injectable()
 export class MediaService {
   getExtension(filename: string): string {
+    filename = filename.toLowerCase();
     const extensionRegExp: RegExp = /(?:\.([^.]+))?$/;
     const extension: string = extensionRegExp.exec(filename)[1];
     if (extension) {
@@ -19,7 +20,7 @@ export class MediaService {
   }
 
   isImage(filename: string): boolean {
-    switch (this.getExtension(filename).toLowerCase()) {
+    switch (this.getExtension(filename)) {
       case 'jpg':
       case 'jpeg':
       case 'png':
@@ -31,7 +32,7 @@ export class MediaService {
   }
 
   isText(filename: string): boolean {
-    switch (this.getExtension(filename).toLowerCase()) {
+    switch (this.getExtension(filename)) {
       // Text
       case 'txt':
       case 'text':
