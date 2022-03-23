@@ -1,0 +1,17 @@
+<div class="dialog">
+  <div
+    class="option"
+    [ngClass]= "{ selected: sortBy === 'az' }"
+    (click)="az()"
+  >A-Z</div>
+  <div
+    class="option"
+    [ngClass]= "{ selected: sortBy === 'modified' }"
+    (click)="modified()"
+  >Modified</div>
+  <div
+    class="option"
+    [ngClass]= "{ selected: sortBy === 'default' }"
+    (click)="default()"
+  >Default</div>
+</div>

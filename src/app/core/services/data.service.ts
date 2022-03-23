@@ -84,28 +84,36 @@ export class DataService {
         this.refresh(node);
       }
     });
-    this.sort(folder.nodes);
+    this.sort(folder);
   }
 
-  sort(nodes: Node[]): void {
-    nodes.sort((a, b) => {
-      // Show parents before children
-      const aNodeLength: number = parsePath(a.path).length;
-      const bNodeLength: number = parsePath(b.path).length;
-      const lengthStatus: number = aNodeLength - bNodeLength;
-      // Show folder before files
-      const aFolderStatus: number = a.isFolder ? 1 : 0;
-      const bFolderStatus: number = b.isFolder ? 1 : 0;
-      const folderStatus: number = bFolderStatus - aFolderStatus;
-      if (lengthStatus !== 0) {
-        return lengthStatus;
-      } else if (folderStatus !== 0) {
-        return folderStatus;
-      } else {
-        // Sort strings
-        return a.name.localeCompare(b.name);
+  sort(folder: Folder): void {
+    folder.nodes.sort((a, b) => {
+      switch (folder.sortBy) {
+        case 'az': return a.name.localeCompare(b.name);
+        case 'modified': return b.updatedTimestamp - a.updatedTimestamp;
+        default: return this.sortABDefault(a, b);
       }
     });
+  }
+
+  sortABDefault(a: Node, b: Node): number {
+    // Show parents before children
+    const aNodeLength: number = parsePath(a.path).length;
+    const bNodeLength: number = parsePath(b.path).length;
+    const lengthStatus: number = aNodeLength - bNodeLength;
+    // Show folder before files
+    const aFolderStatus: number = a.isFolder ? 1 : 0;
+    const bFolderStatus: number = b.isFolder ? 1 : 0;
+    const folderStatus: number = bFolderStatus - aFolderStatus;
+    if (lengthStatus !== 0) {
+      return lengthStatus;
+    } else if (folderStatus !== 0) {
+      return folderStatus;
+    } else {
+      // Sort strings
+      return a.name.localeCompare(b.name);
+    }
   }
 
   generateId(): string {

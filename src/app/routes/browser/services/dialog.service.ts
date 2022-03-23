@@ -5,7 +5,11 @@ import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import {
-  ContextDialogComponent, RenameDialogComponent, AddDialogComponent, TagDialogComponent
+  ContextDialogComponent,
+  RenameDialogComponent,
+  AddDialogComponent,
+  TagDialogComponent,
+  SortDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
@@ -84,6 +88,19 @@ export class DialogService {
             case 'import-file': this.fileService.importFiles(res.list); break;
             case 'import-folder': this.fileService.importFolder(res.list); break;
           }
+        }
+      });
+  }
+
+  showSortDialog(): void {
+    this.matDialog.open(SortDialogComponent, {
+      panelClass: 'context-dialog',
+      data: { message: this.dataService.folder.sortBy }
+    })
+      .afterClosed().subscribe(sortBy => {
+        if (sortBy) {
+          this.dataService.folder.sortBy = sortBy;
+          this.dataService.sort(this.dataService.folder);
         }
       });
   }
