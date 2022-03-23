@@ -21,7 +21,7 @@ export class BranchService {
 
   // Creates branch from list and connects it with tree
   connectNodeList(thisFolder: Folder, nodeList: Node[]): void {
-    this.dataService.sort(nodeList);
+    this.sort(nodeList);
     for (const node of nodeList) {
       // Convert list to tree
       this.protoService.addToTree(nodeList, node);
@@ -139,7 +139,7 @@ export class BranchService {
   }
 
   createParentFolders(fileList: File[]): Folder[] {
-    this.dataService.sort(fileList);
+    this.sort(fileList);
     const folderList: Folder[] = [];
     const nodePathList: string[] = [];
     let createHeadFolder: boolean = false;
@@ -183,5 +183,11 @@ export class BranchService {
       });
     }
     return folderList;
+  }
+
+  private sort(nodes: Node[]): void {
+    nodes.sort((a, b) => {
+      return this.dataService.sortABDefault(a, b);
+    });
   }
 }

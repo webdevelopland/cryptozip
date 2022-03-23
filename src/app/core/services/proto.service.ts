@@ -78,11 +78,7 @@ export class ProtoService {
       nodeList.push(file);
     }
     nodeList.sort((a, b) => {
-      const aNodeLength: number = a.path.split('/').length;
-      const bNodeLength: number = b.path.split('/').length;
-      const aFolderStatus: number = a.isFolder ? 1 : 0;
-      const bFolderStatus: number = b.isFolder ? 1 : 0;
-      return (aNodeLength - aFolderStatus) - (bNodeLength - bFolderStatus);
+      return this.dataService.sortABDefault(a, b);
     });
     for (const node of nodeList) {
       // Convert list to tree

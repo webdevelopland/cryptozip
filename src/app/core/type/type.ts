@@ -29,6 +29,7 @@ export class File extends Node {
 
 export class Folder extends Node {
   nodes: Node[] = [];
+  sortBy: string;
 
   constructor() {
     super();
