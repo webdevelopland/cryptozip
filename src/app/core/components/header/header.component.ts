@@ -177,11 +177,11 @@ export class HeaderComponent {
         autoFocus: false,
       }).afterClosed().subscribe(confirm => {
         if (confirm) {
-          this.exit();
+          this.headerService.exit();
         }
       });
     } else {
-      this.exit();
+      this.headerService.exit();
     }
   }
 
@@ -201,14 +201,19 @@ export class HeaderComponent {
     }
   }
 
-  exit(): void {
+  askToReload(): void {
     this.headerService.isMenu = false;
-    this.dataService.destroy();
-    this.clipboardService.destroy();
-    this.eventService.destroy();
-    this.searchService.destroy();
-    this.loadingService.destroy();
-    this.notificationService.destroy();
-    this.router.navigate(['/']);
+    if (this.dataService.isModified || this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved progress. Reload czip?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.reload();
+        }
+      });
+    } else {
+      this.headerService.reload();
+    }
   }
 }
