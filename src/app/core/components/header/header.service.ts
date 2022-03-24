@@ -64,6 +64,12 @@ export class HeaderService {
     this.firebaseService.replace(this.dataService.data.meta.id, oldId);
   }
 
+  root(): void {
+    this.isMenu = false;
+    this.dataService.folder = this.dataService.data.root;
+    this.router.navigate(['/browser']);
+  }
+
   reload(): void {
     this.loadingService.loads++;
     this.firebaseService.download(this.dataService.id).subscribe(binary => {

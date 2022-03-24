@@ -169,6 +169,22 @@ export class HeaderComponent {
     });
   }
 
+  askToRoot(): void {
+    this.headerService.isMenu = false;
+    if (this.eventService.isEditing && this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved file. Open root?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.root();
+        }
+      });
+    } else {
+      this.headerService.root();
+    }
+  }
+
   askToExit(): void {
     this.headerService.isMenu = false;
     if (this.dataService.isModified || this.dataService.isFileModified) {

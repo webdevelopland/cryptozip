@@ -17,6 +17,7 @@
 </header>
 <div class="popup-menu" *ngIf="headerService.isMenu" #menu>
   <div class="option" (click)="clearClipboard()">Clear Clipboard</div>
+  <div class="option" (click)="askToRoot()">Root</div>
   <div class="option" (click)="openIdDialog()">Change id</div>
   <div class="option" (click)="openPasswordDialog()">Change Password</div>
   <div class="option" (click)="print()">Print</div>
