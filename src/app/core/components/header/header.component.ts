@@ -127,6 +127,7 @@ export class HeaderComponent {
       nodeInfo,
       this.dataService.data.meta.createdTimestamp,
       this.dataService.data.meta.updatedTimestamp,
+      'Modified: ' + (this.dataService.isModified || this.dataService.isFileModified).toString(),
     );
   }
 
@@ -168,30 +169,67 @@ export class HeaderComponent {
     });
   }
 
+  askToRoot(): void {
+    this.headerService.isMenu = false;
+    if (this.eventService.isEditing && this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved file. Open root?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.root();
+        }
+      });
+    } else {
+      this.headerService.root();
+    }
+  }
+
   askToExit(): void {
     this.headerService.isMenu = false;
-    if (this.dataService.isModified) {
+    if (this.dataService.isModified || this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved progress. Close czip?' },
         autoFocus: false,
       }).afterClosed().subscribe(confirm => {
         if (confirm) {
-          this.exit();
+          this.headerService.exit();
         }
       });
     } else {
-      this.exit();
+      this.headerService.exit();
     }
   }
 
-  exit(): void {
+  askToSave(): void {
     this.headerService.isMenu = false;
-    this.dataService.destroy();
-    this.clipboardService.destroy();
-    this.eventService.destroy();
-    this.searchService.destroy();
-    this.loadingService.destroy();
-    this.notificationService.destroy();
-    this.router.navigate(['/']);
+    if (this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved file. Save czip?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.save();
+        }
+      });
+    } else {
+      this.headerService.save();
+    }
+  }
+
+  askToReload(): void {
+    this.headerService.isMenu = false;
+    if (this.dataService.isModified || this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved progress. Reload czip?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.reload();
+        }
+      });
+    } else {
+      this.headerService.reload();
+    }
   }
 }

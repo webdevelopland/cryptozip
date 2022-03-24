@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 'rndmjs';
 
 import { Grid, GridType, GridRow } from '@/core/type';
@@ -18,6 +18,7 @@ import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } f
 export class GridEditComponent implements OnDestroy {
   grid = new Grid();
   keySub = new Subscription();
+  timerSub = new Subscription();
 
   constructor(
     public router: Router,
@@ -40,6 +41,7 @@ export class GridEditComponent implements OnDestroy {
       this.close();
     }
     this.keyboardEvents();
+    this.checkModified();
   }
 
   add(): void {
@@ -199,6 +201,18 @@ export class GridEditComponent implements OnDestroy {
     }
   }
 
+  checkModified(): void {
+    this.timerSub = interval(1000).subscribe(() => {
+      let isFileModified: boolean;
+      if (!this.dataService.file.text && this.grid.rows.length === 0) {
+        isFileModified = false;
+      } else {
+        isFileModified = this.getJSON() !== this.dataService.file.text;
+      }
+      this.dataService.isFileModified = isFileModified;
+    });
+  }
+
   preview(): void {
     this.router.navigate(['/browser/grid']);
   }
@@ -209,6 +223,8 @@ export class GridEditComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.eventService.isEditing = false;
+    this.dataService.isFileModified = false;
     this.keySub.unsubscribe();
+    this.timerSub.unsubscribe();
   }
 }

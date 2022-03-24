@@ -10,6 +10,7 @@ import { META } from '@/environments/meta';
 export class DataService {
   isDecrypted: boolean = false;
   isModified: boolean = false;
+  isFileModified: boolean = false;
   id: string;
   password: string;
   data: Data;
@@ -170,9 +171,14 @@ export class DataService {
 
   destroy(): void {
     this.isDecrypted = false;
+    this.isModified = false;
+    this.isFileModified = false;
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
     this.folder = undefined;
+    this.file = undefined;
+    this.nodeMap = {};
+    this.pathMap = {};
   }
 }

@@ -14,12 +14,16 @@ export class NodeService {
     nodeInfo: NodeInfo,
     createdTimestamp: number,
     updatedTimestamp: number,
+    extra: string = '',
   ): void {
     let properties: string = '';
     properties += 'Size: ' + this.getSizeString(nodeInfo.size) + '\n';
     properties += 'Files: ' + nodeInfo.files + '\n';
     properties += 'Folders: ' + nodeInfo.folders + '\n';
     properties += 'Depth: ' + nodeInfo.depth + '\n';
+    if (extra) {
+      properties += extra + '\n';
+    }
     properties += '\n';
     properties += 'Created: ' + timestampToDate(createdTimestamp) + '\n';
     properties += 'Updated: ' + timestampToDate(updatedTimestamp);
