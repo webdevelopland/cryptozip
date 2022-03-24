@@ -29,6 +29,9 @@
             padding: 10px 12px;
             box-sizing: border-box;
           }
+          &.textarea {
+            align-items: flex-start;
+          }
         }
         >.key-line {
           >.label {

@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 
 import { DataService, NotificationService, EventService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
@@ -14,6 +14,7 @@ import { ConfirmDialogComponent } from '@/shared/dialogs';
 export class TextComponent implements OnDestroy {
   content: string;
   keySub = new Subscription();
+  timerSub = new Subscription();
 
   constructor(
     public router: Router,
@@ -29,12 +30,20 @@ export class TextComponent implements OnDestroy {
       this.close();
     }
     this.keyboardEvents();
+    this.checkModified();
   }
 
   save(): void {
     this.dataService.file.text = this.content;
     this.dataService.updateNode(this.dataService.file);
+    this.dataService.isFileModified = false;
     this.notificationService.success('File saved');
+  }
+
+  checkModified(): void {
+    this.timerSub = interval(1000).subscribe(() => {
+      this.dataService.isFileModified = this.content !== this.dataService.file.text;
+    });
   }
 
   checkSave(): void {
@@ -67,6 +76,8 @@ export class TextComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.eventService.isEditing = false;
+    this.dataService.isFileModified = false;
     this.keySub.unsubscribe();
+    this.timerSub.unsubscribe();
   }
 }

@@ -40,7 +40,6 @@ export class HeaderService {
   }
 
   save(): void {
-    this.isMenu = false;
     this.loadingService.loads++;
     this.dataService.update();
     setTimeout(() => {

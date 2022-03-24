@@ -127,6 +127,7 @@ export class HeaderComponent {
       nodeInfo,
       this.dataService.data.meta.createdTimestamp,
       this.dataService.data.meta.updatedTimestamp,
+      'Modified: ' + (this.dataService.isModified || this.dataService.isFileModified).toString(),
     );
   }
 
@@ -170,7 +171,7 @@ export class HeaderComponent {
 
   askToExit(): void {
     this.headerService.isMenu = false;
-    if (this.dataService.isModified) {
+    if (this.dataService.isModified || this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved progress. Close czip?' },
         autoFocus: false,
@@ -181,6 +182,22 @@ export class HeaderComponent {
       });
     } else {
       this.exit();
+    }
+  }
+
+  askToSave(): void {
+    this.headerService.isMenu = false;
+    if (this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved file. Save czip?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.headerService.save();
+        }
+      });
+    } else {
+      this.headerService.save();
     }
   }
 
