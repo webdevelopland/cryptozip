@@ -151,6 +151,30 @@ export class FileService {
     this.dataService.updateNode(this.dataService.folder);
   }
 
+  transferTo(node: Node): void {
+    if (node instanceof File) {
+      this.clipboardService.copyFile(node);
+      this.notificationService.success('Copied');
+    } else {
+      this.notificationService.warning('Folders are not supported yet');
+    }
+  }
+
+  transferFrom(base64: string): void {
+    const file: File = this.clipboardService.pasteFile(base64);
+    if (file) {
+      const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
+      file.name = newName;
+      file.path = Path.join(this.dataService.folder.path, newName);
+      this.dataService.folder.push(file);
+      this.dataService.updateNode(file);
+      this.branchService.unselectAll();
+      file.isSelected = true;
+    } else {
+      this.notificationService.warning('Invalid file');
+    }
+  }
+
   rename(node: Node, newName: string): void {
     node.name = newName;
     node.path = Path.join(this.dataService.folder.path, newName);

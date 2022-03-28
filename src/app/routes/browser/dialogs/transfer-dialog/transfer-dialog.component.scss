@@ -1,0 +1,21 @@
+.dialog {
+  >.title {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  >.base64 {
+    margin-bottom: 10px;
+    >textarea {
+      width: 250px;
+      border: 1px solid #ccc;
+      height: 100px;
+    }
+  }
+  >.button {
+    >button {
+      padding: 4px;
+      width: 100px;
+      font-size: 14px;
+    }
+  }
+}

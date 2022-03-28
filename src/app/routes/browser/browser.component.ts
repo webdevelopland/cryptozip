@@ -91,6 +91,10 @@ export class BrowserComponent implements OnDestroy {
           }
         }
       }
+      if (event.code === 'KeyA' && event.altKey) {
+        event.preventDefault();
+        this.branchService.unselectAll();
+      }
     }));
   }
 

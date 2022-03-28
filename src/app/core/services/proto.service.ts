@@ -29,18 +29,7 @@ export class ProtoService {
         folder.setTagList(node.tags);
         data.addFolder(folder);
       } else if (node instanceof File) {
-        const file = new Proto.File();
-        file.setPath(node.path);
-        file.setIsBinary(node.isBinary);
-        if (node.isBinary) {
-          file.setBinary(node.binary);
-        } else {
-          file.setText(node.text);
-        }
-        file.setCreatedTimestamp(node.createdTimestamp);
-        file.setUpdatedTimestamp(node.updatedTimestamp);
-        file.setTagList(node.tags);
-        data.addFile(file);
+        data.addFile(this.getProtoFile(node));
       }
     }
     return data.serializeBinary();
@@ -65,17 +54,7 @@ export class ProtoService {
       nodeList.push(folder);
     }
     for (const protoFile of protoData.getFileList()) {
-      const file: File = this.dataService.getFile(protoFile.getPath());
-      file.isBinary = protoFile.getIsBinary();
-      if (file.isBinary) {
-        file.binary = protoFile.getBinary_asU8();
-      } else {
-        file.text = protoFile.getText();
-      }
-      file.createdTimestamp = protoFile.getCreatedTimestamp();
-      file.updatedTimestamp = protoFile.getUpdatedTimestamp();
-      file.tags = protoFile.getTagList();
-      nodeList.push(file);
+      nodeList.push(this.getFile(protoFile));
     }
     nodeList.sort((a, b) => {
       return this.dataService.sortABDefault(a, b);
@@ -102,5 +81,34 @@ export class ProtoService {
         node.nodes.push(newNode);
       }
     }
+  }
+
+  getProtoFile(node: File): Proto.File {
+    const file = new Proto.File();
+    file.setPath(node.path);
+    file.setIsBinary(node.isBinary);
+    if (node.isBinary) {
+      file.setBinary(node.binary);
+    } else {
+      file.setText(node.text);
+    }
+    file.setCreatedTimestamp(node.createdTimestamp);
+    file.setUpdatedTimestamp(node.updatedTimestamp);
+    file.setTagList(node.tags);
+    return file;
+  }
+
+  getFile(protoFile: Proto.File): File {
+    const file: File = this.dataService.getFile(protoFile.getPath());
+    file.isBinary = protoFile.getIsBinary();
+    if (file.isBinary) {
+      file.binary = protoFile.getBinary_asU8();
+    } else {
+      file.text = protoFile.getText();
+    }
+    file.createdTimestamp = protoFile.getCreatedTimestamp();
+    file.updatedTimestamp = protoFile.getUpdatedTimestamp();
+    file.tags = protoFile.getTagList();
+    return file;
   }
 }

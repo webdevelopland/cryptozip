@@ -10,6 +10,7 @@ import {
   AddDialogComponent,
   TagDialogComponent,
   SortDialogComponent,
+  TransferDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
@@ -37,6 +38,7 @@ export class DialogService {
           case 'copy': this.fileService.copy(); break;
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
+          case 'transfer': this.fileService.transferTo(node); break;
           case 'export': this.zipService.export(node, node.name); break;
           case 'tags': this.openTagsDialog(node); break;
           case 'properties': this.fileService.showProperties(node); break;
@@ -101,6 +103,15 @@ export class DialogService {
         if (sortBy) {
           this.dataService.folder.sortBy = sortBy;
           this.dataService.sort(this.dataService.folder);
+        }
+      });
+  }
+
+  showTransferDialog(): void {
+    this.matDialog.open(TransferDialogComponent)
+      .afterClosed().subscribe(base64 => {
+        if (base64) {
+          this.fileService.transferFrom(base64);
         }
       });
   }

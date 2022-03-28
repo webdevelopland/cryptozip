@@ -96,26 +96,29 @@ export class BranchService {
         newFile.name = bitFile.name;
         newFile.path = '/' + path;
         const reader = new FileReader();
-        if (this.mediaService.isText(bitFile.name)) {
-          // Text
-          reader.readAsText(bitFile, 'UTF-8');
-          reader.onload = () => {
-            newFile.text = reader.result.toString();
-            newFile.isBinary = false;
-            observer.next(newFile);
-          };
-          reader.onerror = () => {
-            // Reader error
-          };
-        } else {
-          // Binary
-          reader.readAsArrayBuffer(bitFile);
-          reader.onload = () => {
-            const binary = new Uint8Array(reader.result as ArrayBuffer);
-            newFile.binary = binary;
-            newFile.isBinary = true;
-            observer.next(newFile);
-          };
+        switch (this.mediaService.getMediaType(bitFile.name)) {
+          case 'text':
+          case 'grid':
+            // Text
+            reader.readAsText(bitFile, 'UTF-8');
+            reader.onload = () => {
+              newFile.text = reader.result.toString();
+              newFile.isBinary = false;
+              observer.next(newFile);
+            };
+            reader.onerror = () => {
+              // Reader error
+            };
+            break;
+          default:
+            // Binary
+            reader.readAsArrayBuffer(bitFile);
+            reader.onload = () => {
+              const binary = new Uint8Array(reader.result as ArrayBuffer);
+              newFile.binary = binary;
+              newFile.isBinary = true;
+              observer.next(newFile);
+            };
         }
       }));
     }
