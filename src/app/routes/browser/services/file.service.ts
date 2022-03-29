@@ -80,7 +80,7 @@ export class FileService {
     this.clipboardService.isCut = true;
   }
 
-  private getSelectedList(): Node[] {
+  getSelectedList(): Node[] {
     const selectedList: Node[] = [];
     for (const node of this.dataService.folder.nodes) {
       if (node.isSelected) {

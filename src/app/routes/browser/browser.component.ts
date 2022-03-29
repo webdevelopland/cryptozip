@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Folder } from '@/core/type';
+import { Node, Folder } from '@/core/type';
 import {
   DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
 } from '@/core/services';
@@ -94,6 +94,17 @@ export class BrowserComponent implements OnDestroy {
       if (event.code === 'KeyA' && event.altKey) {
         event.preventDefault();
         this.branchService.unselectAll();
+      }
+      if (event.code === 'KeyC' && event.altKey) {
+        event.preventDefault();
+        const selectedList: Node[] = this.fileService.getSelectedList();
+        if (selectedList.length > 0) {
+          this.fileService.transferTo(selectedList[0]);
+        }
+      }
+      if (event.code === 'KeyV' && event.altKey) {
+        event.preventDefault();
+        this.dialogService.showTransferDialog();
       }
     }));
   }
