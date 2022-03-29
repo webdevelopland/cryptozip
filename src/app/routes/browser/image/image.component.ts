@@ -16,6 +16,11 @@ export class ImageComponent {
     public dataService: DataService,
     public mediaService: MediaService,
   ) {
+    this.dataService.decryptThisFile();
+    this.start();
+  }
+
+  start(): void {
     if (!this.dataService.file || !this.dataService.file.isBinary) {
       this.close();
     } else {
@@ -25,7 +30,8 @@ export class ImageComponent {
 
   updateBase64(): void {
     const mime: string = this.mediaService.getMime(this.dataService.file.name);
-    this.base64 = `data:${mime};base64,` + this.uint8ArrayToBase64(this.dataService.file.binary);
+    const base64: string = this.uint8ArrayToBase64(this.dataService.file.block.binary);
+    this.base64 = `data:${mime};base64,` + base64;
   }
 
   // Converts uint8array binary to base64 string

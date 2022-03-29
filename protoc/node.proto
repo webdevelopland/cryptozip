@@ -23,6 +23,7 @@ message File {
   int64 created_timestamp = 5;
   int64 updated_timestamp = 6;
   repeated string tag = 7;
+  Block block = 8;
 }
 
 message Meta {
@@ -50,4 +51,9 @@ message GridRow {
   string value = 1;
   GridType type = 2;
   string label = 3;
+}
+
+message Block {
+  int64 position = 1;
+  int64 size = 2;
 }

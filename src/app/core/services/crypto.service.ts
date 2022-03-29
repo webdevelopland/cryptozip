@@ -12,7 +12,7 @@ export class CryptoService {
     return aesCtr.decrypt(encrypted);
   }
 
-  enrypt(binary: Uint8Array, password: string): Uint8Array {
+  encrypt(binary: Uint8Array, password: string): Uint8Array {
     // Password
     const key: Uint8Array = this.getKey(password);
     // Encrypt

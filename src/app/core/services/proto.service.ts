@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import * as AES from 'aes-js';
 
 import * as Proto from 'src/proto';
-import { Data, Node, File, Folder } from '@/core/type';
+import { Data, Node, File, Folder, BinaryBlock } from '@/core/type';
 import { parsePath } from '@/core/functions';
 import { DataService } from './data.service';
 
@@ -11,7 +12,7 @@ export class ProtoService {
     private dataService: DataService,
   ) { }
 
-  getProto(): Uint8Array {
+  getProto(): BinaryBlock[] {
     const data = new Proto.Data();
     const meta = new Proto.Meta();
     meta.setId(this.dataService.data.meta.id);
@@ -20,6 +21,9 @@ export class ProtoService {
     meta.setCreatedTimestamp(this.dataService.data.meta.createdTimestamp);
     meta.setUpdatedTimestamp(this.dataService.data.meta.updatedTimestamp);
     data.setMeta(meta);
+
+    let position: number = 0;
+    const blocks: BinaryBlock[] = [];
     for (const node of Object.values(this.dataService.nodeMap)) {
       if (node.isFolder) {
         const folder = new Proto.Folder();
@@ -29,10 +33,31 @@ export class ProtoService {
         folder.setTagList(node.tags);
         data.addFolder(folder);
       } else if (node instanceof File) {
-        data.addFile(this.getProtoFile(node));
+        const file: Proto.File = this.getProtoFile(node);
+        let binary: Uint8Array;
+        if (node.block.isModified) {
+          if (node.isBinary) {
+            binary = node.block.binary;
+          } else {
+            binary = AES.utils.utf8.toBytes(node.text);
+          }
+          blocks.push(new BinaryBlock(binary, true));
+        } else {
+          const start: number = node.block.position;
+          const size: number = node.block.size;
+          binary = this.dataService.blocks.slice(start, start + size);
+          blocks.push(new BinaryBlock(binary, false));
+        }
+        const block = new Proto.Block();
+        block.setPosition(position);
+        block.setSize(binary.length);
+        file.setBlock(block);
+        position += binary.length;
+        data.addFile(file);
       }
     }
-    return data.serializeBinary();
+    blocks.unshift(new BinaryBlock(data.serializeBinary(), true));
+    return blocks;
   }
 
   setProto(binary: Uint8Array): void {
@@ -68,14 +93,20 @@ export class ProtoService {
     const file = new Proto.File();
     file.setPath(node.path);
     file.setIsBinary(node.isBinary);
-    if (node.isBinary) {
-      file.setBinary(node.binary);
-    } else {
-      file.setText(node.text);
-    }
     file.setCreatedTimestamp(node.createdTimestamp);
     file.setUpdatedTimestamp(node.updatedTimestamp);
     file.setTagList(node.tags);
+    return file;
+  }
+
+  getProtoFileContent(node: File): Proto.File {
+    this.dataService.decryptFile(node);
+    const file: Proto.File = this.getProtoFile(node);
+    if (node.isBinary) {
+      file.setBinary(node.block.binary);
+    } else {
+      file.setText(node.text);
+    }
     return file;
   }
 
@@ -83,13 +114,20 @@ export class ProtoService {
     const file: File = this.dataService.getFile(protoFile.getPath());
     file.isBinary = protoFile.getIsBinary();
     if (file.isBinary) {
-      file.binary = protoFile.getBinary_asU8();
+      file.block.binary = protoFile.getBinary_asU8();
     } else {
       file.text = protoFile.getText();
     }
     file.createdTimestamp = protoFile.getCreatedTimestamp();
     file.updatedTimestamp = protoFile.getUpdatedTimestamp();
     file.tags = protoFile.getTagList();
+    const block: Proto.Block = protoFile.getBlock();
+    if (block) {
+      file.block.position = block.getPosition();
+      file.block.size = block.getSize();
+      file.block.isModified = false;
+      file.block.isDecrypted = false;
+    }
     return file;
   }
 
@@ -108,11 +146,11 @@ export class ProtoService {
               folder.setTagList(mapNode.tags);
               data.addFolder(folder);
             } else if (mapNode instanceof File) {
-              data.addFile(this.getProtoFile(mapNode));
+              data.addFile(this.getProtoFileContent(mapNode));
             }
           });
       } else if (node instanceof File) {
-        data.addFile(this.getProtoFile(node));
+        data.addFile(this.getProtoFileContent(node));
       }
     });
     return data;

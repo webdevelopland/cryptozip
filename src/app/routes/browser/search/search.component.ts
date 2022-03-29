@@ -34,6 +34,7 @@ export class SearchComponent implements OnDestroy {
   }
 
   search(): void {
+    this.dataService.decryptAllFiles();
     this.searchService.tags = this.searchService.tagString.split(' ');
     this.searchService.search(Object.values(this.dataService.nodeMap));
   }

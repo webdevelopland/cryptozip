@@ -139,8 +139,9 @@ export class FileService {
       } else if (node instanceof File) {
         const file: File = this.dataService.getFile(newPath, id);
         file.isBinary = node.isBinary;
-        if (file.isBinary) {
-          file.binary = node.binary;
+        file.block = node.block;
+        if (node.isBinary) {
+          file.block.binary = node.block.binary;
         } else {
           file.text = node.text;
         }
