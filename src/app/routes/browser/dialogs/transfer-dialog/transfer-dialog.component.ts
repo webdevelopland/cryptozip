@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
-import { EventService } from '@/core/services';
+import { EventService, NotificationService } from '@/core/services';
 
 @Component({
   selector: 'transfer-dialog',
@@ -11,14 +11,17 @@ import { EventService } from '@/core/services';
 })
 export class TransferDialogComponent implements OnDestroy {
   base64: string;
+  clipboard: string;
   keySubscription = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<TransferDialogComponent>,
     private eventService: EventService,
+    private notificationService: NotificationService,
   ) {
     this.eventService.isDialog = true;
     this.subscribeOnKeydown();
+    this.readClipboard();
   }
 
   private subscribeOnKeydown(): void {
@@ -29,16 +32,22 @@ export class TransferDialogComponent implements OnDestroy {
     });
   }
 
-  check(): void {
-    if (!this.base64 || !this.base64.trim()) {
-      this.close();
-    } else {
-      this.paste();
-    }
+  private readClipboard(): void {
+    navigator.clipboard.readText()
+      .then(clipboard => {
+        this.clipboard = clipboard;
+      })
+      .catch(() => {
+        this.notificationService.warning('Clipboard error');
+      });
   }
 
   paste(): void {
-    this.dialogRef.close(this.base64);
+    let clipboard: string = this.clipboard;
+    if (this.base64 && this.base64.trim()) {
+      clipboard = this.base64;
+    }
+    this.dialogRef.close(clipboard);
   }
 
   close(): void {
