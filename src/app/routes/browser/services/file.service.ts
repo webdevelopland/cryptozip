@@ -164,6 +164,16 @@ export class FileService {
     }
   }
 
+  readClipboard(): void {
+    navigator.clipboard.readText()
+      .then(clipboard => {
+        this.transferFrom(clipboard);
+      })
+      .catch(() => {
+        this.notificationService.warning('Clipboard error');
+      });
+  }
+
   transferFrom(base64: string): void {
     this.sub(this.clipboardService.pasteNode(base64).subscribe(nodes => {
       this.branchService.unselectAll();

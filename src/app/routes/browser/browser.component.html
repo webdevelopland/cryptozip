@@ -5,7 +5,7 @@
       <button (click)="dialogService.showAddDialog()">+</button>
       <button (click)="branchService.unselectAll()">Clear</button>
       <button (click)="dialogService.showSortDialog()">Sort</button>
-      <button (click)="dialogService.showTransferDialog()">Transfer</button>
+      <button (click)="fileService.readClipboard()">Transfer</button>
       <button
         (click)="fileService.paste()"
         *ngIf="clipboardService.clipboard.length > 0"

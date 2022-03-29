@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Node, Folder } from '@/core/type';
+import { Folder } from '@/core/type';
 import {
   DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
 } from '@/core/services';
@@ -82,6 +82,10 @@ export class BrowserComponent implements OnDestroy {
         event.preventDefault();
         this.fileService.addGrid();
       }
+      if (event.code === 'Backspace') {
+        event.preventDefault();
+        this.back();
+      }
       if (event.code === 'F2') {
         event.preventDefault();
         for (const node of this.dataService.folder.nodes) {
@@ -101,7 +105,7 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'KeyV' && event.altKey) {
         event.preventDefault();
-        this.dialogService.showTransferDialog();
+        this.fileService.readClipboard();
       }
     }));
   }
