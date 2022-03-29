@@ -158,8 +158,12 @@ export class FileService {
   transferTo(): void {
     const selectedList: Node[] = this.getSelectedList();
     if (selectedList.length > 0) {
-      this.sub(this.clipboardService.copyNode(selectedList).subscribe(() => {
-        this.notificationService.success('Copied');
+      this.sub(this.clipboardService.copyNode(selectedList).subscribe(ok => {
+        if (ok) {
+          this.notificationService.success('Copied');
+        } else {
+          this.notificationService.warning('Clipboard error');
+        }
       }));
     }
   }
