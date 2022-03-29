@@ -46,6 +46,7 @@ export class ZipService {
   }
 
   pack(): Blob {
+    this.dataService.data.meta.encryptorVersion = META.version;
     const binary: Uint8Array = this.protoService.getProto();
     return this.enrypt(binary, this.dataService.password);
   }

@@ -32,3 +32,22 @@ message Meta {
   string encryptor_version = 4;
   int64 update_version = 5;
 }
+
+message Grid {
+  repeated GridRow row = 1;
+}
+
+enum GridType {
+  UNDEFINED = 0;
+  TEXTBLOCK = 1;
+  INPUT = 2;
+  PASSWORD = 3;
+  TEXTAREA = 4;
+  HIDDENBLOCK = 5;
+}
+
+message GridRow {
+  string value = 1;
+  GridType type = 2;
+  string label = 3;
+}

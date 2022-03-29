@@ -36,6 +36,7 @@ export class TextComponent implements OnDestroy {
   save(): void {
     this.dataService.file.text = this.content;
     this.dataService.updateNode(this.dataService.file);
+    this.dataService.modify();
     this.dataService.isFileModified = false;
     this.notificationService.success('File saved');
   }

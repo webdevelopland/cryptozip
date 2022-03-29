@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subscription, interval } from 'rxjs';
 import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 'rndmjs';
 
+import * as Proto from 'src/proto';
 import { Grid, GridType, GridRow } from '@/core/type';
 import { DataService, NotificationService, EventService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
@@ -19,6 +20,7 @@ export class GridEditComponent implements OnDestroy {
   grid = new Grid();
   keySub = new Subscription();
   timerSub = new Subscription();
+  gridType = GridType;
 
   constructor(
     public router: Router,
@@ -30,8 +32,8 @@ export class GridEditComponent implements OnDestroy {
     this.eventService.isEditing = true;
     if (this.dataService.file) {
       try {
-        if (this.dataService.file.text) {
-          this.loadJSON(JSON.parse(this.dataService.file.text));
+        if (this.dataService.file.isBinary && this.dataService.file.binary) {
+          this.loadProto(this.dataService.file.binary);
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
@@ -59,32 +61,32 @@ export class GridEditComponent implements OnDestroy {
 
   addInput(): void {
     const row = new GridRow();
-    row.type = GridType.Input;
+    row.type = GridType.INPUT;
     this.grid.rows.push(row);
   }
 
   addTextarea(): void {
     const row = new GridRow();
-    row.type = GridType.Textarea;
+    row.type = GridType.TEXTAREA;
     this.grid.rows.push(row);
   }
 
   addPassword(): void {
     const row = new GridRow();
     row.label = 'password';
-    row.type = GridType.Password;
+    row.type = GridType.PASSWORD;
     this.grid.rows.push(row);
   }
 
   addTextblock(): void {
     const row = new GridRow();
-    row.type = GridType.Textblock;
+    row.type = GridType.TEXTBLOCK;
     this.grid.rows.push(row);
   }
 
   addHiddenblock(): void {
     const row = new GridRow();
-    row.type = GridType.Hiddenblock;
+    row.type = GridType.HIDDENBLOCK;
     this.grid.rows.push(row);
   }
 
@@ -139,33 +141,34 @@ export class GridEditComponent implements OnDestroy {
     }
   }
 
-  loadJSON(jsonGrid: any): void {
-    if (jsonGrid && jsonGrid.rows && jsonGrid.rows.length > 0) {
-      jsonGrid.rows.forEach(jsonRow => {
-        const row = new GridRow();
-        row.type = jsonRow.type;
-        row.label = jsonRow.label;
-        row.value = jsonRow.value;
-        this.grid.rows.push(row);
-      });
-    }
+  loadProto(binary: Uint8Array): void {
+    const grid: Proto.Grid = Proto.Grid.deserializeBinary(binary);
+    grid.getRowList().forEach(protoRow => {
+      const row = new GridRow();
+      row.type = protoRow.getType() as GridType;
+      row.label = protoRow.getLabel();
+      row.value = protoRow.getValue();
+      this.grid.rows.push(row);
+    });
   }
 
-  getJSON(): string {
-    const jsonGrid = { rows: [] };
-    jsonGrid.rows = this.grid.rows.map(row => {
-      return {
-        type: row.type,
-        label: row.label,
-        value: row.value,
-      };
+  getProto(): Uint8Array {
+    const grid = new Proto.Grid();
+    this.grid.rows.forEach(row => {
+      const gridRow = new Proto.GridRow();
+      gridRow.setType(row.type);
+      gridRow.setValue(row.value);
+      gridRow.setLabel(row.label);
+      grid.addRow(gridRow);
     });
-    return JSON.stringify(jsonGrid);
+    return grid.serializeBinary();
   }
 
   save(): void {
-    this.dataService.file.text = this.getJSON();
+    this.dataService.file.isBinary = true;
+    this.dataService.file.binary = this.getProto();
     this.dataService.updateNode(this.dataService.file);
+    this.dataService.modify();
     this.notificationService.success('Grid saved');
   }
 
@@ -186,8 +189,34 @@ export class GridEditComponent implements OnDestroy {
     this.checkSave(() => this.preview());
   }
 
+  compare(gridA: Uint8Array, gridB: Uint8Array): boolean {
+    if (!gridA && !gridB) {
+      return true;
+    }
+    if (
+      ((!gridA || !gridA.length) && (gridB && gridB.length)) ||
+      ((gridA && gridA.length) && (!gridB || !gridB.length))
+    ) {
+      return false;
+    }
+    if (gridA && gridA.length > 0) {
+      if (gridA.length !== gridB.length) {
+        return false;
+      }
+      let isSame: boolean = true;
+      gridA.forEach((byteA, index) => {
+        const byteB = gridB[index];
+        if (byteA !== byteB) {
+          isSame = false;
+        }
+      });
+      return isSame;
+    }
+    return true;
+  }
+
   checkSave(callback: Function): void {
-    if (this.dataService.file.text === this.getJSON()) {
+    if (this.compare(this.dataService.file.binary, this.getProto())) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
@@ -203,12 +232,7 @@ export class GridEditComponent implements OnDestroy {
 
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
-      let isFileModified: boolean;
-      if (!this.dataService.file.text && this.grid.rows.length === 0) {
-        isFileModified = false;
-      } else {
-        isFileModified = this.getJSON() !== this.dataService.file.text;
-      }
+      const isFileModified: boolean = !this.compare(this.dataService.file.binary, this.getProto());
       this.dataService.isFileModified = isFileModified;
     });
   }

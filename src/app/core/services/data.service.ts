@@ -51,8 +51,8 @@ export class DataService {
   }
 
   updateNode(node: Node): void {
-    node.update();
     const now: number = Date.now();
+    node.updatedTimestamp = now;
     for (let i = 0; i < 100; i++) {
       const parent: Folder = this.getParent(node);
       if (!parent || parent.path === '/') {
@@ -61,7 +61,6 @@ export class DataService {
       parent.updatedTimestamp = now;
       node = parent;
     }
-    this.modify();
   }
 
   getParent(node: Node): Folder {

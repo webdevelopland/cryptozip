@@ -15,15 +15,11 @@ export class Node {
     this.createdTimestamp = now;
     this.updatedTimestamp = now;
   }
-
-  update(): void {
-    this.updatedTimestamp = Date.now();
-  }
 }
 
 export class File extends Node {
   isBinary: boolean = false;
-  text: string = '';
+  text: string;
   binary: Uint8Array;
 }
 
@@ -83,17 +79,18 @@ export class Grid {
 }
 
 export enum GridType {
-  Input = 'input',
-  Textarea = 'textarea',
-  Password = 'password',
-  Textblock = 'textblock',
-  Hiddenblock = 'hiddenblock',
+  UNDEFINED = 0,
+  TEXTBLOCK = 1,
+  INPUT = 2,
+  PASSWORD = 3,
+  TEXTAREA = 4,
+  HIDDENBLOCK = 5,
 }
 
 export class GridRow {
   label: string = '';
   value: string = '';
-  type: GridType = GridType.Input;
+  type: GridType = GridType.INPUT;
   visibility: string = 'password';
 }
 

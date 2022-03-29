@@ -98,7 +98,6 @@ export class BranchService {
         const reader = new FileReader();
         switch (this.mediaService.getMediaType(bitFile.name)) {
           case 'text':
-          case 'grid':
             // Text
             reader.readAsText(bitFile, 'UTF-8');
             reader.onload = () => {
