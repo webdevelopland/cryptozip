@@ -13,3 +13,4 @@ export * from './timer.service';
 export * from './loading.service';
 export * from './node.service';
 export * from './search.service';
+export * from './encoding.service';

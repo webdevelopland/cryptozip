@@ -3,8 +3,9 @@
     <div class="buttons">
       <button (click)="back()">...</button>
       <button (click)="dialogService.showAddDialog()">+</button>
-      <button (click)="branchService.unselectAll()">Clear Select</button>
+      <button (click)="branchService.unselectAll()">Clear</button>
       <button (click)="dialogService.showSortDialog()">Sort</button>
+      <button (click)="fileService.readClipboard()">Transfer</button>
       <button
         (click)="fileService.paste()"
         *ngIf="clipboardService.clipboard.length > 0"

@@ -37,6 +37,7 @@ export class DialogService {
           case 'copy': this.fileService.copy(); break;
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
+          case 'send': this.fileService.transferTo(); break;
           case 'export': this.zipService.export(node, node.name); break;
           case 'tags': this.openTagsDialog(node); break;
           case 'properties': this.fileService.showProperties(node); break;

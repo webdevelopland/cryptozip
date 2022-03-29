@@ -82,6 +82,10 @@ export class BrowserComponent implements OnDestroy {
         event.preventDefault();
         this.fileService.addGrid();
       }
+      if (event.code === 'Backspace') {
+        event.preventDefault();
+        this.back();
+      }
       if (event.code === 'F2') {
         event.preventDefault();
         for (const node of this.dataService.folder.nodes) {
@@ -90,6 +94,18 @@ export class BrowserComponent implements OnDestroy {
             break;
           }
         }
+      }
+      if (event.code === 'KeyA' && event.altKey) {
+        event.preventDefault();
+        this.branchService.unselectAll();
+      }
+      if (event.code === 'KeyC' && event.altKey) {
+        event.preventDefault();
+        this.fileService.transferTo();
+      }
+      if (event.code === 'KeyV' && event.altKey) {
+        event.preventDefault();
+        this.fileService.readClipboard();
       }
     }));
   }

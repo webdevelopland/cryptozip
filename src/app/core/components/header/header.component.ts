@@ -56,6 +56,10 @@ export class HeaderComponent {
         event.preventDefault();
         this.headerService.save();
       }
+      if (event.code === 'KeyQ' && event.altKey) {
+        event.preventDefault();
+        this.clearClipboard();
+      }
     });
     this.eventService.mouseup.subscribe(event => {
       if (this.overlay) {

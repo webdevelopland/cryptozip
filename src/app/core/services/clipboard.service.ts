@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Observable, timer } from 'rxjs';
 
+import * as Proto from 'src/proto';
 import { Node, Folder } from '@/core/type';
+import { ProtoService } from './proto.service';
+import { EncodingService } from './encoding.service';
+import { LoadingService } from './loading.service';
 
 @Injectable()
 export class ClipboardService {
@@ -8,6 +13,12 @@ export class ClipboardService {
   clipboard: Node[] = [];
   isCut: boolean;
   location: Folder;
+
+  constructor(
+    private protoService: ProtoService,
+    private encodingService: EncodingService,
+    private loadingService: LoadingService,
+  ) { }
 
   copy(nodeList: Node[]): void {
     this.clipboard = nodeList;
@@ -33,6 +44,43 @@ export class ClipboardService {
   clear(): void {
     this.clearNodeCopyPaste();
     navigator.clipboard.writeText('');
+  }
+
+  copyNode(nodes: Node[]): Observable<boolean> {
+    this.loadingService.loads++;
+    return new Observable(observer => {
+      timer(1).subscribe(() => {
+        const protoData: Proto.Data = this.protoService.getData(nodes);
+        const binary: Uint8Array = protoData.serializeBinary();
+        const base64: string = this.encodingService.uint8ArrayToBase64(binary);
+        navigator.clipboard.writeText(base64)
+          .then(() => {
+            this.loadingService.loads--;
+            observer.next(true);
+          })
+          .catch(() => {
+            this.loadingService.loads--;
+            observer.next(false);
+          });
+      });
+    });
+  }
+
+  pasteNode(base64: string): Observable<Node[]> {
+    this.loadingService.loads++;
+    return new Observable(observer => {
+      timer(1).subscribe(() => {
+        try {
+          const binary: Uint8Array = this.encodingService.base64ToUint8Array(base64);
+          const protoData: Proto.Data = Proto.Data.deserializeBinary(binary);
+          this.loadingService.loads--;
+          observer.next(this.protoService.readData(protoData));
+        } catch (e) {
+          this.loadingService.loads--;
+          observer.error();
+        }
+      });
+    });
   }
 
   destroy() {
