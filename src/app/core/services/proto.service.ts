@@ -45,26 +45,7 @@ export class ProtoService {
       createdTimestamp: protoData.getMeta().getCreatedTimestamp(),
       updatedTimestamp: protoData.getMeta().getUpdatedTimestamp(),
     };
-    const nodeList: (File | Folder)[] = [];
-    for (const protoFolder of protoData.getFolderList()) {
-      const folder: Folder = this.dataService.getFolder(protoFolder.getPath());
-      folder.createdTimestamp = protoFolder.getCreatedTimestamp();
-      folder.updatedTimestamp = protoFolder.getUpdatedTimestamp();
-      folder.tags = protoFolder.getTagList();
-      nodeList.push(folder);
-    }
-    for (const protoFile of protoData.getFileList()) {
-      nodeList.push(this.getFile(protoFile));
-    }
-    nodeList.sort((a, b) => {
-      return this.dataService.sortABDefault(a, b);
-    });
-    for (const node of nodeList) {
-      // Convert list to tree
-      this.addToTree(nodeList, node);
-    }
-
-    data.root = nodeList[0] as Folder;
+    data.root = this.readData(protoData)[0] as Folder;
     data.root.id = protoData.getMeta().getId();
     this.dataService.setData(data);
   }
@@ -110,5 +91,53 @@ export class ProtoService {
     file.updatedTimestamp = protoFile.getUpdatedTimestamp();
     file.tags = protoFile.getTagList();
     return file;
+  }
+
+  getData(nodes: Node[]): Proto.Data {
+    const data = new Proto.Data();
+    nodes.forEach(node => {
+      if (node instanceof Folder) {
+        Object.values(this.dataService.nodeMap)
+          .filter(mapNode => mapNode.path.startsWith(node.path))
+          .forEach(mapNode => {
+            if (mapNode.isFolder) {
+              const folder = new Proto.Folder();
+              folder.setPath(mapNode.path);
+              folder.setCreatedTimestamp(mapNode.createdTimestamp);
+              folder.setUpdatedTimestamp(mapNode.updatedTimestamp);
+              folder.setTagList(mapNode.tags);
+              data.addFolder(folder);
+            } else if (mapNode instanceof File) {
+              data.addFile(this.getProtoFile(mapNode));
+            }
+          });
+      } else if (node instanceof File) {
+        data.addFile(this.getProtoFile(node));
+      }
+    });
+    return data;
+  }
+
+  readData(protoData: Proto.Data): Node[] {
+    const nodeList: (File | Folder)[] = [];
+    for (const protoFolder of protoData.getFolderList()) {
+      const folder: Folder = this.dataService.getFolder(protoFolder.getPath());
+      folder.createdTimestamp = protoFolder.getCreatedTimestamp();
+      folder.updatedTimestamp = protoFolder.getUpdatedTimestamp();
+      folder.tags = protoFolder.getTagList();
+      nodeList.push(folder);
+    }
+    for (const protoFile of protoData.getFileList()) {
+      nodeList.push(this.getFile(protoFile));
+    }
+    nodeList.sort((a, b) => {
+      return this.dataService.sortABDefault(a, b);
+    });
+    for (const node of nodeList) {
+      // Convert list to tree
+      this.addToTree(nodeList, node);
+    }
+    const rootLength: number = parsePath(nodeList[0].path).length;
+    return nodeList.filter(node => parsePath(node.path).length === rootLength);
   }
 }

@@ -23,26 +23,30 @@ export class FileService {
     private nodeService: NodeService,
   ) { }
 
-  private addFile(name: string, ext: string): void {
+  private addNewFile(name: string, ext: string): void {
     const path: string = Path.join(this.dataService.folder.path, name) + ext;
     const file: File = this.dataService.getFile(path);
     file.text = '';
+    file.isBinary = false;
+    this.branchService.unselectAll();
+    this.addFile(file);
+  }
+
+  private addFile(file: File): void {
     const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
     file.name = newName;
     file.path = Path.join(this.dataService.folder.path, newName);
-    file.isBinary = false;
     this.dataService.folder.push(file);
     this.dataService.updateNode(file);
-    this.branchService.unselectAll();
     file.isSelected = true;
   }
 
   addTxtFile(): void {
-    this.addFile('new_file', '.txt');
+    this.addNewFile('new_file', '.txt');
   }
 
   addGrid(): void {
-    this.addFile('new_grid', '.grid');
+    this.addNewFile('new_grid', '.grid');
   }
 
   addFolder(): void {
@@ -151,25 +155,29 @@ export class FileService {
     this.dataService.updateNode(this.dataService.folder);
   }
 
-  transferTo(node: Node): void {
-    if (node instanceof File) {
-      this.sub(this.clipboardService.copyFile(node).subscribe(() => {
+  transferTo(): void {
+    const selectedList: Node[] = this.getSelectedList();
+    if (selectedList.length > 0) {
+      this.sub(this.clipboardService.copyNode(selectedList).subscribe(() => {
         this.notificationService.success('Copied');
       }));
-    } else {
-      this.notificationService.warning('Folders are not supported yet');
     }
   }
 
   transferFrom(base64: string): void {
-    this.sub(this.clipboardService.pasteFile(base64).subscribe(file => {
-      const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
-      file.name = newName;
-      file.path = Path.join(this.dataService.folder.path, newName);
-      this.dataService.folder.push(file);
-      this.dataService.updateNode(file);
+    this.sub(this.clipboardService.pasteNode(base64).subscribe(nodes => {
       this.branchService.unselectAll();
-      file.isSelected = true;
+      nodes.forEach(node => {
+        if (node instanceof File) {
+          this.addFile(node);
+        } else if (node instanceof Folder) {
+          node.name = this.getService.getNewName(node, this.dataService.folder.nodes);
+          this.branchService.connectBranch(node, this.dataService.folder);
+          this.dataService.folder.push(node);
+          node.isSelected = true;
+          this.dataService.updateNode(this.dataService.folder);
+        }
+      });
     }, () => {
       this.notificationService.warning('Invalid file');
     }));

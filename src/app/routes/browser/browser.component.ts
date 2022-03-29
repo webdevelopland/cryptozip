@@ -97,10 +97,7 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'KeyC' && event.altKey) {
         event.preventDefault();
-        const selectedList: Node[] = this.fileService.getSelectedList();
-        if (selectedList.length > 0) {
-          this.fileService.transferTo(selectedList[0]);
-        }
+        this.fileService.transferTo();
       }
       if (event.code === 'KeyV' && event.altKey) {
         event.preventDefault();

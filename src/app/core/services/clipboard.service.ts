@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 
 import * as Proto from 'src/proto';
-import { Node, File, Folder } from '@/core/type';
+import { Node, Folder } from '@/core/type';
 import { ProtoService } from './proto.service';
 import { EncodingService } from './encoding.service';
 import { LoadingService } from './loading.service';
@@ -46,12 +46,12 @@ export class ClipboardService {
     navigator.clipboard.writeText('');
   }
 
-  copyFile(file: File): Observable<boolean> {
+  copyNode(nodes: Node[]): Observable<boolean> {
     this.loadingService.loads++;
     return new Observable(observer => {
       timer(1).subscribe(() => {
-        const protoFile: Proto.File = this.protoService.getProtoFile(file);
-        const binary: Uint8Array = protoFile.serializeBinary();
+        const protoData: Proto.Data = this.protoService.getData(nodes);
+        const binary: Uint8Array = protoData.serializeBinary();
         const base64: string = this.encodingService.uint8ArrayToBase64(binary);
         navigator.clipboard.writeText(base64)
           .then(() => {
@@ -66,15 +66,15 @@ export class ClipboardService {
     });
   }
 
-  pasteFile(base64: string): Observable<File> {
+  pasteNode(base64: string): Observable<Node[]> {
     this.loadingService.loads++;
     return new Observable(observer => {
       timer(1).subscribe(() => {
         try {
           const binary: Uint8Array = this.encodingService.base64ToUint8Array(base64);
-          const protoFile: Proto.File = Proto.File.deserializeBinary(binary);
+          const protoData: Proto.Data = Proto.Data.deserializeBinary(binary);
           this.loadingService.loads--;
-          observer.next(this.protoService.getFile(protoFile));
+          observer.next(this.protoService.readData(protoData));
         } catch (e) {
           this.loadingService.loads--;
           observer.error();
