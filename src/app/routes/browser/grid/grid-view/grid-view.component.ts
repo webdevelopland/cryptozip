@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Grid, GridRow } from '@/core/type';
+import * as Proto from 'src/proto';
+import { Grid, GridRow, GridType } from '@/core/type';
 import { DataService, NotificationService } from '@/core/services';
 
 @Component({
@@ -11,6 +12,7 @@ import { DataService, NotificationService } from '@/core/services';
 })
 export class GridViewComponent {
   grid = new Grid();
+  gridType = GridType;
 
   constructor(
     public router: Router,
@@ -19,8 +21,8 @@ export class GridViewComponent {
   ) {
     if (this.dataService.file) {
       try {
-        if (this.dataService.file.text) {
-          this.loadJSON(JSON.parse(this.dataService.file.text));
+        if (this.dataService.file.isBinary && this.dataService.file.binary) {
+          this.loadProto(this.dataService.file.binary);
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
@@ -31,16 +33,15 @@ export class GridViewComponent {
     }
   }
 
-  loadJSON(jsonGrid: any): void {
-    if (jsonGrid && jsonGrid.rows && jsonGrid.rows.length > 0) {
-      jsonGrid.rows.forEach(jsonRow => {
-        const row = new GridRow();
-        row.type = jsonRow.type;
-        row.label = jsonRow.label;
-        row.value = jsonRow.value;
-        this.grid.rows.push(row);
-      });
-    }
+  loadProto(binary: Uint8Array): void {
+    const grid: Proto.Grid = Proto.Grid.deserializeBinary(binary);
+    grid.getRowList().forEach(protoRow => {
+      const row = new GridRow();
+      row.type = protoRow.getType() as GridType;
+      row.label = protoRow.getLabel();
+      row.value = protoRow.getValue();
+      this.grid.rows.push(row);
+    });
   }
 
   togglePass(row: GridRow): void {

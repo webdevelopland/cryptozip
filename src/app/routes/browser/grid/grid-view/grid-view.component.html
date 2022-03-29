@@ -11,9 +11,9 @@
   <div class="flex">
     <div class="grid">
       <div class="row" *ngFor="let row of grid.rows">
-        <span *ngIf="row.type === 'textblock'">{{ row.value }}</span>
+        <span *ngIf="row.type === gridType.TEXTBLOCK">{{ row.value }}</span>
 
-        <div class="line key-line" *ngIf="row.type === 'input'">
+        <div class="line key-line" *ngIf="row.type === gridType.INPUT">
           <div class="label" *ngIf="row.label">{{ row.label }}:</div>
           <div
             class="value key active-button"
@@ -22,7 +22,7 @@
           >{{ row.value }}</div>
         </div>
 
-        <div class="line key-line" *ngIf="row.type === 'password'">
+        <div class="line key-line" *ngIf="row.type === gridType.PASSWORD">
           <div class="label" *ngIf="row.label">{{ row.label }}:</div>
           <mat-icon
             class="active-button"
@@ -39,12 +39,12 @@
           </div>
         </div>
 
-        <div class="line textarea" *ngIf="row.type === 'textarea'">
+        <div class="line textarea" *ngIf="row.type === gridType.TEXTAREA">
           <div class="label">{{ row.label }}:</div>
           <span class="value">{{ row.value }}</span>
         </div>
 
-        <div class="hiddenblock" *ngIf="row.type === 'hiddenblock'">
+        <div class="hiddenblock" *ngIf="row.type === gridType.HIDDENBLOCK">
           <div class="label">{{ row.label }}</div>
         </div>
       </div>

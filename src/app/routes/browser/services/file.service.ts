@@ -23,22 +23,25 @@ export class FileService {
     private nodeService: NodeService,
   ) { }
 
-  private addNewFile(name: string, ext: string): void {
+  private addNewFile(name: string, ext: string): File {
     const path: string = Path.join(this.dataService.folder.path, name) + ext;
     const file: File = this.dataService.getFile(path);
     file.text = '';
     file.isBinary = false;
     this.branchService.unselectAll();
     this.addFile(file);
+    this.dataService.modify();
+    return file;
   }
 
-  private addFile(file: File): void {
+  private addFile(file: File): File {
     const newName: string = this.getService.getNewName(file, this.dataService.folder.nodes);
     file.name = newName;
     file.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(file);
     this.dataService.updateNode(file);
     file.isSelected = true;
+    return file;
   }
 
   addTxtFile(): void {
@@ -46,7 +49,9 @@ export class FileService {
   }
 
   addGrid(): void {
-    this.addNewFile('new_grid', '.grid');
+    const file = this.addNewFile('new_grid', '.grid');
+    file.text = undefined;
+    file.isBinary = true;
   }
 
   addFolder(): void {
@@ -58,6 +63,7 @@ export class FileService {
     folder.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(folder);
     this.dataService.updateNode(folder);
+    this.dataService.modify();
     this.branchService.unselectAll();
     folder.isSelected = true;
   }
@@ -68,6 +74,7 @@ export class FileService {
       this.dataService.folder.nodes.splice(index, 1);
     });
     this.dataService.updateNode(this.dataService.folder);
+    this.dataService.modify();
   }
 
   copy(): void {
@@ -153,6 +160,7 @@ export class FileService {
       this.clipboardService.clearNodeCopyPaste();
     }
     this.dataService.updateNode(this.dataService.folder);
+    this.dataService.modify();
   }
 
   transferTo(): void {
@@ -189,9 +197,11 @@ export class FileService {
           this.branchService.connectBranch(node, this.dataService.folder);
           this.dataService.folder.push(node);
           node.isSelected = true;
-          this.dataService.updateNode(this.dataService.folder);
+          this.dataService.updateNode(node);
         }
       });
+      this.dataService.updateNode(this.dataService.folder);
+      this.dataService.modify();
     }, () => {
       this.notificationService.warning('Invalid file');
     }));
@@ -205,6 +215,7 @@ export class FileService {
       this.branchService.renameAllChildren(node);
     }
     this.dataService.updateNode(node);
+    this.dataService.modify();
   }
 
   importFiles(fileList: FileList): void {
@@ -220,6 +231,7 @@ export class FileService {
           this.dataService.folder.push(node);
         }
         this.dataService.updateNode(this.dataService.folder);
+        this.dataService.modify();
       }
     }));
   }
@@ -237,6 +249,7 @@ export class FileService {
       this.branchService.connectNodeList(this.dataService.folder, nodeList);
       this.dataService.folder.push(nodeList[0]);
       this.dataService.updateNode(this.dataService.folder);
+      this.dataService.modify();
     }));
   }
 

@@ -75,6 +75,7 @@ export class DialogService {
       data: node
     }).afterClosed().subscribe(() => {
       this.dataService.updateNode(node);
+      this.dataService.modify();
     });
   }
 

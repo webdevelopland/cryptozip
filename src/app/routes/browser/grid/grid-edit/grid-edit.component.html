@@ -26,15 +26,15 @@
           [(ngModel)]="row.value"
           spellcheck="false"
           autosize
-          *ngIf="row.type === 'textblock'"
+          *ngIf="row.type === gridType.TEXTBLOCK"
         ></textarea>
 
-        <ng-container *ngIf="row.type === 'input'">
+        <ng-container *ngIf="row.type === gridType.INPUT">
           <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <input type="text"[(ngModel)]="row.value" placeholder="Value" spellcheck="false">
         </ng-container>
 
-        <ng-container *ngIf="row.type === 'password'">
+        <ng-container *ngIf="row.type === gridType.PASSWORD">
           <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <div class="pwd">
             <input
@@ -70,7 +70,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="row.type === 'textarea'">
+        <ng-container *ngIf="row.type === gridType.TEXTAREA">
           <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <textarea
             [(ngModel)]="row.value"
@@ -79,7 +79,7 @@
           ></textarea>
         </ng-container>
 
-        <ng-container *ngIf="row.type === 'hiddenblock'">
+        <ng-container *ngIf="row.type === gridType.HIDDENBLOCK">
           <input type="text"[(ngModel)]="row.label" placeholder="Label" spellcheck="false">
           <textarea
             [(ngModel)]="row.value"

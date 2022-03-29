@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import * as Proto from 'src/proto';
 import { Node, File, Folder, SearchResult } from '@/core/type';
 import { MediaService } from './media.service';
 
@@ -59,7 +60,7 @@ export class SearchService {
           break;
         case 'grid':
           searchResult.rank = 3;
-          searchResult.isContent = this.compareGrid(searchTerm, searchResult.node.text);
+          searchResult.isContent = this.compareGrid(searchTerm, searchResult.node.binary);
           break;
         default: searchResult.rank = 0;
       }
@@ -93,18 +94,16 @@ export class SearchService {
     } else return false;
   }
 
-  private compareGrid(searchTerm: string, target: string): boolean {
+  private compareGrid(searchTerm: string, target: Uint8Array): boolean {
     let hit: boolean = false;
     try {
-      const jsonGrid: any = JSON.parse(target);
-      if (jsonGrid && jsonGrid.rows && jsonGrid.rows.length > 0) {
-        for (const jsonRow of jsonGrid.rows) {
-          const hitLabel: boolean = this.compareText(searchTerm, jsonRow.label);
-          const hitValue: boolean = this.compareText(searchTerm, jsonRow.value);
-          if (hitLabel || hitValue) {
-            hit = true;
-            break;
-          }
+      const grid: Proto.Grid = Proto.Grid.deserializeBinary(target);
+      for (const protoRow of grid.getRowList()) {
+        const hitLabel: boolean = this.compareText(searchTerm, protoRow.getLabel());
+        const hitValue: boolean = this.compareText(searchTerm, protoRow.getValue());
+        if (hitLabel || hitValue) {
+          hit = true;
+          break;
         }
       }
     } catch (e) {
