@@ -130,6 +130,7 @@ export class ZipService {
         this.addFolderToZip(zipFolder, node);
       } else {
         const file = node as File;
+        this.dataService.decryptFile(file);
         jszip.file(
           file.name,
           file.isBinary ? file.block.binary : file.text,

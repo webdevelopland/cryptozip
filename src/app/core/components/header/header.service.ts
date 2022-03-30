@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { Data } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -76,10 +77,12 @@ export class HeaderService {
       try {
         const password: string = this.dataService.password;
         this.zipService.unpack(binary, password);
-        const data = this.dataService.data;
+        const data: Data = this.dataService.data;
+        const blocks: Uint8Array = this.dataService.blocks;
         this.router.navigate(['/browser']);
         this.destroy();
         this.dataService.setData(data);
+        this.dataService.blocks = blocks;
         this.dataService.password = password;
         this.loadingService.loads--;
         this.notificationService.success('Reloaded');
