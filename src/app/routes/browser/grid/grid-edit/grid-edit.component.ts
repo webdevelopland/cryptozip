@@ -32,8 +32,8 @@ export class GridEditComponent implements OnDestroy {
     this.eventService.isEditing = true;
     if (this.dataService.file) {
       try {
-        if (this.dataService.file.isBinary && this.dataService.file.binary) {
-          this.loadProto(this.dataService.file.binary);
+        if (this.dataService.file.isBinary && this.dataService.file.block.binary) {
+          this.loadProto(this.dataService.file.block.binary);
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
@@ -166,7 +166,7 @@ export class GridEditComponent implements OnDestroy {
 
   save(): void {
     this.dataService.file.isBinary = true;
-    this.dataService.file.binary = this.getProto();
+    this.dataService.file.block.binary = this.getProto();
     this.dataService.updateNode(this.dataService.file);
     this.dataService.modify();
     this.notificationService.success('Grid saved');
@@ -216,7 +216,7 @@ export class GridEditComponent implements OnDestroy {
   }
 
   checkSave(callback: Function): void {
-    if (this.compare(this.dataService.file.binary, this.getProto())) {
+    if (this.compare(this.dataService.file.block.binary, this.getProto())) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
@@ -232,7 +232,10 @@ export class GridEditComponent implements OnDestroy {
 
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
-      const isFileModified: boolean = !this.compare(this.dataService.file.binary, this.getProto());
+      const isFileModified: boolean = !this.compare(
+        this.dataService.file.block.binary,
+        this.getProto(),
+      );
       this.dataService.isFileModified = isFileModified;
     });
   }

@@ -80,6 +80,16 @@ export class HeaderComponent {
     this.headerService.isMenu = false;
   }
 
+  decryptAll(): void {
+    this.headerService.isMenu = false;
+    this.loadingService.loads++;
+    setTimeout(() => {
+      this.dataService.decryptAllFiles();
+      this.loadingService.loads--;
+      this.notificationService.success('Decrypted');
+    }, 0);
+  }
+
   search(): void {
     this.headerService.isMenu = false;
     this.headerService.search();
@@ -149,6 +159,7 @@ export class HeaderComponent {
 
   openPasswordDialog(): void {
     this.headerService.isMenu = false;
+    this.dataService.decryptAllFiles(true);
     this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
       if (newPass) {
         this.dataService.password = newPass;

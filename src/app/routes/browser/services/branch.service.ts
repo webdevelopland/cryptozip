@@ -58,8 +58,9 @@ export class BranchService {
       } else if (node instanceof File) {
         const file: File = this.dataService.getFile(newPath);
         file.isBinary = node.isBinary;
-        if (file.isBinary) {
-          file.binary = node.binary;
+        file.block = node.block;
+        if (node.isBinary) {
+          file.block.binary = node.block.binary;
         } else {
           file.text = node.text;
         }
@@ -114,7 +115,7 @@ export class BranchService {
             reader.readAsArrayBuffer(bitFile);
             reader.onload = () => {
               const binary = new Uint8Array(reader.result as ArrayBuffer);
-              newFile.binary = binary;
+              newFile.block.binary = binary;
               newFile.isBinary = true;
               observer.next(newFile);
             };

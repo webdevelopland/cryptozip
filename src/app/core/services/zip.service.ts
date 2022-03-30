@@ -4,13 +4,16 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'aes-js';
 
-import { Node, File, Folder } from '@/core/type';
+import { Node, File, Folder, BinaryBlock } from '@/core/type';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { DataService } from './data.service';
 import { ProtoService } from './proto.service';
 import { LoadingService } from './loading.service';
+import { EncodingService } from './encoding.service';
 import { META } from '@/environments/meta';
+
+const INT32BYTES = 4;
 
 @Injectable()
 export class ZipService {
@@ -20,6 +23,7 @@ export class ZipService {
     private dataService: DataService,
     private protoService: ProtoService,
     private loadingService: LoadingService,
+    private encodingService: EncodingService,
   ) { }
 
   unzip(fileList: FileList, password: string): Observable<void> {
@@ -47,23 +51,35 @@ export class ZipService {
 
   pack(): Blob {
     this.dataService.data.meta.encryptorVersion = META.version;
-    const binary: Uint8Array = this.protoService.getProto();
-    return this.enrypt(binary, this.dataService.password);
+    const blocks: BinaryBlock[] = this.protoService.getProto();
+    return this.enrypt(blocks, this.dataService.password);
   }
 
-  enrypt(binary: Uint8Array, password: string): Blob {
+  enrypt(blocks: BinaryBlock[], password: string): Blob {
     // Encrypt
-    const encrypted: Uint8Array = this.cryptoService.enrypt(binary, password);
+    const encrypted: Uint8Array[] = blocks.map(block => {
+      if (block.isDecrypted) {
+        return this.cryptoService.encrypt(block.binary, password);
+      } else {
+        return block.binary;
+      }
+    });
     // Add header
     const czipHeader: Uint8Array = AES.utils.utf8.toBytes(META.header + META.version);
     const czipHeaderLen: Uint8Array = new Uint8Array(1);
     czipHeaderLen[0] = czipHeader.length;
+    const mapSize: Uint8Array = this.encodingService.int32ToUint8Array(encrypted[0].length);
     // Download
-    return new Blob([czipHeaderLen, czipHeader, encrypted]);
+    return new Blob([czipHeaderLen, czipHeader, mapSize, ...encrypted]);
   }
 
   unpack(binary: Uint8Array, password: string): void {
-    const encrypted: Uint8Array = this.removeHeader(binary);
+    const base: Uint8Array = this.removeHeader(binary);
+    const mapSizeBinary: Uint8Array = base.slice(0, INT32BYTES);
+    const mapSize: number = this.encodingService.uint8ArrayToint32(mapSizeBinary);
+    const encrypted: Uint8Array = base.slice(INT32BYTES, INT32BYTES + mapSize);
+    const blocks: Uint8Array = base.slice(INT32BYTES + mapSize);
+    this.dataService.blocks = blocks;
     const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, password);
     this.protoService.setProto(decrypted);
   }
@@ -88,6 +104,7 @@ export class ZipService {
       });
     } else if (node instanceof File) {
       let blob: Blob;
+      this.dataService.decryptFile(node);
       if (!node.isBinary) {
         // Download as text
         blob = new Blob(
@@ -97,7 +114,7 @@ export class ZipService {
       } else {
         // Download as binary
         blob = new Blob(
-          [node.binary],
+          [node.block.binary],
           { type: this.mediaService.getMimeType(node.name) },
         );
       }
@@ -113,9 +130,10 @@ export class ZipService {
         this.addFolderToZip(zipFolder, node);
       } else {
         const file = node as File;
+        this.dataService.decryptFile(file);
         jszip.file(
           file.name,
-          file.isBinary ? file.binary : file.text,
+          file.isBinary ? file.block.binary : file.text,
           {
             binary: file.isBinary,
             compression: 'DEFLATE',

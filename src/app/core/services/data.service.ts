@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { randCustomString, numerals } from 'rndmjs';
+import * as AES from 'aes-js';
 
 import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
 import { parsePath } from '@/core/functions';
+import { CryptoService } from './crypto.service';
 import { META } from '@/environments/meta';
 
 @Injectable()
@@ -18,9 +20,11 @@ export class DataService {
   file: File; // Current file (open in editor)
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
+  blocks: Uint8Array;
 
   constructor(
     private router: Router,
+    private cryptoService: CryptoService,
   ) { }
 
   setData(data: Data): void {
@@ -53,6 +57,9 @@ export class DataService {
   updateNode(node: Node): void {
     const now: number = Date.now();
     node.updatedTimestamp = now;
+    if (node instanceof File) {
+      node.block.isModified = true;
+    }
     for (let i = 0; i < 100; i++) {
       const parent: Folder = this.getParent(node);
       if (!parent || parent.path === '/') {
@@ -168,6 +175,39 @@ export class DataService {
     return folder;
   }
 
+  decryptThisFile(): void {
+    if (this.file && !this.file.block.isDecrypted) {
+      this.decryptFile(this.file);
+    }
+  }
+
+  decryptFile(file: File): void {
+    if (file && !file.block.isDecrypted) {
+      const start: number = file.block.position;
+      const size: number = file.block.size;
+      const encrypted: Uint8Array = this.blocks.slice(start, start + size);
+      const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, this.password);
+      if (file.isBinary) {
+        file.block.binary = decrypted;
+      } else {
+        file.text = AES.utils.utf8.fromBytes(decrypted);
+      }
+      file.block.isDecrypted = true;
+    }
+  }
+
+  decryptAllFiles(modify: boolean = false): void {
+    this.refresh(this.data.root);
+    for (const node of Object.values(this.nodeMap)) {
+      if (node instanceof File) {
+        this.decryptFile(node);
+        if (modify) {
+          node.block.isModified = true;
+        }
+      }
+    }
+  }
+
   destroy(): void {
     this.isDecrypted = false;
     this.isModified = false;
@@ -177,6 +217,7 @@ export class DataService {
     this.data = undefined;
     this.folder = undefined;
     this.file = undefined;
+    this.blocks = undefined;
     this.nodeMap = {};
     this.pathMap = {};
   }

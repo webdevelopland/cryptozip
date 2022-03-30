@@ -69,10 +69,14 @@ export class NodeService {
   }
 
   private getSizeOfFile(file: File): number {
-    if (file.isBinary) {
-      return file.binary.length;
+    if (file.block.isDecrypted) {
+      if (file.isBinary) {
+        return file.block.binary.length;
+      } else {
+        return new Blob([file.text]).size;
+      }
     } else {
-      return new Blob([file.text]).size;
+      return file.block.size;
     }
   }
 

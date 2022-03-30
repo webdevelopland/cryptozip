@@ -60,7 +60,7 @@ export class SearchService {
           break;
         case 'grid':
           searchResult.rank = 3;
-          searchResult.isContent = this.compareGrid(searchTerm, searchResult.node.binary);
+          searchResult.isContent = this.compareGrid(searchTerm, searchResult.node.block.binary);
           break;
         default: searchResult.rank = 0;
       }

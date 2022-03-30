@@ -20,7 +20,7 @@ export class Node {
 export class File extends Node {
   isBinary: boolean = false;
   text: string;
-  binary: Uint8Array;
+  block = new BinaryBlock();
 }
 
 export class Folder extends Node {
@@ -51,8 +51,22 @@ export class Data {
   root: Folder;
 }
 
-export class Password extends File {
-  createdTimestamp: number;
+export class BinaryBlock {
+  binary: Uint8Array;
+  position: number;
+  size: number;
+  // "false" means we need to take it from binary heap:
+  isDecrypted: boolean = true; // When read
+  isModified: boolean = true; // When save
+
+  constructor(binary?: Uint8Array, isDecrypted?: boolean) {
+    if (binary) {
+      this.binary = binary;
+    }
+    if (isDecrypted !== undefined) {
+      this.isDecrypted = isDecrypted;
+    }
+  }
 }
 
 export interface NodeMap {
