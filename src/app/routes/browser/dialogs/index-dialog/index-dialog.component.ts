@@ -7,16 +7,16 @@ import { Node } from '@/core/type';
 import { GetService } from '../../services/get.service';
 
 @Component({
-  selector: 'tag-dialog',
-  templateUrl: './tag-dialog.component.html',
-  styleUrls: ['./tag-dialog.component.scss'],
+  selector: 'index-dialog',
+  templateUrl: './index-dialog.component.html',
+  styleUrls: ['./index-dialog.component.scss'],
 })
-export class TagDialogComponent implements OnDestroy {
-  tags: string;
+export class IndexDialogComponent implements OnDestroy {
+  index: number;
   keySubscription = new Subscription();
 
   constructor(
-    private dialogRef: MatDialogRef<TagDialogComponent>,
+    private dialogRef: MatDialogRef<IndexDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public node: Node,
     private eventService: EventService,
     private notificationService: NotificationService,
@@ -24,7 +24,7 @@ export class TagDialogComponent implements OnDestroy {
     private dataService: DataService,
   ) {
     this.eventService.isDialog = true;
-    this.tags = this.node.tags.join(' ');
+    this.index = this.node.index;
     this.subscribeOnKeydown();
   }
 
@@ -37,7 +37,7 @@ export class TagDialogComponent implements OnDestroy {
   }
 
   save(): void {
-    this.node.tags = this.tags.toLowerCase().split(' ');
+    this.node.index = this.index;
     this.close();
   }
 

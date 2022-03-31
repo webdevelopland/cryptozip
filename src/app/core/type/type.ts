@@ -11,6 +11,7 @@ export class Node {
   sizeString: string;
   createdTimestamp: number;
   updatedTimestamp: number;
+  index: number = 0;
 
   constructor() {
     const now = Date.now();
@@ -54,9 +55,9 @@ export class Data {
 }
 
 export class BinaryBlock {
-  binary: Uint8Array;
+  binary = new Uint8Array();
   position: number;
-  size: number;
+  size: number = 0;
   isDecrypted: boolean = true;
   isModified: boolean = true;
 

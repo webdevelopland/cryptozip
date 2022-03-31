@@ -6,6 +6,4 @@ binary in general: ?
 
 - symbolic link or shortcut
 
-- index (To be able to sort by the index. To set order manually)
-
 - ability to open folders by path bar

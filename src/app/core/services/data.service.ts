@@ -122,6 +122,8 @@ export class DataService {
 
   sortABDefault(a: Node, b: Node): number {
     // Show parents before children
+    const indexStatus: number = b.index - a.index;
+    // Show parents before children
     const aNodeLength: number = parsePath(a.path).length;
     const bNodeLength: number = parsePath(b.path).length;
     const lengthStatus: number = aNodeLength - bNodeLength;
@@ -129,7 +131,9 @@ export class DataService {
     const aFolderStatus: number = a.isFolder ? 1 : 0;
     const bFolderStatus: number = b.isFolder ? 1 : 0;
     const folderStatus: number = bFolderStatus - aFolderStatus;
-    if (lengthStatus !== 0) {
+    if (indexStatus !== 0) {
+      return indexStatus;
+    } else if (lengthStatus !== 0) {
       return lengthStatus;
     } else if (folderStatus !== 0) {
       return folderStatus;

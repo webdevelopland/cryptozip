@@ -31,6 +31,7 @@ export class ProtoService {
         folder.setCreatedTimestamp(node.createdTimestamp);
         folder.setUpdatedTimestamp(node.updatedTimestamp);
         folder.setTagList(node.tags);
+        folder.setIndex(node.index);
         data.addFolder(folder);
       } else if (node instanceof File) {
         const file: Proto.File = this.getProtoFile(node);
@@ -75,20 +76,6 @@ export class ProtoService {
     this.dataService.setData(data);
   }
 
-  // Adds a node to tree
-  addToTree(nodeList: Node[], newNode: Node): void {
-    const parent: string = parsePath(newNode.path).parent;
-    for (const node of nodeList) {
-      if (
-        node.path !== newNode.path &&
-        node.path === parent &&
-        node instanceof Folder
-      ) {
-        node.nodes.push(newNode);
-      }
-    }
-  }
-
   getProtoFile(node: File): Proto.File {
     const file = new Proto.File();
     file.setPath(node.path);
@@ -96,6 +83,7 @@ export class ProtoService {
     file.setCreatedTimestamp(node.createdTimestamp);
     file.setUpdatedTimestamp(node.updatedTimestamp);
     file.setTagList(node.tags);
+    file.setIndex(node.index);
     return file;
   }
 
@@ -121,6 +109,7 @@ export class ProtoService {
     file.createdTimestamp = protoFile.getCreatedTimestamp();
     file.updatedTimestamp = protoFile.getUpdatedTimestamp();
     file.tags = protoFile.getTagList();
+    file.index = protoFile.getIndex();
     const block: Proto.Block = protoFile.getBlock();
     if (block) {
       file.block.position = block.getPosition();
@@ -144,6 +133,7 @@ export class ProtoService {
               folder.setCreatedTimestamp(mapNode.createdTimestamp);
               folder.setUpdatedTimestamp(mapNode.updatedTimestamp);
               folder.setTagList(mapNode.tags);
+              folder.setIndex(mapNode.index);
               data.addFolder(folder);
             } else if (mapNode instanceof File) {
               data.addFile(this.getProtoFileContent(mapNode));
@@ -163,19 +153,35 @@ export class ProtoService {
       folder.createdTimestamp = protoFolder.getCreatedTimestamp();
       folder.updatedTimestamp = protoFolder.getUpdatedTimestamp();
       folder.tags = protoFolder.getTagList();
+      folder.index = protoFolder.getIndex();
       nodeList.push(folder);
     }
     for (const protoFile of protoData.getFileList()) {
       nodeList.push(this.getFile(protoFile));
     }
-    nodeList.sort((a, b) => {
-      return this.dataService.sortABDefault(a, b);
-    });
+    let root: Folder;
     for (const node of nodeList) {
-      // Convert list to tree
+      if (node.path === '/' && node instanceof Folder) {
+        root = node;
+        continue;
+      }
       this.addToTree(nodeList, node);
     }
-    const rootLength: number = parsePath(nodeList[0].path).length;
+    const rootLength: number = parsePath(root.path).length;
     return nodeList.filter(node => parsePath(node.path).length === rootLength);
+  }
+
+  // Adds a node to tree
+  addToTree(nodeList: Node[], newNode: Node): void {
+    const parent: string = parsePath(newNode.path).parent;
+    for (const node of nodeList) {
+      if (
+        node.path !== newNode.path &&
+        node.path === parent &&
+        node instanceof Folder
+      ) {
+        node.nodes.push(newNode);
+      }
+    }
   }
 }

@@ -30,8 +30,8 @@ export class SearchService {
         const searchResult = new SearchResult(node);
         searchResult.icon = this.mediaService.getIcon(node);
         if (
-          (node.path.startsWith(this.where) &&
-          (this.tagString || this.what)) || this.isAll
+          node.path.startsWith(this.where) &&
+          (this.tagString || this.what || this.isAll)
         ) {
           if (this.what) {
             this.setTextRank(this.what, searchResult);
@@ -144,6 +144,7 @@ export class SearchService {
     this.folder = undefined;
     this.where = undefined;
     this.sortBy = undefined;
+    this.isAll = false;
     this.what = '';
     this.tagString = '';
     this.tags = [];

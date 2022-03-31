@@ -9,6 +9,7 @@ import {
   RenameDialogComponent,
   AddDialogComponent,
   TagDialogComponent,
+  IndexDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
@@ -39,6 +40,7 @@ export class DialogService {
           case 'send': this.fileService.transferTo(); break;
           case 'export': this.zipService.export(node, node.name); break;
           case 'tags': this.openTagsDialog(node); break;
+          case 'index': this.openIndexDialog(node); break;
           case 'properties': this.fileService.showProperties(node); break;
         }
       });
@@ -71,6 +73,17 @@ export class DialogService {
     this.branchService.unselectAll();
     node.isSelected = true;
     this.matDialog.open(TagDialogComponent, {
+      data: node
+    }).afterClosed().subscribe(() => {
+      this.dataService.updateNode(node);
+      this.dataService.modify();
+    });
+  }
+
+  openIndexDialog(node: Node): void {
+    this.branchService.unselectAll();
+    node.isSelected = true;
+    this.matDialog.open(IndexDialogComponent, {
       data: node
     }).afterClosed().subscribe(() => {
       this.dataService.updateNode(node);
