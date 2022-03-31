@@ -2,7 +2,8 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Folder } from '@/core/type';
+import { Folder, Node } from '@/core/type';
+import { Path } from '@/core/functions';
 import {
   DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
 } from '@/core/services';
@@ -15,6 +16,7 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
   styleUrls: ['./browser.component.scss'],
 })
 export class BrowserComponent implements OnDestroy {
+  isFocus: boolean = false;
   subs: Subscription[] = [];
 
   constructor(
@@ -41,7 +43,23 @@ export class BrowserComponent implements OnDestroy {
     if (parent && this.dataService.folder.path !== '/') {
       this.branchService.unselectAll();
       this.dataService.folder.isSelected = true;
-      this.dataService.folder = parent;
+      this.dataService.updatePath(parent);
+    }
+  }
+
+  open(): void {
+    this.dataService.path = Path.join(this.dataService.path);
+    this.dataService.path = this.dataService.path || '/';
+    const id: string = this.dataService.pathMap[this.dataService.path];
+    if (id) {
+      const node: Node = this.dataService.nodeMap[id];
+      if (node instanceof Folder) {
+        this.dataService.folder = node;
+      } else {
+        this.notificationService.warning('Not a folder');
+      }
+    } else {
+      this.notificationService.warning('Not found');
     }
   }
 
@@ -51,13 +69,13 @@ export class BrowserComponent implements OnDestroy {
         // Disable, if dialog is open
         return;
       }
-      if (event.code === 'KeyX' && event.ctrlKey) {
+      if (event.code === 'KeyX' && event.ctrlKey && !this.isFocus) {
         this.fileService.cut();
       }
-      if (event.code === 'KeyC' && event.ctrlKey) {
+      if (event.code === 'KeyC' && event.ctrlKey && !this.isFocus) {
         this.fileService.copy();
       }
-      if (event.code === 'KeyV' && event.ctrlKey) {
+      if (event.code === 'KeyV' && event.ctrlKey && !this.isFocus) {
         event.preventDefault();
         this.fileService.paste();
       }
@@ -69,6 +87,10 @@ export class BrowserComponent implements OnDestroy {
       if (event.code === 'Delete') {
         event.preventDefault();
         this.dialogService.askToDelete();
+      }
+      if (event.key === 'Enter' && this.isFocus) {
+        event.preventDefault();
+        this.open();
       }
       if (event.code === 'Equal' && event.ctrlKey) {
         event.preventDefault();
@@ -82,7 +104,7 @@ export class BrowserComponent implements OnDestroy {
         event.preventDefault();
         this.fileService.addGrid();
       }
-      if (event.code === 'Backspace') {
+      if (event.code === 'Backspace' && !this.isFocus) {
         event.preventDefault();
         this.back();
       }
@@ -94,6 +116,10 @@ export class BrowserComponent implements OnDestroy {
             break;
           }
         }
+      }
+      if (event.code === 'KeyA' && event.ctrlKey && !this.isFocus) {
+        event.preventDefault();
+        this.dataService.folder.nodes.forEach(node => node.isSelected = true);
       }
       if (event.code === 'KeyA' && event.altKey) {
         event.preventDefault();
@@ -108,6 +134,14 @@ export class BrowserComponent implements OnDestroy {
         this.fileService.readClipboard();
       }
     }));
+  }
+
+  focus(): void {
+    this.isFocus = true;
+  }
+
+  blur(): void {
+    this.isFocus = false;
   }
 
   sub(sub: Subscription): void {

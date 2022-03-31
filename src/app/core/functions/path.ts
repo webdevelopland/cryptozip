@@ -3,7 +3,7 @@ export class Path {
     return args
       .map(path => {
         if (path && path.endsWith('/')) {
-          path = path.slice(0, -1);
+          path = path.replace(/(\/)+$/g, '');
         }
         return path;
       })

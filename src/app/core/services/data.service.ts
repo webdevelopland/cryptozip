@@ -17,6 +17,7 @@ export class DataService {
   id: string;
   password: string;
   data: Data;
+  path: string;
   folder: Folder; // Current folder (open in browser)
   file: File; // Current file (open in editor)
   nodeMap: NodeMap = {};
@@ -31,7 +32,7 @@ export class DataService {
 
   setData(data: Data): void {
     this.data = data;
-    this.folder = data.root;
+    this.updatePath(data.root);
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.data.root);
@@ -46,6 +47,13 @@ export class DataService {
     this.refresh(this.data.root);
     this.nodeService.getNodeInfo(this.data.root);
     this.isModified = true;
+  }
+
+  updatePath(folder: Folder): void {
+    if (folder) {
+      this.folder = folder;
+      this.path = this.folder.path;
+    }
   }
 
   update(): void {
@@ -232,6 +240,7 @@ export class DataService {
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
+    this.path = undefined;
     this.folder = undefined;
     this.file = undefined;
     this.blocks = undefined;

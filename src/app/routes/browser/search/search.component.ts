@@ -20,7 +20,7 @@ export class SearchComponent implements OnDestroy {
     private mediaService: MediaService,
     private eventService: EventService,
   ) {
-    this.dataService.folder = this.searchService.folder;
+    this.dataService.updatePath(this.searchService.folder);
     this.keyboardEvents();
   }
 
@@ -48,7 +48,7 @@ export class SearchComponent implements OnDestroy {
 
   open(searchResult: SearchResult): void {
     if (searchResult.node instanceof Folder) {
-      this.dataService.folder = searchResult.node;
+      this.dataService.updatePath(searchResult.node);
       this.router.navigate(['/browser']);
     } else {
       this.openFile(searchResult.node as File);
@@ -68,7 +68,7 @@ export class SearchComponent implements OnDestroy {
   private setParentFolder(file: File): void {
     const parent: Folder = this.dataService.getParent(file);
     if (parent) {
-      this.dataService.folder = parent;
+      this.dataService.updatePath(parent);
     }
   }
 
@@ -81,7 +81,7 @@ export class SearchComponent implements OnDestroy {
   }
 
   close(): void {
-    this.dataService.folder = this.searchService.folder;
+    this.dataService.updatePath(this.searchService.folder);
     this.router.navigate(['/browser']);
   }
 

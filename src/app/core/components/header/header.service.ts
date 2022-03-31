@@ -67,7 +67,7 @@ export class HeaderService {
 
   root(): void {
     this.isMenu = false;
-    this.dataService.folder = this.dataService.data.root;
+    this.dataService.updatePath(this.dataService.data.root);
     this.router.navigate(['/browser']);
   }
 

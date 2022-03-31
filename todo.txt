@@ -5,5 +5,3 @@ audio: ?
 binary in general: ?
 
 - symbolic link or shortcut
-
-- ability to open folders by path bar

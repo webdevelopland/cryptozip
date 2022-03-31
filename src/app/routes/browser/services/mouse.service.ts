@@ -34,7 +34,7 @@ export class MouseService {
     node.isSelected = true;
     if (node instanceof Folder) {
       this.branchService.unselectAll();
-      this.dataService.folder = node;
+      this.dataService.updatePath(node);
     } else {
       this.dataService.file = node as File;
       switch (this.mediaService.getMediaType(node.name)) {
