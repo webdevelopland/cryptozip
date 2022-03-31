@@ -1,10 +1,11 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
+      <button (click)="locationService.back()">&#60;</button>
       <button (click)="close()">...</button>
     </div>
     <div class="path">
-      <input type="text" readonly="true" [value]="dataService.file.path">
+      <input type="text" readonly="true" [value]="locationService.file.path">
     </div>
   </div>
   <div class="image">

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription, interval } from 'rxjs';
 
-import { DataService, NotificationService, EventService } from '@/core/services';
+import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 
 @Component({
@@ -18,30 +18,33 @@ export class TextComponent implements OnDestroy {
 
   constructor(
     public router: Router,
+    private matDialog: MatDialog,
     public dataService: DataService,
     private notificationService: NotificationService,
     private eventService: EventService,
-    private matDialog: MatDialog,
+    public locationService: LocationService,
   ) {
     this.eventService.isEditing = true;
     this.start();
   }
 
   start(): void {
-    if (this.dataService.file) {
-      this.dataService.decryptThisFile();
-      this.content = this.dataService.file.text;
+    if (this.locationService.file) {
+      this.dataService.decryptFile(this.locationService.file);
+      this.locationService.updateParent(this.locationService.file);
+      this.content = this.locationService.file.text;
       this.keyboardEvents();
       this.checkModified();
     } else {
       this.notificationService.error('File not found');
+      this.locationService.cancel();
       this.close();
     }
   }
 
   save(): void {
-    this.dataService.file.text = this.content;
-    this.dataService.updateNode(this.dataService.file);
+    this.locationService.file.text = this.content;
+    this.locationService.updateNode(this.locationService.file);
     this.dataService.modify();
     this.dataService.isFileModified = false;
     this.notificationService.success('File saved');
@@ -49,20 +52,28 @@ export class TextComponent implements OnDestroy {
 
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
-      this.dataService.isFileModified = this.content !== this.dataService.file.text;
+      this.dataService.isFileModified = this.content !== this.locationService.file.text;
     });
   }
 
-  checkSave(): void {
-    if (this.dataService.file.text === this.content) {
-      this.close();
+  askClose(): void {
+    this.ask(() => this.close());
+  }
+
+  askBack(): void {
+    this.ask(() => this.locationService.back());
+  }
+
+  ask(callback: Function): void {
+    if (this.locationService.file.text === this.content) {
+      callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved progress. Close?' },
         autoFocus: false,
       }).afterClosed().subscribe(confirm => {
         if (confirm) {
-          this.close();
+          callback();
         }
       });
     }
@@ -78,6 +89,7 @@ export class TextComponent implements OnDestroy {
   }
 
   close(): void {
+    this.locationService.updatePath(this.locationService.folder);
     this.router.navigate(['/browser']);
   }
 

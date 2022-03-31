@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
-import { EventService, NotificationService, DataService } from '@/core/services';
+import { EventService, NotificationService, DataService, LocationService } from '@/core/services';
 import { Node } from '@/core/type';
 import { GetService } from '../../services/get.service';
 
@@ -22,6 +22,7 @@ export class RenameDialogComponent implements OnDestroy {
     private notificationService: NotificationService,
     private getService: GetService,
     private dataService: DataService,
+    private locationService: LocationService,
   ) {
     this.eventService.isDialog = true;
     this.newName = node.name;
@@ -74,7 +75,8 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   private checkAlreadyExists(): void {
-    const nodes: Node[] = this.dataService.folder.nodes.filter(node => node.id !== this.node.id);
+    const nodes: Node[] = this.locationService.folder.nodes
+      .filter(node => node.id !== this.node.id);
     if (this.getService.checkNodeAlreadyExists(this.newName, nodes)) {
       this.notificationService.warning('"' + this.newName + '" already exists');
     } else {

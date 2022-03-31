@@ -11,6 +11,7 @@ import {
   NotificationService,
   ClipboardService,
   EventService,
+  LocationService,
 } from '@/core/services';
 
 @Injectable()
@@ -27,14 +28,16 @@ export class HeaderService {
     private notificationService: NotificationService,
     private clipboardService: ClipboardService,
     private eventService: EventService,
+    private locationService: LocationService,
   ) { }
 
   search(): void {
-    this.searchService.folder = this.dataService.folder;
-    this.searchService.where = this.dataService.folder.path;
+    this.searchService.folder = this.locationService.folder;
+    this.searchService.where = this.locationService.folder.path;
     this.searchService.what = '';
     this.searchService.tagString = '';
     this.searchService.tags = [];
+    this.locationService.openSearch(this.locationService.folder.path);
   }
 
   download(): void {
@@ -67,7 +70,8 @@ export class HeaderService {
 
   root(): void {
     this.isMenu = false;
-    this.dataService.updatePath(this.dataService.data.root);
+    this.locationService.updatePath(this.dataService.data.root);
+    this.dataService.unselectAll();
     this.router.navigate(['/browser']);
   }
 
@@ -111,6 +115,7 @@ export class HeaderService {
     this.searchService.destroy();
     this.loadingService.destroy();
     this.notificationService.destroy();
+    this.locationService.destroy();
   }
 
   exit(): void {

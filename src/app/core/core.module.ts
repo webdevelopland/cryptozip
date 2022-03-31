@@ -17,6 +17,7 @@ import {
   NodeService,
   SearchService,
   EncodingService,
+  LocationService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -44,6 +45,7 @@ import { HeaderModule } from './components/header';
     NodeService,
     SearchService,
     EncodingService,
+    LocationService,
   ],
 })
 export class CoreModule { }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { randstr64 } from 'rndmjs';
 
 import { Node, Folder, File, NodeMap } from '@/core/type';
+import { parseFilename } from '@/core/functions';
 
 @Injectable()
 export class GetService {
@@ -27,7 +28,7 @@ export class GetService {
         ext = '';
       } else {
         // code.js.map -> [code, js.map]
-        const fileparse: string[] = this.parseFilename(newName);
+        const fileparse: string[] = parseFilename(newName);
         filename = fileparse[0];
         ext = '.' + fileparse[1];
       }
@@ -59,13 +60,6 @@ export class GetService {
       }
     }
     return newName;
-  }
-
-  // code.js.map -> [code, js.map]
-  parseFilename(filename: string): string[] {
-    const name: string = filename.split('.').reverse().pop();
-    const ext: string = filename.substr(name.length + 1, filename.length - 1);
-    return [name, ext];
   }
 
   isCutBlock(thisFolder: Folder, nodes: Node[]): boolean {

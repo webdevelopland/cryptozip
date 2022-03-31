@@ -10,3 +10,20 @@ export function parsePath(path: string): Parse {
     nodes: nodes,
   };
 }
+
+// code.js.map -> [code, js.map]
+export function parseFilename(filename: string): string[] {
+  const name: string = filename.split('.').reverse().pop();
+  const ext: string = filename.substr(name.length + 1, filename.length - 1);
+  return [name, ext];
+}
+
+// code.js -> code
+export function getName(filename: string, isFolder: boolean): string {
+  if (isFolder) {
+    return filename;
+  } else {
+    const fileparse: string[] = parseFilename(filename);
+    return fileparse[0];
+  }
+}

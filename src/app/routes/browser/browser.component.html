@@ -1,7 +1,8 @@
 <div class="page" *ngIf="dataService.isDecrypted">
   <div class="controls">
     <div class="buttons">
-      <button (click)="back()">...</button>
+      <button (click)="locationService.back()">&#60;</button>
+      <button (click)="up()">...</button>
       <button (click)="dialogService.showAddDialog()">+</button>
       <button (click)="dialogService.showSortDialog()">Sort</button>
       <button (click)="fileService.readClipboard()">Transfer</button>
@@ -14,7 +15,7 @@
       <input
         type="text"
         spellcheck=false
-        [(ngModel)]="dataService.path"
+        [(ngModel)]="locationService.path"
         (focus)="focus()"
         (blur)="blur()"
       >
@@ -23,7 +24,7 @@
   <div class="explorer">
     <div
       class="node"
-      *ngFor="let node of dataService.folder.nodes"
+      *ngFor="let node of locationService.folder.nodes"
       (click)="mouseService.click(node)"
       (dblclick)="mouseService.dblclick(node)"
       (contextmenu)="mouseService.contextmenu($event, node)"

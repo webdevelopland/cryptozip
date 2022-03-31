@@ -2,8 +2,10 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { File, Folder, SearchResult } from '@/core/type';
-import { DataService, SearchService, MediaService, EventService } from '@/core/services';
+import { SearchResult } from '@/core/type';
+import {
+  DataService, SearchService, MediaService, EventService, LocationService
+} from '@/core/services';
 
 @Component({
   selector: 'page-search',
@@ -19,8 +21,10 @@ export class SearchComponent implements OnDestroy {
     public searchService: SearchService,
     private mediaService: MediaService,
     private eventService: EventService,
+    public locationService: LocationService,
   ) {
-    this.dataService.updatePath(this.searchService.folder);
+    this.locationService.updatePath(this.searchService.folder, false);
+    this.dataService.unselectAll();
     this.keyboardEvents();
   }
 
@@ -47,29 +51,8 @@ export class SearchComponent implements OnDestroy {
   }
 
   open(searchResult: SearchResult): void {
-    if (searchResult.node instanceof Folder) {
-      this.dataService.updatePath(searchResult.node);
-      this.router.navigate(['/browser']);
-    } else {
-      this.openFile(searchResult.node as File);
-    }
-  }
-
-  openFile(file: File): void {
-    this.dataService.file = file;
-    this.setParentFolder(file);
-    switch (this.mediaService.getMediaType(file.name)) {
-      case 'text': this.router.navigate(['/browser/text']); break;
-      case 'image': this.router.navigate(['/browser/image']); break;
-      case 'grid': this.router.navigate(['/browser/grid']); break;
-    }
-  }
-
-  private setParentFolder(file: File): void {
-    const parent: Folder = this.dataService.getParent(file);
-    if (parent) {
-      this.dataService.updatePath(parent);
-    }
+    searchResult.node.isSelected = true;
+    this.locationService.openNode(searchResult.node);
   }
 
   clear(): void {
@@ -81,7 +64,7 @@ export class SearchComponent implements OnDestroy {
   }
 
   close(): void {
-    this.dataService.updatePath(this.searchService.folder);
+    this.locationService.updatePath(this.searchService.folder);
     this.router.navigate(['/browser']);
   }
 

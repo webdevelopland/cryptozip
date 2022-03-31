@@ -44,10 +44,6 @@ export class BranchService {
     }
   }
 
-  unselectAll(): void {
-    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
-  }
-
   copyFolderNodes(originFolder: Folder, path: string): Node[] {
     const children: Node[] = [];
     originFolder.nodes.forEach(node => {

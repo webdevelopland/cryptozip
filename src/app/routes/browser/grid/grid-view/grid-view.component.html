@@ -1,11 +1,12 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
+      <button (click)="locationService.back()">&#60;</button>
       <button (click)="close()">...</button>
       <button [routerLink]="['/browser/grid-edit']">Edit</button>
     </div>
     <div class="path">
-      <input type="text" readonly="true" [value]="dataService.file.path">
+      <input type="text" readonly="true" [value]="locationService.file.path">
     </div>
   </div>
   <div class="flex">

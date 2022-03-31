@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { DataService, MediaService, NotificationService } from '@/core/services';
+import { DataService, MediaService, NotificationService, LocationService } from '@/core/services';
 
 @Component({
   selector: 'page-image',
@@ -16,23 +16,26 @@ export class ImageComponent {
     public dataService: DataService,
     public mediaService: MediaService,
     private notificationService: NotificationService,
+    public locationService: LocationService,
   ) {
     this.start();
   }
 
   start(): void {
-    if (!this.dataService.file || !this.dataService.file.isBinary) {
+    if (!this.locationService.file || !this.locationService.file.isBinary) {
       this.notificationService.error('Invalid image');
+      this.locationService.cancel();
       this.close();
     } else {
-      this.dataService.decryptThisFile();
+      this.dataService.decryptFile(this.locationService.file);
+      this.locationService.updateParent(this.locationService.file);
       this.updateBase64();
     }
   }
 
   updateBase64(): void {
-    const mime: string = this.mediaService.getMimeType(this.dataService.file.name);
-    const base64: string = this.uint8ArrayToBase64(this.dataService.file.block.binary);
+    const mime: string = this.mediaService.getMimeType(this.locationService.file.name);
+    const base64: string = this.uint8ArrayToBase64(this.locationService.file.block.binary);
     this.base64 = `data:${mime};base64,` + base64;
   }
 
@@ -44,6 +47,7 @@ export class ImageComponent {
   }
 
   close(): void {
+    this.locationService.updatePath(this.locationService.folder);
     this.router.navigate(['/browser']);
   }
 }

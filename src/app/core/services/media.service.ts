@@ -101,6 +101,8 @@ export class MediaService {
       return 'image';
     } else if (this.getExtension(filename) === 'grid') {
       return 'grid';
+    } else if (this.getExtension(filename) === 'link') {
+      return 'link';
     } else {
       return 'binary';
     }
@@ -113,6 +115,7 @@ export class MediaService {
       switch (this.getMediaType(node.name)) {
         case 'text': return 'insert_drive_file';
         case 'grid': return 'grid_view';
+        case 'link': return 'file_open';
         default: return 'category';
       }
     }
