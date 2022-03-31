@@ -3,13 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService } from '@/core/services';
-import { ConfirmDialogComponent } from '@/shared/dialogs';
+import { ConfirmDialogComponent, SortDialogComponent } from '@/shared/dialogs';
 import {
   ContextDialogComponent,
   RenameDialogComponent,
   AddDialogComponent,
   TagDialogComponent,
-  SortDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';

@@ -24,16 +24,17 @@ export class TextComponent implements OnDestroy {
     private matDialog: MatDialog,
   ) {
     this.eventService.isEditing = true;
-    this.dataService.decryptThisFile();
     this.start();
   }
 
   start(): void {
     if (this.dataService.file) {
+      this.dataService.decryptThisFile();
       this.content = this.dataService.file.text;
       this.keyboardEvents();
       this.checkModified();
     } else {
+      this.notificationService.error('File not found');
       this.close();
     }
   }

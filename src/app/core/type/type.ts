@@ -6,9 +6,11 @@ export class Node {
   id: string = randstr64(20);
   isSelected: boolean = false;
   isFolder: boolean = false;
+  tags: string[] = [];
+  size: number;
+  sizeString: string;
   createdTimestamp: number;
   updatedTimestamp: number;
-  tags: string[] = [];
 
   constructor() {
     const now = Date.now();
@@ -55,9 +57,8 @@ export class BinaryBlock {
   binary: Uint8Array;
   position: number;
   size: number;
-  // "false" means we need to take it from binary heap:
-  isDecrypted: boolean = true; // When read
-  isModified: boolean = true; // When save
+  isDecrypted: boolean = true;
+  isModified: boolean = true;
 
   constructor(binary?: Uint8Array, isDecrypted?: boolean) {
     if (binary) {
@@ -66,6 +67,16 @@ export class BinaryBlock {
     if (isDecrypted !== undefined) {
       this.isDecrypted = isDecrypted;
     }
+  }
+
+  copy(): BinaryBlock {
+    const bb = new BinaryBlock();
+    bb.binary = this.binary;
+    bb.position = this.position;
+    bb.size = this.size;
+    bb.isDecrypted = this.isDecrypted;
+    bb.isModified = this.isModified;
+    return bb;
   }
 }
 

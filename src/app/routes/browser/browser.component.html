@@ -29,8 +29,14 @@
       <div class="icon">
         <mat-icon>{{ mediaService.getIcon(node) }}</mat-icon>
       </div>
-      <div class="name">
+      <div class="name text">
         <span class="ellipsis">{{ node.name }}</span>
+      </div>
+      <div class="size text">
+        <span>{{ node.sizeString }}</span>
+      </div>
+      <div class="modified text">
+        <span>{{ node.updatedTimestamp | date:'dd/MM/yyyy' }}</span>
       </div>
     </div>
   </div>

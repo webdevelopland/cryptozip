@@ -13,7 +13,7 @@ import {
   SearchService,
 } from '@/core/services';
 import {
-  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent
+  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, SortDialogComponent
 } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 import { META } from '@/environments/meta';
@@ -80,7 +80,7 @@ export class HeaderComponent {
     this.headerService.isMenu = false;
   }
 
-  decryptAll(): void {
+  decrypt(): void {
     this.headerService.isMenu = false;
     this.loadingService.loads++;
     setTimeout(() => {
@@ -88,6 +88,19 @@ export class HeaderComponent {
       this.loadingService.loads--;
       this.notificationService.success('Decrypted');
     }, 0);
+  }
+
+  sort(): void {
+    this.headerService.isMenu = false;
+    this.matDialog.open(SortDialogComponent, {
+      panelClass: 'context-dialog',
+    })
+      .afterClosed().subscribe(sortBy => {
+        if (sortBy) {
+          this.dataService.sortAll(sortBy);
+          this.searchService.sortAll(sortBy);
+        }
+      });
   }
 
   search(): void {

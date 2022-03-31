@@ -35,7 +35,14 @@ export class SearchComponent implements OnDestroy {
 
   search(): void {
     this.dataService.decryptAllFiles();
+    this.searchService.isAll = false;
     this.searchService.tags = this.searchService.tagString.split(' ');
+    this.searchService.search(Object.values(this.dataService.nodeMap));
+  }
+
+  all(): void {
+    this.clear();
+    this.searchService.isAll = true;
     this.searchService.search(Object.values(this.dataService.nodeMap));
   }
 
@@ -70,6 +77,7 @@ export class SearchComponent implements OnDestroy {
     this.searchService.tagString = '';
     this.searchService.tags = [];
     this.searchService.searchResults = [];
+    this.searchService.isAll = false;
   }
 
   close(): void {

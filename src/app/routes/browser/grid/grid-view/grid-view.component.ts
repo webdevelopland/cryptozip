@@ -19,21 +19,24 @@ export class GridViewComponent {
     public dataService: DataService,
     public notificationService: NotificationService,
   ) {
-    this.dataService.decryptThisFile();
     this.start();
   }
 
   start(): void {
     if (this.dataService.file) {
+      this.dataService.decryptThisFile();
       try {
         if (this.dataService.file.isBinary && this.dataService.file.block.binary) {
           this.loadProto(this.dataService.file.block.binary);
+        } else {
+          throw new Error();
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
         this.close();
       }
     } else {
+      this.notificationService.error('Grid not found');
       this.close();
     }
   }

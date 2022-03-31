@@ -30,20 +30,28 @@ export class GridEditComponent implements OnDestroy {
     private matDialog: MatDialog,
   ) {
     this.eventService.isEditing = true;
+    this.start();
+  }
+
+  start(): void {
     if (this.dataService.file) {
+      this.dataService.decryptThisFile();
       try {
         if (this.dataService.file.isBinary && this.dataService.file.block.binary) {
           this.loadProto(this.dataService.file.block.binary);
+        } else {
+          throw new Error();
         }
       } catch (e) {
         this.notificationService.error('Grid invalid');
         this.close();
       }
+      this.keyboardEvents();
+      this.checkModified();
     } else {
+      this.notificationService.error('Grid not found');
       this.close();
     }
-    this.keyboardEvents();
-    this.checkModified();
   }
 
   add(): void {

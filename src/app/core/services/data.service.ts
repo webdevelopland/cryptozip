@@ -6,6 +6,7 @@ import * as AES from 'aes-js';
 import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
 import { parsePath } from '@/core/functions';
 import { CryptoService } from './crypto.service';
+import { NodeService } from './node.service';
 import { META } from '@/environments/meta';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class DataService {
   constructor(
     private router: Router,
     private cryptoService: CryptoService,
+    private nodeService: NodeService,
   ) { }
 
   setData(data: Data): void {
@@ -33,6 +35,7 @@ export class DataService {
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.data.root);
+    this.nodeService.getNodeInfo(this.data.root);
     this.id = data.meta.id;
     this.isDecrypted = true;
   }
@@ -41,6 +44,7 @@ export class DataService {
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.data.root);
+    this.nodeService.getNodeInfo(this.data.root);
     this.isModified = true;
   }
 
@@ -57,7 +61,7 @@ export class DataService {
   updateNode(node: Node): void {
     const now: number = Date.now();
     node.updatedTimestamp = now;
-    if (node instanceof File) {
+    if (node instanceof File && node.block.isDecrypted) {
       node.block.isModified = true;
     }
     for (let i = 0; i < 100; i++) {
@@ -81,7 +85,7 @@ export class DataService {
     }
   }
 
-  refresh(folder: Folder): void {
+  private refresh(folder: Folder): void {
     this.nodeMap[folder.id] = folder;
     this.pathMap[folder.path] = folder.id;
     folder.nodes.forEach(node => {
@@ -94,11 +98,23 @@ export class DataService {
     this.sort(folder);
   }
 
-  sort(folder: Folder): void {
+  sortAll(sortBy?: string): void {
+    this.refresh(this.data.root);
+    for (const node of Object.values(this.nodeMap)) {
+      if (node instanceof Folder) {
+        this.sort(node, sortBy);
+      }
+    }
+  }
+
+  sort(folder: Folder, sortBy?: string): void {
     folder.nodes.sort((a, b) => {
-      switch (folder.sortBy) {
+      const folderSortBy: string = sortBy || folder.sortBy;
+      folder.sortBy = folderSortBy;
+      switch (folderSortBy) {
         case 'az': return a.name.localeCompare(b.name);
         case 'modified': return b.updatedTimestamp - a.updatedTimestamp;
+        case 'size': return b.size - a.size;
         default: return this.sortABDefault(a, b);
       }
     });
@@ -176,9 +192,7 @@ export class DataService {
   }
 
   decryptThisFile(): void {
-    if (this.file && !this.file.block.isDecrypted) {
-      this.decryptFile(this.file);
-    }
+    this.decryptFile(this.file);
   }
 
   decryptFile(file: File): void {

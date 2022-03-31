@@ -7,7 +7,11 @@ import { AutosizeModule } from 'ngx-autosize';
 
 import { MaterialModule } from '@/import';
 import {
-  InfoDialogComponent, ConfirmDialogComponent, PasswordDialogComponent, IdDialogComponent
+  InfoDialogComponent,
+  ConfirmDialogComponent,
+  PasswordDialogComponent,
+  IdDialogComponent,
+  SortDialogComponent,
 } from './dialogs';
 import { HtmlDirective, FocusDirective } from './directives';
 
@@ -16,6 +20,7 @@ const ExportDeclarations = [
   InfoDialogComponent,
   PasswordDialogComponent,
   IdDialogComponent,
+  SortDialogComponent,
   HtmlDirective,
   FocusDirective,
 ];

@@ -30,6 +30,7 @@ export class FileService {
     file.isBinary = false;
     this.branchService.unselectAll();
     this.addFile(file);
+    this.dataService.updateNode(file);
     this.dataService.modify();
     return file;
   }
@@ -39,7 +40,6 @@ export class FileService {
     file.name = newName;
     file.path = Path.join(this.dataService.folder.path, newName);
     this.dataService.folder.push(file);
-    this.dataService.updateNode(file);
     file.isSelected = true;
     return file;
   }
@@ -137,15 +137,7 @@ export class FileService {
         folder.nodes = this.branchService.copyFolderNodes(node, newPath);
         return folder;
       } else if (node instanceof File) {
-        const file: File = this.dataService.getFile(newPath, id);
-        file.isBinary = node.isBinary;
-        file.block = node.block;
-        if (node.isBinary) {
-          file.block.binary = node.block.binary;
-        } else {
-          file.text = node.text;
-        }
-        return file;
+        return this.branchService.copyFile(node, newPath, id);
       }
     });
     this.branchService.unselectAll();
@@ -198,7 +190,6 @@ export class FileService {
           this.branchService.connectBranch(node, this.dataService.folder);
           this.dataService.folder.push(node);
           node.isSelected = true;
-          this.dataService.updateNode(node);
         }
       });
       this.dataService.updateNode(this.dataService.folder);
