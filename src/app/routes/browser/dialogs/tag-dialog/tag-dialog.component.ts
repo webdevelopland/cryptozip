@@ -37,8 +37,7 @@ export class TagDialogComponent implements OnDestroy {
   }
 
   save(): void {
-    this.node.tags = this.tags.toLowerCase().split(' ');
-    this.close();
+    this.dialogRef.close(this.tags.toLowerCase().split(' '));
   }
 
   close(): void {

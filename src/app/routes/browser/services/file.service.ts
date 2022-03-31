@@ -133,7 +133,7 @@ export class FileService {
       const id: string = this.clipboardService.isCut ? node.id : undefined;
       const newPath: string = Path.join(this.dataService.folder.path, newName);
       if (node instanceof Folder) {
-        const folder: Folder = this.dataService.getFolder(newPath, id);
+        const folder: Folder = this.branchService.copyFolder(node, newPath, id);
         folder.nodes = this.branchService.copyFolderNodes(node, newPath);
         return folder;
       } else if (node instanceof File) {

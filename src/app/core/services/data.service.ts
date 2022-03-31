@@ -109,9 +109,8 @@ export class DataService {
 
   sort(folder: Folder, sortBy?: string): void {
     folder.nodes.sort((a, b) => {
-      const folderSortBy: string = sortBy || folder.sortBy;
-      folder.sortBy = folderSortBy;
-      switch (folderSortBy) {
+      folder.sortBy = sortBy || folder.sortBy;
+      switch (folder.sortBy) {
         case 'az': return a.name.localeCompare(b.name);
         case 'modified': return b.updatedTimestamp - a.updatedTimestamp;
         case 'size': return b.size - a.size;

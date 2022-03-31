@@ -54,7 +54,7 @@ export class BranchService {
       const id: string = this.clipboardService.isCut ? node.id : undefined;
       const newPath: string = Path.join(path, node.name);
       if (node instanceof Folder) {
-        const folder: Folder = this.dataService.getFolder(newPath, id);
+        const folder: Folder = this.copyFolder(node, path, id);
         folder.nodes = this.copyFolderNodes(node, newPath);
         children.push(folder);
       } else if (node instanceof File) {
@@ -64,12 +64,22 @@ export class BranchService {
     return children;
   }
 
+  copyFolder(node: Folder, path: string, id?: string): Folder {
+    const folder: Folder = this.dataService.getFolder(path, id);
+    folder.tags = node.tags;
+    folder.index = node.index;
+    folder.createdTimestamp = node.createdTimestamp;
+    folder.updatedTimestamp = node.updatedTimestamp;
+    return folder;
+  }
+
   copyFile(node: File, path: string, id?: string): File {
     const file: File = this.dataService.getFile(path, id);
     file.isBinary = node.isBinary;
     file.block = node.block.copy();
     file.text = node.text;
     file.tags = node.tags;
+    file.index = node.index;
     file.createdTimestamp = node.createdTimestamp;
     file.updatedTimestamp = node.updatedTimestamp;
     return file;

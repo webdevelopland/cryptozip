@@ -74,9 +74,12 @@ export class DialogService {
     node.isSelected = true;
     this.matDialog.open(TagDialogComponent, {
       data: node
-    }).afterClosed().subscribe(() => {
-      this.dataService.updateNode(node);
-      this.dataService.modify();
+    }).afterClosed().subscribe(tags => {
+      if (tags !== undefined) {
+        node.tags = tags;
+        this.dataService.updateNode(node);
+        this.dataService.modify();
+      }
     });
   }
 
@@ -85,9 +88,12 @@ export class DialogService {
     node.isSelected = true;
     this.matDialog.open(IndexDialogComponent, {
       data: node
-    }).afterClosed().subscribe(() => {
-      this.dataService.updateNode(node);
-      this.dataService.modify();
+    }).afterClosed().subscribe(index => {
+      if (index !== undefined) {
+        node.index = index;
+        this.dataService.updateNode(node);
+        this.dataService.modify();
+      }
     });
   }
 

@@ -31,7 +31,7 @@ export class ImageComponent {
   }
 
   updateBase64(): void {
-    const mime: string = this.mediaService.getMime(this.dataService.file.name);
+    const mime: string = this.mediaService.getMimeType(this.dataService.file.name);
     const base64: string = this.uint8ArrayToBase64(this.dataService.file.block.binary);
     this.base64 = `data:${mime};base64,` + base64;
   }

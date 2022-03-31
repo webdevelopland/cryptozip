@@ -12,7 +12,7 @@ import { GetService } from '../../services/get.service';
   styleUrls: ['./index-dialog.component.scss'],
 })
 export class IndexDialogComponent implements OnDestroy {
-  index: number;
+  index: string;
   keySubscription = new Subscription();
 
   constructor(
@@ -24,7 +24,7 @@ export class IndexDialogComponent implements OnDestroy {
     private dataService: DataService,
   ) {
     this.eventService.isDialog = true;
-    this.index = this.node.index;
+    this.index = this.node.index.toString();
     this.subscribeOnKeydown();
   }
 
@@ -37,8 +37,7 @@ export class IndexDialogComponent implements OnDestroy {
   }
 
   save(): void {
-    this.node.index = this.index;
-    this.close();
+    this.dialogRef.close(parseInt(this.index));
   }
 
   close(): void {
