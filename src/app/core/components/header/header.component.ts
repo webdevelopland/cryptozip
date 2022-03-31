@@ -58,7 +58,7 @@ export class HeaderComponent {
       }
       if (event.code === 'KeyQ' && event.altKey) {
         event.preventDefault();
-        this.clearClipboard();
+        this.clear();
       }
     });
     this.eventService.mouseup.subscribe(event => {
@@ -109,10 +109,12 @@ export class HeaderComponent {
     this.router.navigate(['/browser/search']);
   }
 
-  clearClipboard(): void {
+  clear(): void {
     this.clipboardService.clear();
     this.headerService.isMenu = false;
-    this.notificationService.success('Clipboard cleared');
+    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
+    this.dataService.path = this.dataService.folder.path;
+    this.notificationService.success('Cleared');
   }
 
   toggleMenu(): void {

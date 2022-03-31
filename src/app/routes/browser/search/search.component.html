@@ -7,13 +7,29 @@
       <button (click)="clear()">Clear</button>
     </div>
     <div class="path">
-      <input type="text" readonly="true" placeholder="Where" [(ngModel)]="searchService.where">
+      <input
+        type="text"
+        spellcheck=false
+        placeholder="Where"
+        [(ngModel)]="searchService.where"
+      >
     </div>
     <div class="path">
-      <input type="text" placeholder="What" [(ngModel)]="searchService.what" focus=true>
+      <input
+        type="text"
+        spellcheck=false
+        placeholder="What"
+        [(ngModel)]="searchService.what"
+        focus=true
+      >
     </div>
     <div class="path">
-      <input type="text" placeholder="Tags" [(ngModel)]="searchService.tagString">
+      <input
+        type="text"
+        spellcheck=false
+        placeholder="Tags"
+        [(ngModel)]="searchService.tagString"
+      >
     </div>
   </div>
   <div class="explorer">
