@@ -6,7 +6,7 @@ import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 
 
 import * as Proto from 'src/proto';
 import { Grid, GridType, GridRow } from '@/core/type';
-import { DataService, NotificationService, EventService } from '@/core/services';
+import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
 import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from './dict';
@@ -24,21 +24,23 @@ export class GridEditComponent implements OnDestroy {
 
   constructor(
     public router: Router,
+    private matDialog: MatDialog,
     public dataService: DataService,
     private notificationService: NotificationService,
     private eventService: EventService,
-    private matDialog: MatDialog,
+    public locationService: LocationService,
   ) {
     this.eventService.isEditing = true;
     this.start();
   }
 
   start(): void {
-    if (this.dataService.file) {
-      this.dataService.decryptThisFile();
+    if (this.locationService.file) {
+      this.dataService.decryptFile(this.locationService.file);
+      this.locationService.updateParent(this.locationService.file);
       try {
-        if (this.dataService.file.isBinary && this.dataService.file.block.binary) {
-          this.loadProto(this.dataService.file.block.binary);
+        if (this.locationService.file.isBinary && this.locationService.file.block.binary) {
+          this.loadProto(this.locationService.file.block.binary);
         } else {
           throw new Error();
         }
@@ -50,6 +52,7 @@ export class GridEditComponent implements OnDestroy {
       this.checkModified();
     } else {
       this.notificationService.error('Grid not found');
+      this.locationService.cancel();
       this.close();
     }
   }
@@ -173,9 +176,9 @@ export class GridEditComponent implements OnDestroy {
   }
 
   save(): void {
-    this.dataService.file.isBinary = true;
-    this.dataService.file.block.binary = this.getProto();
-    this.dataService.updateNode(this.dataService.file);
+    this.locationService.file.isBinary = true;
+    this.locationService.file.block.binary = this.getProto();
+    this.locationService.updateNode(this.locationService.file);
     this.dataService.modify();
     this.notificationService.success('Grid saved');
   }
@@ -187,6 +190,10 @@ export class GridEditComponent implements OnDestroy {
         this.save();
       }
     });
+  }
+
+  tryBack(): void {
+    this.checkSave(() => this.locationService.back());
   }
 
   tryClose(): void {
@@ -224,7 +231,7 @@ export class GridEditComponent implements OnDestroy {
   }
 
   checkSave(callback: Function): void {
-    if (this.compare(this.dataService.file.block.binary, this.getProto())) {
+    if (this.compare(this.locationService.file.block.binary, this.getProto())) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
@@ -241,7 +248,7 @@ export class GridEditComponent implements OnDestroy {
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
       const isFileModified: boolean = !this.compare(
-        this.dataService.file.block.binary,
+        this.locationService.file.block.binary,
         this.getProto(),
       );
       this.dataService.isFileModified = isFileModified;
@@ -253,6 +260,7 @@ export class GridEditComponent implements OnDestroy {
   }
 
   close(): void {
+    this.locationService.updatePath(this.locationService.folder);
     this.router.navigate(['/browser']);
   }
 

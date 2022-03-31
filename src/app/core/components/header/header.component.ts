@@ -11,6 +11,7 @@ import {
   ClipboardService,
   NodeService,
   SearchService,
+  LocationService,
 } from '@/core/services';
 import {
   PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, SortDialogComponent
@@ -37,6 +38,7 @@ export class HeaderComponent {
 
   constructor(
     private router: Router,
+    private matDialog: MatDialog,
     public dataService: DataService,
     public headerService: HeaderService,
     public loadingService: LoadingService,
@@ -45,7 +47,7 @@ export class HeaderComponent {
     public notificationService: NotificationService,
     private clipboardService: ClipboardService,
     private searchService: SearchService,
-    private matDialog: MatDialog,
+    private locationService: LocationService,
   ) {
     this.events();
   }
@@ -112,8 +114,8 @@ export class HeaderComponent {
   clear(): void {
     this.clipboardService.clear();
     this.headerService.isMenu = false;
-    Object.values(this.dataService.nodeMap).forEach(node => node.isSelected = false);
-    this.dataService.path = this.dataService.folder.path;
+    this.dataService.unselectAll();
+    this.locationService.path = this.locationService.folder.path;
     this.notificationService.success('Cleared');
   }
 

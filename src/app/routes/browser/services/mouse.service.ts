@@ -2,8 +2,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
-import { Node, File, Folder } from '@/core/type';
-import { DataService, EventService, MediaService, NotificationService } from '@/core/services';
+import { Node } from '@/core/type';
+import {
+  DataService,
+  EventService,
+  MediaService,
+  NotificationService,
+  LocationService,
+} from '@/core/services';
 import { FileService } from './file.service';
 import { GetService } from './get.service';
 import { DialogService } from './dialog.service';
@@ -23,6 +29,7 @@ export class MouseService {
     private getService: GetService,
     private dialogService: DialogService,
     private branchService: BranchService,
+    private locationService: LocationService,
   ) { }
 
   click(node: Node): void {
@@ -30,20 +37,8 @@ export class MouseService {
   }
 
   dblclick(node: Node): void {
-    this.branchService.unselectAll();
-    node.isSelected = true;
-    if (node instanceof Folder) {
-      this.branchService.unselectAll();
-      this.dataService.updatePath(node);
-    } else {
-      this.dataService.file = node as File;
-      switch (this.mediaService.getMediaType(node.name)) {
-        case 'text': this.router.navigate(['/browser/text']); break;
-        case 'image': this.router.navigate(['/browser/image']); break;
-        case 'grid': this.router.navigate(['/browser/grid']); break;
-        default: this.notificationService.warning("Binary file can't be opened");
-      }
-    }
+    this.dataService.unselectAll();
+    this.locationService.openNode(node);
   }
 
   contextmenu(event: MouseEvent, node: Node): void {

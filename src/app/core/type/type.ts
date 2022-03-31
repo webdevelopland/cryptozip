@@ -138,3 +138,17 @@ export class SearchResult {
     this.node = node;
   }
 }
+
+export enum LocationType {
+  Search = 1,
+  Folder = 2,
+  Text = 3,
+  Grid = 4,
+  Image = 5,
+}
+
+export interface Location {
+  type: LocationType;
+  path: string;
+  node?: Node;
+}

@@ -14,3 +14,4 @@ export * from './loading.service';
 export * from './node.service';
 export * from './search.service';
 export * from './encoding.service';
+export * from './location.service';

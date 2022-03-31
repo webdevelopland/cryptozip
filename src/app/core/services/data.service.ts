@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { randCustomString, numerals } from 'rndmjs';
 import * as AES from 'aes-js';
 
 import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
-import { parsePath } from '@/core/functions';
+import { parsePath, getName } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { NodeService } from './node.service';
 import { META } from '@/environments/meta';
@@ -17,12 +18,10 @@ export class DataService {
   id: string;
   password: string;
   data: Data;
-  path: string;
-  folder: Folder; // Current folder (open in browser)
-  file: File; // Current file (open in editor)
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
   blocks: Uint8Array;
+  dataChanges = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -32,12 +31,12 @@ export class DataService {
 
   setData(data: Data): void {
     this.data = data;
-    this.updatePath(data.root);
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.data.root);
     this.nodeService.getNodeInfo(this.data.root);
     this.id = data.meta.id;
+    this.dataChanges.next();
     this.isDecrypted = true;
   }
 
@@ -49,13 +48,6 @@ export class DataService {
     this.isModified = true;
   }
 
-  updatePath(folder: Folder): void {
-    if (folder) {
-      this.folder = folder;
-      this.path = this.folder.path;
-    }
-  }
-
   update(): void {
     if (this.isModified) {
       this.data.meta.updateVersion++;
@@ -63,33 +55,6 @@ export class DataService {
       this.data.meta.updatedTimestamp = now;
       this.data.root.updatedTimestamp = now;
       this.isModified = false;
-    }
-  }
-
-  updateNode(node: Node): void {
-    const now: number = Date.now();
-    node.updatedTimestamp = now;
-    if (node instanceof File && node.block.isDecrypted) {
-      node.block.isModified = true;
-    }
-    for (let i = 0; i < 100; i++) {
-      const parent: Folder = this.getParent(node);
-      if (!parent || parent.path === '/') {
-        break;
-      }
-      parent.updatedTimestamp = now;
-      node = parent;
-    }
-  }
-
-  getParent(node: Node): Folder {
-    const parentPath: string = parsePath(node.path).parent;
-    const parentId: string = this.pathMap[parentPath];
-    const parent = this.nodeMap[parentId] as Folder;
-    if (parent) {
-      return parent;
-    } else {
-      console.error('Parent folder not found');
     }
   }
 
@@ -145,13 +110,32 @@ export class DataService {
     } else if (folderStatus !== 0) {
       return folderStatus;
     } else {
-      // Sort strings
-      return a.name.localeCompare(b.name);
+      return this.compareStrings(a, b);
+    }
+  }
+
+  compareStrings(a: Node, b: Node): number {
+    const nameA: string = getName(a.name, a.isFolder);
+    const nameB: string = getName(b.name, b.isFolder);
+    const regExpA: RegExpMatchArray = nameA.match(/.+?_([0-9]+)/);
+    const regExpB: RegExpMatchArray = nameB.match(/.+?_([0-9]+)/);
+    if (regExpA && regExpA[1] && regExpB && regExpB[1]) {
+      return parseInt(regExpA[1]) - parseInt(regExpB[1]);
+    } else if (nameA.startsWith(nameB)) {
+      return 1;
+    } else if (nameB.startsWith(nameA)) {
+      return -1;
+    } else {
+      return nameA.localeCompare(nameB);
     }
   }
 
   generateId(): string {
     return randCustomString(numerals, 9);
+  }
+
+  unselectAll(): void {
+    Object.values(this.nodeMap).forEach(node => node.isSelected = false);
   }
 
   create(id: string, password: string): void {
@@ -202,10 +186,6 @@ export class DataService {
     return folder;
   }
 
-  decryptThisFile(): void {
-    this.decryptFile(this.file);
-  }
-
   decryptFile(file: File): void {
     if (file && !file.block.isDecrypted) {
       const start: number = file.block.position;
@@ -240,9 +220,6 @@ export class DataService {
     this.id = undefined;
     this.password = undefined;
     this.data = undefined;
-    this.path = undefined;
-    this.folder = undefined;
-    this.file = undefined;
     this.blocks = undefined;
     this.nodeMap = {};
     this.pathMap = {};

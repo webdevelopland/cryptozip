@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import * as Proto from 'src/proto';
 import { Grid, GridRow, GridType } from '@/core/type';
-import { DataService, NotificationService } from '@/core/services';
+import { DataService, NotificationService, LocationService } from '@/core/services';
 
 @Component({
   selector: 'page-grid-view',
@@ -18,16 +18,18 @@ export class GridViewComponent {
     public router: Router,
     public dataService: DataService,
     public notificationService: NotificationService,
+    public locationService: LocationService,
   ) {
     this.start();
   }
 
   start(): void {
-    if (this.dataService.file) {
-      this.dataService.decryptThisFile();
+    if (this.locationService.file) {
+      this.dataService.decryptFile(this.locationService.file);
+      this.locationService.updateParent(this.locationService.file);
       try {
-        if (this.dataService.file.isBinary && this.dataService.file.block.binary) {
-          this.loadProto(this.dataService.file.block.binary);
+        if (this.locationService.file.isBinary && this.locationService.file.block.binary) {
+          this.loadProto(this.locationService.file.block.binary);
         } else {
           throw new Error();
         }
@@ -37,6 +39,7 @@ export class GridViewComponent {
       }
     } else {
       this.notificationService.error('Grid not found');
+      this.locationService.cancel();
       this.close();
     }
   }
@@ -66,6 +69,7 @@ export class GridViewComponent {
   }
 
   close(): void {
+    this.locationService.updatePath(this.locationService.folder);
     this.router.navigate(['/browser']);
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
-import { DataService, ZipService, NotificationService } from '@/core/services';
+import { DataService, ZipService, NotificationService, LocationService } from '@/core/services';
 import { ConfirmDialogComponent, SortDialogComponent } from '@/shared/dialogs';
 import {
   ContextDialogComponent,
@@ -17,17 +17,18 @@ import { BranchService } from './branch.service';
 @Injectable()
 export class DialogService {
   constructor(
+    private matDialog: MatDialog,
     public dataService: DataService,
     public zipService: ZipService,
     public fileService: FileService,
     public branchService: BranchService,
     public notificationService: NotificationService,
-    private matDialog: MatDialog,
+    public locationService: LocationService,
   ) { }
 
   openContextmenu(node: Node): void {
     if (!node.isSelected) {
-      this.branchService.unselectAll();
+      this.dataService.unselectAll();
       node.isSelected = true;
     }
     this.matDialog.open(ContextDialogComponent, { panelClass: 'context-dialog' })
@@ -38,6 +39,7 @@ export class DialogService {
           case 'cut': this.fileService.cut(); break;
           case 'rename': this.openRenameDialog(node); break;
           case 'send': this.fileService.transferTo(); break;
+          case 'link': this.fileService.createLink(node); break;
           case 'export': this.zipService.export(node, node.name); break;
           case 'tags': this.openTagsDialog(node); break;
           case 'index': this.openIndexDialog(node); break;
@@ -47,7 +49,7 @@ export class DialogService {
   }
 
   openRenameDialog(node: Node): void {
-    this.branchService.unselectAll();
+    this.dataService.unselectAll();
     node.isSelected = true;
     this.matDialog.open(RenameDialogComponent, {
       data: node
@@ -70,28 +72,28 @@ export class DialogService {
   }
 
   openTagsDialog(node: Node): void {
-    this.branchService.unselectAll();
+    this.dataService.unselectAll();
     node.isSelected = true;
     this.matDialog.open(TagDialogComponent, {
       data: node
     }).afterClosed().subscribe(tags => {
       if (tags !== undefined) {
         node.tags = tags;
-        this.dataService.updateNode(node);
+        this.locationService.updateNode(node);
         this.dataService.modify();
       }
     });
   }
 
   openIndexDialog(node: Node): void {
-    this.branchService.unselectAll();
+    this.dataService.unselectAll();
     node.isSelected = true;
     this.matDialog.open(IndexDialogComponent, {
       data: node
     }).afterClosed().subscribe(index => {
       if (index !== undefined) {
         node.index = index;
-        this.dataService.updateNode(node);
+        this.locationService.updateNode(node);
         this.dataService.modify();
       }
     });
@@ -115,12 +117,12 @@ export class DialogService {
   showSortDialog(): void {
     this.matDialog.open(SortDialogComponent, {
       panelClass: 'context-dialog',
-      data: { message: this.dataService.folder.sortBy }
+      data: { message: this.locationService.folder.sortBy }
     })
       .afterClosed().subscribe(sortBy => {
         if (sortBy) {
-          this.dataService.folder.sortBy = sortBy;
-          this.dataService.sort(this.dataService.folder);
+          this.locationService.folder.sortBy = sortBy;
+          this.dataService.sort(this.locationService.folder);
         }
       });
   }

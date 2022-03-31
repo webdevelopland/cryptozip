@@ -5,7 +5,13 @@ import { Subscription } from 'rxjs';
 import { Folder, Node } from '@/core/type';
 import { Path } from '@/core/functions';
 import {
-  DataService, NotificationService, EventService, ClipboardService, MediaService, SearchService
+  DataService,
+  NotificationService,
+  EventService,
+  ClipboardService,
+  MediaService,
+  SearchService,
+  LocationService,
 } from '@/core/services';
 import { HeaderService } from '@/core/components/header';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
@@ -28,6 +34,7 @@ export class BrowserComponent implements OnDestroy {
     public mediaService: MediaService,
     private searchService: SearchService,
     private headerService: HeaderService,
+    private locationService: LocationService,
 
     public mouseService: MouseService,
     public fileService: FileService,
@@ -38,23 +45,23 @@ export class BrowserComponent implements OnDestroy {
     this.keyboardEvents();
   }
 
-  back(): void {
-    const parent: Folder = this.dataService.getParent(this.dataService.folder);
-    if (parent && this.dataService.folder.path !== '/') {
-      this.branchService.unselectAll();
-      this.dataService.folder.isSelected = true;
-      this.dataService.updatePath(parent);
+  up(): void {
+    const parent: Folder = this.locationService.getParent(this.locationService.folder);
+    if (parent && this.locationService.folder.path !== '/') {
+      this.dataService.unselectAll();
+      this.locationService.folder.isSelected = true;
+      this.locationService.updatePath(parent);
     }
   }
 
   open(): void {
-    this.dataService.path = Path.join(this.dataService.path);
-    this.dataService.path = this.dataService.path || '/';
-    const id: string = this.dataService.pathMap[this.dataService.path];
+    this.locationService.path = Path.join(this.locationService.path);
+    this.locationService.path = this.locationService.path || '/';
+    const id: string = this.dataService.pathMap[this.locationService.path];
     if (id) {
       const node: Node = this.dataService.nodeMap[id];
       if (node instanceof Folder) {
-        this.dataService.folder = node;
+        this.locationService.updatePath(node);
       } else {
         this.notificationService.warning('Not a folder');
       }
@@ -106,11 +113,11 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'Backspace' && !this.isFocus) {
         event.preventDefault();
-        this.back();
+        this.up();
       }
       if (event.code === 'F2') {
         event.preventDefault();
-        for (const node of this.dataService.folder.nodes) {
+        for (const node of this.locationService.folder.nodes) {
           if (node.isSelected) {
             this.dialogService.openRenameDialog(node);
             break;
@@ -119,11 +126,11 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'KeyA' && event.ctrlKey && !this.isFocus) {
         event.preventDefault();
-        this.dataService.folder.nodes.forEach(node => node.isSelected = true);
+        this.locationService.folder.nodes.forEach(node => node.isSelected = true);
       }
       if (event.code === 'KeyA' && event.altKey) {
         event.preventDefault();
-        this.branchService.unselectAll();
+        this.dataService.unselectAll();
       }
       if (event.code === 'KeyC' && event.altKey) {
         event.preventDefault();
