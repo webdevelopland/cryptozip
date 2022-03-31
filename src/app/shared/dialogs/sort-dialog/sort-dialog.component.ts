@@ -15,10 +15,13 @@ export class SortDialogComponent {
     private dialogRef: MatDialogRef<SortDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
   ) {
-    switch (dialogData.message) {
-      case 'az': this.sortBy = 'az'; break;
-      case 'modified': this.sortBy = 'modified'; break;
-      default: this.sortBy = 'default';
+    if (dialogData) {
+      switch (dialogData.message) {
+        case 'az': this.sortBy = 'az'; break;
+        case 'modified': this.sortBy = 'modified'; break;
+        case 'size': this.sortBy = 'size'; break;
+        default: this.sortBy = 'default';
+      }
     }
   }
 
@@ -28,6 +31,10 @@ export class SortDialogComponent {
 
   modified(): void {
     this.dialogRef.close('modified');
+  }
+
+  size(): void {
+    this.dialogRef.close('size');
   }
 
   default(): void {

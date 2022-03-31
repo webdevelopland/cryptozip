@@ -11,6 +11,11 @@
   >Modified</div>
   <div
     class="option"
+    [ngClass]= "{ selected: sortBy === 'size' }"
+    (click)="size()"
+  >Size</div>
+  <div
+    class="option"
     [ngClass]= "{ selected: sortBy === 'default' }"
     (click)="default()"
   >Default</div>

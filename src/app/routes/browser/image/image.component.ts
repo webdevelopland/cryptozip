@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { DataService, MediaService } from '@/core/services';
+import { DataService, MediaService, NotificationService } from '@/core/services';
 
 @Component({
   selector: 'page-image',
@@ -15,21 +15,23 @@ export class ImageComponent {
     public router: Router,
     public dataService: DataService,
     public mediaService: MediaService,
+    private notificationService: NotificationService,
   ) {
-    this.dataService.decryptThisFile();
     this.start();
   }
 
   start(): void {
     if (!this.dataService.file || !this.dataService.file.isBinary) {
+      this.notificationService.error('Invalid image');
       this.close();
     } else {
+      this.dataService.decryptThisFile();
       this.updateBase64();
     }
   }
 
   updateBase64(): void {
-    const mime: string = this.mediaService.getMime(this.dataService.file.name);
+    const mime: string = this.mediaService.getMimeType(this.dataService.file.name);
     const base64: string = this.uint8ArrayToBase64(this.dataService.file.block.binary);
     this.base64 = `data:${mime};base64,` + base64;
   }

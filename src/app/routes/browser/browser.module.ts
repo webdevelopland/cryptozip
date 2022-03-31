@@ -12,7 +12,7 @@ import {
   AddDialogComponent,
   GridDialogComponent,
   TagDialogComponent,
-  SortDialogComponent,
+  IndexDialogComponent,
 } from './dialogs';
 import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
 
@@ -27,7 +27,7 @@ import { MouseService, FileService, GetService, DialogService, BranchService } f
     AddDialogComponent,
     GridDialogComponent,
     TagDialogComponent,
-    SortDialogComponent,
+    IndexDialogComponent,
     TextComponent,
     ImageComponent,
     GridViewComponent, GridEditComponent,

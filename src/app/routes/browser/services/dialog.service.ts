@@ -3,13 +3,13 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService } from '@/core/services';
-import { ConfirmDialogComponent } from '@/shared/dialogs';
+import { ConfirmDialogComponent, SortDialogComponent } from '@/shared/dialogs';
 import {
   ContextDialogComponent,
   RenameDialogComponent,
   AddDialogComponent,
   TagDialogComponent,
-  SortDialogComponent,
+  IndexDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
@@ -40,6 +40,7 @@ export class DialogService {
           case 'send': this.fileService.transferTo(); break;
           case 'export': this.zipService.export(node, node.name); break;
           case 'tags': this.openTagsDialog(node); break;
+          case 'index': this.openIndexDialog(node); break;
           case 'properties': this.fileService.showProperties(node); break;
         }
       });
@@ -73,9 +74,26 @@ export class DialogService {
     node.isSelected = true;
     this.matDialog.open(TagDialogComponent, {
       data: node
-    }).afterClosed().subscribe(() => {
-      this.dataService.updateNode(node);
-      this.dataService.modify();
+    }).afterClosed().subscribe(tags => {
+      if (tags !== undefined) {
+        node.tags = tags;
+        this.dataService.updateNode(node);
+        this.dataService.modify();
+      }
+    });
+  }
+
+  openIndexDialog(node: Node): void {
+    this.branchService.unselectAll();
+    node.isSelected = true;
+    this.matDialog.open(IndexDialogComponent, {
+      data: node
+    }).afterClosed().subscribe(index => {
+      if (index !== undefined) {
+        node.index = index;
+        this.dataService.updateNode(node);
+        this.dataService.modify();
+      }
     });
   }
 

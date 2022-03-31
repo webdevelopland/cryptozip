@@ -3,6 +3,7 @@
     <div class="buttons">
       <button (click)="close()">...</button>
       <button (click)="search()">Search</button>
+      <button (click)="all()">All</button>
       <button (click)="clear()">Clear</button>
     </div>
     <div class="path">
@@ -24,8 +25,14 @@
       <div class="icon">
         <mat-icon>{{ searchResult.icon }}</mat-icon>
       </div>
-      <div class="name">
+      <div class="name text">
         <span class="ellipsis">{{ searchResult.node.path }}</span>
+      </div>
+      <div class="size text">
+        <span>{{ searchResult.node.sizeString }}</span>
+      </div>
+      <div class="modified text">
+        <span>{{ searchResult.node.updatedTimestamp | date:'dd/MM/yyyy' }}</span>
       </div>
     </div>
   </div>

@@ -24,17 +24,33 @@
         height: $size;
       }
     }
-    >.name {
-      width: calc(100% - 50px);
-      height: 50px;
-      display: flex;
-      align-items: center;
-      padding: 5px 10px;
-      box-sizing: border-box;
+    >.text {
       >span {
         font-size: 14px;
         color: #555;
       }
+    }
+    >.name {
+      width: calc(100% - 50px - 100px - 100px);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+    >.size {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    >.modified {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     &.selected {
       >.icon {
@@ -42,7 +58,7 @@
           color: $color-primary;
         }
       }
-      >.name {
+      >.text {
         >span {
           color: #131313;
         }

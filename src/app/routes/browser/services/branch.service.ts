@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, zip } from 'rxjs';
 
 import {
-  DataService, ZipService, MediaService, NotificationService, ProtoService
+  DataService, ZipService, MediaService, NotificationService, ProtoService, ClipboardService
 } from '@/core/services';
 import { Node, Folder, File, Parse } from '@/core/type';
 import { parsePath, Path } from '@/core/functions';
@@ -12,6 +12,7 @@ import { GetService } from './get.service';
 export class BranchService {
   constructor(
     private notificationService: NotificationService,
+    private clipboardService: ClipboardService,
     private dataService: DataService,
     private protoService: ProtoService,
     private zipService: ZipService,
@@ -50,24 +51,38 @@ export class BranchService {
   copyFolderNodes(originFolder: Folder, path: string): Node[] {
     const children: Node[] = [];
     originFolder.nodes.forEach(node => {
+      const id: string = this.clipboardService.isCut ? node.id : undefined;
       const newPath: string = Path.join(path, node.name);
       if (node instanceof Folder) {
-        const folder: Folder = this.dataService.getFolder(newPath);
+        const folder: Folder = this.copyFolder(node, path, id);
         folder.nodes = this.copyFolderNodes(node, newPath);
         children.push(folder);
       } else if (node instanceof File) {
-        const file: File = this.dataService.getFile(newPath);
-        file.isBinary = node.isBinary;
-        file.block = node.block;
-        if (node.isBinary) {
-          file.block.binary = node.block.binary;
-        } else {
-          file.text = node.text;
-        }
-        children.push(file);
+        children.push(this.copyFile(node, newPath, id));
       }
     });
     return children;
+  }
+
+  copyFolder(node: Folder, path: string, id?: string): Folder {
+    const folder: Folder = this.dataService.getFolder(path, id);
+    folder.tags = node.tags;
+    folder.index = node.index;
+    folder.createdTimestamp = node.createdTimestamp;
+    folder.updatedTimestamp = node.updatedTimestamp;
+    return folder;
+  }
+
+  copyFile(node: File, path: string, id?: string): File {
+    const file: File = this.dataService.getFile(path, id);
+    file.isBinary = node.isBinary;
+    file.block = node.block.copy();
+    file.text = node.text;
+    file.tags = node.tags;
+    file.index = node.index;
+    file.createdTimestamp = node.createdTimestamp;
+    file.updatedTimestamp = node.updatedTimestamp;
+    return file;
   }
 
   renameAllChildren(folder: Folder): void {

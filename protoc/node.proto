@@ -13,6 +13,7 @@ message Folder {
   int64 created_timestamp = 2;
   int64 updated_timestamp = 3;
   repeated string tag = 4;
+  int32 index = 5;
 }
 
 message File {
@@ -24,6 +25,7 @@ message File {
   int64 updated_timestamp = 6;
   repeated string tag = 7;
   Block block = 8;
+  int32 index = 9;
 }
 
 message Meta {

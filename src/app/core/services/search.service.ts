@@ -8,7 +8,9 @@ import { MediaService } from './media.service';
 export class SearchService {
   where: string;
   what: string = '';
+  isAll: boolean = false;
   tagString: string = '';
+  sortBy: string;
   tags: string[] = [];
   searchResults: SearchResult[] = [];
   folder: Folder;
@@ -18,8 +20,9 @@ export class SearchService {
   ) { }
 
   search(nodes: Node[]): void {
+    this.sortBy = 'rank';
     let searchResults: SearchResult[] = [];
-    if (this.what || this.tagString) {
+    if (this.what || this.tagString || this.isAll) {
       for (const node of nodes) {
         if (node.path === '/') {
           continue;
@@ -28,7 +31,7 @@ export class SearchService {
         searchResult.icon = this.mediaService.getIcon(node);
         if (
           node.path.startsWith(this.where) &&
-          (this.tagString || this.what)
+          (this.tagString || this.what || this.isAll)
         ) {
           if (this.what) {
             this.setTextRank(this.what, searchResult);
@@ -121,13 +124,27 @@ export class SearchService {
 
   sort(searchResults: SearchResult[]): void {
     searchResults.sort((a, b) => {
-      return b.rank - a.rank;
+      switch (this.sortBy) {
+        case 'az': return a.node.name.localeCompare(b.node.name);
+        case 'modified': return b.node.updatedTimestamp - a.node.updatedTimestamp;
+        case 'size': return b.node.size - a.node.size;
+        default: return b.rank - a.rank;
+      }
     });
+  }
+
+  sortAll(sortBy: string): void {
+    if (this.searchResults && this.searchResults.length > 0) {
+      this.sortBy = sortBy;
+      this.sort(this.searchResults);
+    }
   }
 
   destroy(): void {
     this.folder = undefined;
     this.where = undefined;
+    this.sortBy = undefined;
+    this.isAll = false;
     this.what = '';
     this.tagString = '';
     this.tags = [];

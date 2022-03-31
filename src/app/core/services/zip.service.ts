@@ -109,7 +109,7 @@ export class ZipService {
         // Download as text
         blob = new Blob(
           [node.text],
-          { type: 'text/plain;charset=utf-8' },
+          { type: this.mediaService.getMimeType(node.name) },
         );
       } else {
         // Download as binary

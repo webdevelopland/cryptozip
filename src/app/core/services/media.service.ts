@@ -67,8 +67,8 @@ export class MediaService {
     }
   }
 
-  // Returns short form of mime type. Only type/subtype
-  getMime(filename: string): string {
+  // Returns mime type. type/subtype[;parameter]
+  getMimeType(filename: string): string {
     switch (this.getExtension(filename)) {
       // Binary
       case 'jpg':
@@ -81,24 +81,16 @@ export class MediaService {
       case 'mp3': return 'audio/mpeg';
       case 'wav': return 'audio/wav';
       case 'zip': return 'application/zip';
+      case 'grid': return 'application/grid';
       // Text
-      case 'html': return 'text/html';
       case 'json': return 'application/json';
       case 'js': return 'application/javascript';
       case 'xml': return 'application/xml';
       case 'proto': return 'application/protobuf';
-      case 'css': return 'text/css';
-      case 'scss': return 'text/scss';
-      default: return 'text/plain';
-    }
-  }
-
-  // Returns mime type. type/subtype[;parameter]
-  getMimeType(filename: string): string {
-    if (this.isText(filename)) {
-      return 'text/plain;charset=utf-8';
-    } else {
-      return this.getMime(filename);
+      case 'html': return 'text/html;charset=utf-8';
+      case 'css': return 'text/css;charset=utf-8';
+      case 'scss': return 'text/scss;charset=utf-8';
+      default: return 'text/plain;charset=utf-8';
     }
   }
 

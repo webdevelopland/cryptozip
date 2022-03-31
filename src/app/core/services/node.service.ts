@@ -51,6 +51,8 @@ export class NodeService {
         folders += nodeInfo.folders;
         depth = Math.max(depth, nodeInfo.depth);
       }
+      node.size = size;
+      node.sizeString = this.getSizeString(size);
       return {
         size: size,
         files: files,
@@ -59,6 +61,8 @@ export class NodeService {
       };
     } else if (node instanceof File) {
       const size: number = this.getSizeOfFile(node);
+      node.size = size;
+      node.sizeString = this.getSizeString(size);
       return {
         size: size,
         files: 1,
@@ -69,7 +73,7 @@ export class NodeService {
   }
 
   private getSizeOfFile(file: File): number {
-    if (file.block.isDecrypted) {
+    if (file.block.isModified) {
       if (file.isBinary) {
         return file.block.binary.length;
       } else {
@@ -82,7 +86,9 @@ export class NodeService {
 
   // bytes -> Kb, Mb, Gb
   getSizeString(bytes: number): string {
-    if (bytes >= 1000000) {
+    if (bytes >= 1000000000) {
+      return round(bytes / 1000000000, 2) + ' Gb';
+    } else if (bytes >= 1000000) {
       return round(bytes / 1000000, 2) + ' Mb';
     } else if (bytes >= 1000) {
       return round(bytes / 1000, 2) + ' Kb';
