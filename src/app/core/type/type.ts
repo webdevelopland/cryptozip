@@ -21,8 +21,6 @@ export class Node {
 }
 
 export class File extends Node {
-  isBinary: boolean = false;
-  text: string;
   block = new BinaryBlock();
 }
 

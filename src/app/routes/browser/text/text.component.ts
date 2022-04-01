@@ -2,8 +2,10 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription, interval } from 'rxjs';
+import * as AES from 'aes-js';
 
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
+import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 
 @Component({
@@ -32,7 +34,7 @@ export class TextComponent implements OnDestroy {
     if (this.locationService.file) {
       this.dataService.decryptFile(this.locationService.file);
       this.locationService.updateParent(this.locationService.file);
-      this.content = this.locationService.file.text;
+      this.content = AES.utils.utf8.fromBytes(this.locationService.file.block.binary);
       this.keyboardEvents();
       this.checkModified();
     } else {
@@ -43,17 +45,32 @@ export class TextComponent implements OnDestroy {
   }
 
   save(): void {
-    this.locationService.file.text = this.content;
-    this.locationService.updateNode(this.locationService.file);
-    this.dataService.modify();
-    this.dataService.isFileModified = false;
-    this.notificationService.success('File saved');
+    try {
+      this.locationService.file.block.binary = AES.utils.utf8.toBytes(this.content);
+      this.locationService.updateNode(this.locationService.file);
+      this.dataService.modify();
+      this.dataService.isFileModified = false;
+      this.notificationService.success('File saved');
+    } catch (e) {
+      this.notificationService.error('Invalid data');
+    }
   }
 
   checkModified(): void {
-    this.timerSub = interval(1000).subscribe(() => {
-      this.dataService.isFileModified = this.content !== this.locationService.file.text;
+    this.timerSub = interval(10000).subscribe(() => {
+      this.dataService.isFileModified = this.compare();
     });
+  }
+
+  compare(): boolean {
+    try {
+      return compareBinary(
+        AES.utils.utf8.toBytes(this.content),
+        this.locationService.file.block.binary
+      );
+    } catch (e) {
+      return false;
+    }
   }
 
   askClose(): void {
@@ -65,7 +82,7 @@ export class TextComponent implements OnDestroy {
   }
 
   ask(callback: Function): void {
-    if (this.locationService.file.text === this.content) {
+    if (this.compare()) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {

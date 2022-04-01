@@ -28,11 +28,7 @@ export class GridViewComponent {
       this.dataService.decryptFile(this.locationService.file);
       this.locationService.updateParent(this.locationService.file);
       try {
-        if (this.locationService.file.isBinary && this.locationService.file.block.binary) {
-          this.loadProto(this.locationService.file.block.binary);
-        } else {
-          throw new Error();
-        }
+        this.loadProto(this.locationService.file.block.binary);
       } catch (e) {
         this.notificationService.error('Grid invalid');
         this.close();

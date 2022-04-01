@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { randCustomString, numerals } from 'rndmjs';
-import * as AES from 'aes-js';
 
 import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
 import { parsePath, getName } from '@/core/functions';
@@ -192,11 +191,7 @@ export class DataService {
       const size: number = file.block.size;
       const encrypted: Uint8Array = this.blocks.slice(start, start + size);
       const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, this.password);
-      if (file.isBinary) {
-        file.block.binary = decrypted;
-      } else {
-        file.text = AES.utils.utf8.fromBytes(decrypted);
-      }
+      file.block.binary = decrypted;
       file.block.isDecrypted = true;
     }
   }

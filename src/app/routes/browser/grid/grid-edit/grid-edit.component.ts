@@ -7,6 +7,7 @@ import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 
 import * as Proto from 'src/proto';
 import { Grid, GridType, GridRow } from '@/core/type';
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
+import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
 import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from './dict';
@@ -39,11 +40,7 @@ export class GridEditComponent implements OnDestroy {
       this.dataService.decryptFile(this.locationService.file);
       this.locationService.updateParent(this.locationService.file);
       try {
-        if (this.locationService.file.isBinary && this.locationService.file.block.binary) {
-          this.loadProto(this.locationService.file.block.binary);
-        } else {
-          throw new Error();
-        }
+        this.loadProto(this.locationService.file.block.binary);
       } catch (e) {
         this.notificationService.error('Grid invalid');
         this.close();
@@ -176,7 +173,6 @@ export class GridEditComponent implements OnDestroy {
   }
 
   save(): void {
-    this.locationService.file.isBinary = true;
     this.locationService.file.block.binary = this.getProto();
     this.locationService.updateNode(this.locationService.file);
     this.dataService.modify();
@@ -204,34 +200,8 @@ export class GridEditComponent implements OnDestroy {
     this.checkSave(() => this.preview());
   }
 
-  compare(gridA: Uint8Array, gridB: Uint8Array): boolean {
-    if (!gridA && !gridB) {
-      return true;
-    }
-    if (
-      ((!gridA || !gridA.length) && (gridB && gridB.length)) ||
-      ((gridA && gridA.length) && (!gridB || !gridB.length))
-    ) {
-      return false;
-    }
-    if (gridA && gridA.length > 0) {
-      if (gridA.length !== gridB.length) {
-        return false;
-      }
-      let isSame: boolean = true;
-      gridA.forEach((byteA, index) => {
-        const byteB = gridB[index];
-        if (byteA !== byteB) {
-          isSame = false;
-        }
-      });
-      return isSame;
-    }
-    return true;
-  }
-
   checkSave(callback: Function): void {
-    if (this.compare(this.locationService.file.block.binary, this.getProto())) {
+    if (compareBinary(this.locationService.file.block.binary, this.getProto())) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
@@ -247,7 +217,7 @@ export class GridEditComponent implements OnDestroy {
 
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
-      const isFileModified: boolean = !this.compare(
+      const isFileModified: boolean = !compareBinary(
         this.locationService.file.block.binary,
         this.getProto(),
       );

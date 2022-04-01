@@ -74,11 +74,7 @@ export class NodeService {
 
   private getSizeOfFile(file: File): number {
     if (file.block.isModified) {
-      if (file.isBinary) {
-        return file.block.binary.length;
-      } else {
-        return new Blob([file.text]).size;
-      }
+      return file.block.binary.length;
     } else {
       return file.block.size;
     }

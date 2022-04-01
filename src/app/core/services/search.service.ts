@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import * as AES from 'aes-js';
 
 import * as Proto from 'src/proto';
 import { Node, File, Folder, SearchResult } from '@/core/type';
+import { parsePath } from '@/core/functions';
 import { MediaService } from './media.service';
 
 @Injectable()
@@ -59,11 +61,18 @@ export class SearchService {
       switch (this.mediaService.getMediaType(searchResult.node.name)) {
         case 'text':
           searchResult.rank = 2;
-          searchResult.isContent = this.compareText(searchTerm, searchResult.node.text);
+          const text: string = AES.utils.utf8.fromBytes(searchResult.node.block.binary);
+          searchResult.isContent = this.compareText(searchTerm, text);
           break;
         case 'grid':
           searchResult.rank = 3;
           searchResult.isContent = this.compareGrid(searchTerm, searchResult.node.block.binary);
+          break;
+        case 'link':
+          searchResult.rank = 1;
+          const path: string = AES.utils.utf8.fromBytes(searchResult.node.block.binary);
+          const name: string = parsePath(path).name;
+          searchResult.isName = searchResult.isName || this.compareText(searchTerm, name);
           break;
         default: searchResult.rank = 0;
       }

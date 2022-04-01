@@ -71,9 +71,7 @@ export class BranchService {
 
   copyFile(node: File, path: string, id?: string): File {
     const file: File = this.dataService.getFile(path, id);
-    file.isBinary = node.isBinary;
     file.block = node.block.copy();
-    file.text = node.text;
     file.tags = node.tags;
     file.index = node.index;
     file.createdTimestamp = node.createdTimestamp;
@@ -108,29 +106,11 @@ export class BranchService {
         newFile.name = bitFile.name;
         newFile.path = '/' + path;
         const reader = new FileReader();
-        switch (this.mediaService.getMediaType(bitFile.name)) {
-          case 'text':
-            // Text
-            reader.readAsText(bitFile, 'UTF-8');
-            reader.onload = () => {
-              newFile.text = reader.result.toString();
-              newFile.isBinary = false;
-              observer.next(newFile);
-            };
-            reader.onerror = () => {
-              // Reader error
-            };
-            break;
-          default:
-            // Binary
-            reader.readAsArrayBuffer(bitFile);
-            reader.onload = () => {
-              const binary = new Uint8Array(reader.result as ArrayBuffer);
-              newFile.block.binary = binary;
-              newFile.isBinary = true;
-              observer.next(newFile);
-            };
-        }
+        reader.readAsArrayBuffer(bitFile);
+        reader.onload = () => {
+          newFile.block.binary = new Uint8Array(reader.result as ArrayBuffer);
+          observer.next(newFile);
+        };
       }));
     }
     this.displaySizeLimitFiles(sizeLimitFileList, '30Mb');

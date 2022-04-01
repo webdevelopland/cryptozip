@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as AES from 'aes-js';
 
 import * as Proto from 'src/proto';
 import { Data, Node, File, Folder, BinaryBlock } from '@/core/type';
@@ -37,11 +36,7 @@ export class ProtoService {
         const file: Proto.File = this.getProtoFile(node);
         let binary: Uint8Array;
         if (node.block.isModified) {
-          if (node.isBinary) {
-            binary = node.block.binary;
-          } else {
-            binary = AES.utils.utf8.toBytes(node.text);
-          }
+          binary = node.block.binary;
           blocks.push(new BinaryBlock(binary, true));
         } else {
           const start: number = node.block.position;
@@ -79,7 +74,6 @@ export class ProtoService {
   getProtoFile(node: File): Proto.File {
     const file = new Proto.File();
     file.setPath(node.path);
-    file.setIsBinary(node.isBinary);
     file.setCreatedTimestamp(node.createdTimestamp);
     file.setUpdatedTimestamp(node.updatedTimestamp);
     file.setTagList(node.tags);
@@ -90,22 +84,13 @@ export class ProtoService {
   getProtoFileContent(node: File): Proto.File {
     this.dataService.decryptFile(node);
     const file: Proto.File = this.getProtoFile(node);
-    if (node.isBinary) {
-      file.setBinary(node.block.binary);
-    } else {
-      file.setText(node.text);
-    }
+    file.setBinary(node.block.binary);
     return file;
   }
 
   getFile(protoFile: Proto.File): File {
     const file: File = this.dataService.getFile(protoFile.getPath());
-    file.isBinary = protoFile.getIsBinary();
-    if (file.isBinary) {
-      file.block.binary = protoFile.getBinary_asU8();
-    } else {
-      file.text = protoFile.getText();
-    }
+    file.block.binary = protoFile.getBinary_asU8();
     file.createdTimestamp = protoFile.getCreatedTimestamp();
     file.updatedTimestamp = protoFile.getUpdatedTimestamp();
     file.tags = protoFile.getTagList();
