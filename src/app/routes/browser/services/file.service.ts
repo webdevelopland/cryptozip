@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
+import * as AES from 'aes-js';
 
 import { Node, File, Folder, NodeMap, NodeInfo } from '@/core/type';
 import {
@@ -32,8 +33,6 @@ export class FileService {
   private addNewFile(name: string, ext: string): File {
     const path: string = Path.join(this.locationService.folder.path, name) + ext;
     const file: File = this.dataService.getFile(path);
-    file.text = '';
-    file.isBinary = false;
     this.dataService.unselectAll();
     this.addFile(file);
     this.locationService.updateNode(file);
@@ -55,15 +54,13 @@ export class FileService {
   }
 
   addGrid(): void {
-    const file: File = this.addNewFile('new_grid', '.grid');
-    file.text = undefined;
-    file.isBinary = true;
+    this.addNewFile('new_grid', '.grid');
   }
 
   createLink(node: Node): void {
     const nodeName: string = parseFilename(node.name)[0];
     const file: File = this.addNewFile(nodeName, '.link');
-    file.text = node.path;
+    file.block.binary = AES.utils.utf8.toBytes(node.path);
     this.dataService.modify();
   }
 

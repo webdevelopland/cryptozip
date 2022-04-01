@@ -18,8 +18,6 @@ message Folder {
 
 message File {
   string path = 1;
-  bool is_binary = 2;
-  string text = 3;
   bytes binary = 4;
   int64 created_timestamp = 5;
   int64 updated_timestamp = 6;

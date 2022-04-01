@@ -22,14 +22,14 @@ export class ImageComponent {
   }
 
   start(): void {
-    if (!this.locationService.file || !this.locationService.file.isBinary) {
-      this.notificationService.error('Invalid image');
-      this.locationService.cancel();
-      this.close();
-    } else {
+    if (this.locationService.file) {
       this.dataService.decryptFile(this.locationService.file);
       this.locationService.updateParent(this.locationService.file);
       this.updateBase64();
+    } else {
+      this.notificationService.error('Invalid image');
+      this.locationService.cancel();
+      this.close();
     }
   }
 

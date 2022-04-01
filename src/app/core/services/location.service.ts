@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import * as AES from 'aes-js';
 
 import { Node, File, Folder, Location, LocationType } from '@/core/type';
 import { parsePath } from '@/core/functions';
@@ -156,7 +157,8 @@ export class LocationService {
 
   openLink(file: File): void {
     this.dataService.decryptFile(file);
-    const id: string = this.dataService.pathMap[file.text];
+    const path: string = AES.utils.utf8.fromBytes(file.block.binary);
+    const id: string = this.dataService.pathMap[path];
     if (id) {
       this.openNode(this.dataService.nodeMap[id]);
     } else {

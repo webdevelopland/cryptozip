@@ -103,21 +103,11 @@ export class ZipService {
         this.loadingService.loads--;
       });
     } else if (node instanceof File) {
-      let blob: Blob;
       this.dataService.decryptFile(node);
-      if (!node.isBinary) {
-        // Download as text
-        blob = new Blob(
-          [node.text],
-          { type: this.mediaService.getMimeType(node.name) },
-        );
-      } else {
-        // Download as binary
-        blob = new Blob(
-          [node.block.binary],
-          { type: this.mediaService.getMimeType(node.name) },
-        );
-      }
+      const blob = new Blob(
+        [node.block.binary],
+        { type: this.mediaService.getMimeType(node.name) },
+      );
       saveAs(blob, node.name);
       this.loadingService.loads--;
     }
@@ -133,9 +123,9 @@ export class ZipService {
         this.dataService.decryptFile(file);
         jszip.file(
           file.name,
-          file.isBinary ? file.block.binary : file.text,
+          file.block.binary,
           {
-            binary: file.isBinary,
+            binary: true,
             compression: 'DEFLATE',
           },
         );
