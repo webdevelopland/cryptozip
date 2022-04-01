@@ -2,7 +2,8 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
-import { EventService, DataService } from '@/core/services';
+import { generateId } from '@/core/functions';
+import { EventService } from '@/core/services';
 
 @Component({
   selector: 'id-dialog',
@@ -16,7 +17,6 @@ export class IdDialogComponent implements OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<IdDialogComponent>,
     private eventService: EventService,
-    private dataService: DataService,
   ) {
     this.eventService.isDialog = true;
     this.subscribeOnKeydown();
@@ -32,7 +32,7 @@ export class IdDialogComponent implements OnDestroy {
   }
 
   randomize(): void {
-    this.id = this.dataService.generateId();
+    this.id = generateId();
   }
 
   save(): void {

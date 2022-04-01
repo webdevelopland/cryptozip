@@ -6,11 +6,11 @@ import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 
 
 import * as Proto from 'src/proto';
 import { Grid, GridType, GridRow } from '@/core/type';
+import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from '@/core/type';
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
-import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from './dict';
 
 @Component({
   selector: 'page-grid-edit',

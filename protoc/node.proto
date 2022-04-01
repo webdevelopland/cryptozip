@@ -2,28 +2,27 @@ syntax = "proto3";
 
 package wakka.common.node;
 
-message Data {
+message Tree {
   Meta meta = 1;
   repeated Folder folder = 2;
   repeated File file = 3;
 }
 
 message Folder {
-  string path = 1;
-  int64 created_timestamp = 2;
-  int64 updated_timestamp = 3;
-  repeated string tag = 4;
-  int32 index = 5;
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
 }
 
 message File {
-  string path = 1;
-  bytes binary = 4;
-  int64 created_timestamp = 5;
-  int64 updated_timestamp = 6;
-  repeated string tag = 7;
-  Block block = 8;
-  int32 index = 9;
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
+  Block block = 6;
 }
 
 message Meta {
@@ -56,4 +55,19 @@ message GridRow {
 message Block {
   int64 position = 1;
   int64 size = 2;
+  bytes key = 3;
+}
+
+message Transfer {
+  repeated Folder folder = 1;
+  repeated TransferFile file = 2;
+}
+
+message TransferFile {
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
+  bytes binary = 6;
 }

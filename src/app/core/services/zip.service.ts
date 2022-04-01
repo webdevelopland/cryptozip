@@ -14,6 +14,7 @@ import { EncodingService } from './encoding.service';
 import { META } from '@/environments/meta';
 
 const INT32BYTES = 4;
+const IVSIZE = 16;
 
 @Injectable()
 export class ZipService {
@@ -33,7 +34,7 @@ export class ZipService {
       reader.onload = () => {
         const binary = new Uint8Array(reader.result as ArrayBuffer);
         try {
-          this.unpack(binary, password);
+          this.decrypt(binary, password);
           observer.next();
         } catch (e) {
           observer.error();
@@ -46,42 +47,81 @@ export class ZipService {
   }
 
   zip(): void {
-    saveAs(this.pack(), this.dataService.data.meta.id + '.czip');
+    saveAs(this.pack(), this.dataService.tree.meta.id + '.czip');
   }
 
   pack(): Blob {
-    this.dataService.data.meta.encryptorVersion = META.version;
-    const blocks: BinaryBlock[] = this.protoService.getProto();
-    return this.enrypt(blocks, this.dataService.password);
+    this.dataService.tree.meta.encryptorVersion = META.version;
+    return this.enrypt(this.protoService.getProto());
   }
 
-  enrypt(blocks: BinaryBlock[], password: string): Blob {
-    // Encrypt
+  enrypt(blocks: BinaryBlock[]): Blob {
+    // Encrypt tree
+    const key: Uint8Array = this.cryptoService.getKey(this.dataService.password);
+    const openTree: Uint8Array = blocks.shift().binary;
+    const roundTree: Uint8Array = this.cryptoService.roundBlock(openTree);
+    const treeLength: number = roundTree.length;
+    const tailLength: number = roundTree.length - openTree.length;
+    const tree: Uint8Array = this.cryptoService.encryptCBC(
+      roundTree,
+      key,
+      this.dataService.iv
+    );
+    // Encrypt blocks
     const encrypted: Uint8Array[] = blocks.map(block => {
-      if (block.isDecrypted) {
-        return this.cryptoService.encrypt(block.binary, password);
+      if (block.isModified) {
+        return this.cryptoService.encryptCTR(block.binary, block.key);
       } else {
         return block.binary;
       }
     });
-    // Add header
-    const czipHeader: Uint8Array = AES.utils.utf8.toBytes(META.header + META.version);
-    const czipHeaderLen: Uint8Array = new Uint8Array(1);
-    czipHeaderLen[0] = czipHeader.length;
-    const mapSize: Uint8Array = this.encodingService.int32ToUint8Array(encrypted[0].length);
+    // Pack
+    const czipTitle: Uint8Array = AES.utils.utf8.toBytes(META.name + META.version);
+    const czipTitleLen = new Uint8Array(1);
+    czipTitleLen[0] = czipTitle.length;
+    const treeSize: Uint8Array = this.encodingService.int32ToUint8Array(treeLength);
+    const tailSize = new Uint8Array(1);
+    tailSize[0] = tailLength;
     // Download
-    return new Blob([czipHeaderLen, czipHeader, mapSize, ...encrypted]);
+    // [8, "CZIP2.46", iv, 9000, 14, tree, blocks]
+    return new Blob([
+      czipTitleLen,
+      czipTitle,
+      this.dataService.iv,
+      treeSize,
+      tailSize,
+      tree,
+      ...encrypted
+    ]);
   }
 
-  unpack(binary: Uint8Array, password: string): void {
-    const base: Uint8Array = this.removeHeader(binary);
-    const mapSizeBinary: Uint8Array = base.slice(0, INT32BYTES);
-    const mapSize: number = this.encodingService.uint8ArrayToint32(mapSizeBinary);
-    const encrypted: Uint8Array = base.slice(INT32BYTES, INT32BYTES + mapSize);
-    const blocks: Uint8Array = base.slice(INT32BYTES + mapSize);
+  decrypt(binary: Uint8Array, password: string): void {
+    let i: number = 0;
+    // Removes title. E.g. "CZIP2.46"
+    const length: number = binary[0];
+    i += length + 1;
+    // Get iv
+    const iv: Uint8Array = binary.slice(i, i + IVSIZE);
+    this.dataService.iv = iv;
+    i += IVSIZE;
+    // Get size of tree
+    const treeSize: Uint8Array = binary.slice(i, i + INT32BYTES);
+    const treeLength: number = this.encodingService.uint8ArrayToint32(treeSize);
+    i += INT32BYTES;
+    // Get size of tree tail
+    const tailLength: number = binary[i];
+    i += 1;
+    // Get encrypted tree
+    const tree: Uint8Array = binary.slice(i, i + treeLength);
+    i += treeLength;
+    // Get encrypted blocks
+    const blocks: Uint8Array = binary.slice(i);
     this.dataService.blocks = blocks;
-    const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, password);
-    this.protoService.setProto(decrypted);
+    // Decrypt
+    const key: Uint8Array = this.cryptoService.getKey(password);
+    const roundTree: Uint8Array = this.cryptoService.decryptCBC(tree, key, iv);
+    const openTree: Uint8Array = roundTree.slice(0, roundTree.length - tailLength);
+    this.protoService.setProto(openTree);
   }
 
   // Removes czip header

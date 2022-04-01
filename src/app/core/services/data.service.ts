@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { randCustomString, numerals } from 'rndmjs';
 
-import { Data, Node, File, Folder, NodeMap, StringMap, Parse } from '@/core/type';
-import { parsePath, getName } from '@/core/functions';
+import { Tree, Node, File, Folder, NodeMap, StringMap, Parse, BinaryBlock } from '@/core/type';
+import { parsePath, getName, getIV } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { NodeService } from './node.service';
 import { META } from '@/environments/meta';
@@ -16,7 +15,8 @@ export class DataService {
   isFileModified: boolean = false;
   id: string;
   password: string;
-  data: Data;
+  iv: Uint8Array;
+  tree: Tree;
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
   blocks: Uint8Array;
@@ -28,13 +28,13 @@ export class DataService {
     private nodeService: NodeService,
   ) { }
 
-  setData(data: Data): void {
-    this.data = data;
+  setTree(tree: Tree): void {
+    this.tree = tree;
     this.nodeMap = {};
     this.pathMap = {};
-    this.refresh(this.data.root);
-    this.nodeService.getNodeInfo(this.data.root);
-    this.id = data.meta.id;
+    this.refresh(this.tree.root);
+    this.nodeService.getNodeInfo(this.tree.root);
+    this.id = tree.meta.id;
     this.dataChanges.next();
     this.isDecrypted = true;
   }
@@ -42,17 +42,18 @@ export class DataService {
   modify(): void {
     this.nodeMap = {};
     this.pathMap = {};
-    this.refresh(this.data.root);
-    this.nodeService.getNodeInfo(this.data.root);
+    this.refresh(this.tree.root);
+    this.nodeService.getNodeInfo(this.tree.root);
     this.isModified = true;
   }
 
   update(): void {
     if (this.isModified) {
-      this.data.meta.updateVersion++;
+      this.tree.meta.updateVersion++;
       const now = Date.now();
-      this.data.meta.updatedTimestamp = now;
-      this.data.root.updatedTimestamp = now;
+      this.tree.meta.updatedTimestamp = now;
+      this.tree.root.updatedTimestamp = now;
+      this.iv = getIV();
       this.isModified = false;
     }
   }
@@ -71,7 +72,7 @@ export class DataService {
   }
 
   sortAll(sortBy?: string): void {
-    this.refresh(this.data.root);
+    this.refresh(this.tree.root);
     for (const node of Object.values(this.nodeMap)) {
       if (node instanceof Folder) {
         this.sort(node, sortBy);
@@ -129,10 +130,6 @@ export class DataService {
     }
   }
 
-  generateId(): string {
-    return randCustomString(numerals, 9);
-  }
-
   unselectAll(): void {
     Object.values(this.nodeMap).forEach(node => node.isSelected = false);
   }
@@ -140,19 +137,20 @@ export class DataService {
   create(id: string, password: string): void {
     this.id = id;
     this.password = password;
-    this.setData(this.getNewData(this.id));
+    this.iv = getIV();
+    this.setTree(this.getNewTree(this.id));
     this.router.navigate(['/browser']);
   }
 
-  private getNewData(id: string): Data {
+  private getNewTree(id: string): Tree {
     const root = '/' + id;
 
-    const data = new Data();
-    data.root = this.getFolder(root);
-    data.root.path = '/';
+    const tree = new Tree();
+    tree.root = this.getFolder(root);
+    tree.root.path = '/';
 
     const now: number = Date.now();
-    data.meta = {
+    tree.meta = {
       id: id,
       encryptorVersion: META.version,
       updateVersion: 1,
@@ -160,7 +158,7 @@ export class DataService {
       updatedTimestamp: now,
     };
 
-    return data;
+    return tree;
   }
 
   getFile(path: string, id?: string): File {
@@ -187,24 +185,39 @@ export class DataService {
 
   decryptFile(file: File): void {
     if (file && !file.block.isDecrypted) {
-      const start: number = file.block.position;
-      const size: number = file.block.size;
-      const encrypted: Uint8Array = this.blocks.slice(start, start + size);
-      const decrypted: Uint8Array = this.cryptoService.decrypt(encrypted, this.password);
-      file.block.binary = decrypted;
+      const encrypted: Uint8Array = this.getBlockBinary(file.block);
+      if (encrypted.length > 0) {
+        file.block.binary = this.cryptoService.decryptCTR(encrypted, file.block.key);
+      }
       file.block.isDecrypted = true;
     }
   }
 
   decryptAllFiles(modify: boolean = false): void {
-    this.refresh(this.data.root);
+    let isModified: boolean = false;
+    this.refresh(this.tree.root);
     for (const node of Object.values(this.nodeMap)) {
       if (node instanceof File) {
         this.decryptFile(node);
-        if (modify) {
+        if (modify && !node.block.isModified) {
           node.block.isModified = true;
+          node.block.updateKey();
+          isModified = true;
         }
       }
+    }
+    if (isModified) {
+      this.isModified = true;
+    }
+  }
+
+  getBlockBinary(block: BinaryBlock): Uint8Array {
+    const size: number = block.size;
+    if (size > 0) {
+      const start: number = block.position;
+      return this.blocks.slice(start, start + size);
+    } else {
+      return new Uint8Array();
     }
   }
 
@@ -214,7 +227,7 @@ export class DataService {
     this.isFileModified = false;
     this.id = undefined;
     this.password = undefined;
-    this.data = undefined;
+    this.tree = undefined;
     this.blocks = undefined;
     this.nodeMap = {};
     this.pathMap = {};

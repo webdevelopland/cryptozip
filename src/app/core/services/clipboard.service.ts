@@ -50,8 +50,8 @@ export class ClipboardService {
     this.loadingService.loads++;
     return new Observable(observer => {
       timer(1).subscribe(() => {
-        const protoData: Proto.Data = this.protoService.getData(nodes);
-        const binary: Uint8Array = protoData.serializeBinary();
+        const transfer: Proto.Transfer = this.protoService.getTransfer(nodes);
+        const binary: Uint8Array = transfer.serializeBinary();
         const base64: string = this.encodingService.uint8ArrayToBase64(binary);
         navigator.clipboard.writeText(base64)
           .then(() => {
@@ -72,9 +72,9 @@ export class ClipboardService {
       timer(1).subscribe(() => {
         try {
           const binary: Uint8Array = this.encodingService.base64ToUint8Array(base64);
-          const protoData: Proto.Data = Proto.Data.deserializeBinary(binary);
+          const transfer: Proto.Transfer = Proto.Transfer.deserializeBinary(binary);
           this.loadingService.loads--;
-          observer.next(this.protoService.readData(protoData));
+          observer.next(this.protoService.readTransfer(transfer));
         } catch (e) {
           this.loadingService.loads--;
           observer.error();

@@ -33,6 +33,7 @@ export class FileService {
   private addNewFile(name: string, ext: string): File {
     const path: string = Path.join(this.locationService.folder.path, name) + ext;
     const file: File = this.dataService.getFile(path);
+    file.block.updateKey();
     this.dataService.unselectAll();
     this.addFile(file);
     this.locationService.updateNode(file);

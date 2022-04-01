@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
+import { generateId } from '@/core/functions';
 import { DataService, EventService } from '@/core/services';
 
 @Component({
@@ -32,7 +33,7 @@ export class CreateComponent implements OnDestroy {
   }
 
   randomize(): void {
-    this.id = this.dataService.generateId();
+    this.id = generateId();
   }
 
   create(): void {

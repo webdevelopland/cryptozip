@@ -41,7 +41,7 @@ export class LoginComponent implements OnDestroy {
       this.isLoading = true;
       this.firebaseService.download(this.id).subscribe(binary => {
         try {
-          this.zipService.unpack(binary, this.password);
+          this.zipService.decrypt(binary, this.password);
           this.dataService.password = this.password;
           this.router.navigate(['/browser']);
         } catch (e) {

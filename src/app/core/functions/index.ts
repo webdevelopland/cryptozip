@@ -5,3 +5,4 @@ export * from './round';
 export * from './zero';
 export * from './timestamp';
 export * from './binary';
+export * from './rand';

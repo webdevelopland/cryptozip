@@ -58,7 +58,7 @@ export class TextComponent implements OnDestroy {
 
   checkModified(): void {
     this.timerSub = interval(1000).subscribe(() => {
-      this.dataService.isFileModified = this.compare();
+      this.dataService.isFileModified = !this.compare();
     });
   }
 

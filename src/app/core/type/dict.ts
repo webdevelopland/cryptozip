@@ -75,7 +75,7 @@ export const EMOJI: string[] = [
 export const SIMPLE: string[] = [
   'a', 'A',
   'b', 'B',
-  'c',/*C*/
+  'c', 'C',
   'd', 'D',
   'e', 'E',
   'f', 'F',
@@ -83,20 +83,20 @@ export const SIMPLE: string[] = [
   'h', 'H',
  /*i    I*/
   'j', 'J',
-  'k',/*K*/
+  'k', 'K',
  /*l */'L',
   'm', 'M',
   'n', 'N',
  /*o    O*/
-  'p',/*P*/
+  'p', 'P',
   'q', 'Q',
   'r', 'R',
  /*s    S*/
   't', 'T',
   'u', 'U',
-  'v',/*V*/
-  'w',/*W*/
-  'x',/*X*/
+  'v', 'V',
+  'w', 'W',
+  'x', 'X',
   'y', 'Y',
  /*Z    Z*/
 ];
@@ -128,19 +128,25 @@ export const SIMPLE_SMALL: string[] = [
 export const SIMPLE_BIG: string[] = [
   'A',
   'B',
+  'C',
   'D',
   'E',
   'F',
   'G',
   'H',
   'J',
+  'K',
   'L',
   'M',
   'N',
+  'P',
   'Q',
   'R',
   'T',
   'U',
+  'V',
+  'W',
+  'X',
   'Y',
 ];
 

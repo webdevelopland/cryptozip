@@ -103,6 +103,7 @@ export class BranchService {
       }
       observableList.push(new Observable(observer => {
         const newFile = new File();
+        newFile.block.updateKey();
         newFile.name = bitFile.name;
         newFile.path = '/' + path;
         const reader = new FileReader();
