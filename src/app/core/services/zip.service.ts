@@ -104,7 +104,7 @@ export class ZipService {
       });
     } else if (node instanceof File) {
       this.dataService.decryptFile(node);
-      const blob: Blob = new Blob(
+      const blob = new Blob(
         [node.block.binary],
         { type: this.mediaService.getMimeType(node.name) },
       );
