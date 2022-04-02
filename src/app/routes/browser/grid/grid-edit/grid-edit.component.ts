@@ -7,8 +7,10 @@ import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 
 import * as Proto from 'src/proto';
 import { Grid, GridType, GridRow } from '@/core/type';
 import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from '@/core/type';
-import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
-import { compareBinary } from '@/core/functions';
+import {
+  DataService, NotificationService, EventService, LocationService, EncodingService,
+} from '@/core/services';
+import { compareBinary, getRandomBlock } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
 import { GridDialogComponent } from '../../dialogs';
 
@@ -29,6 +31,7 @@ export class GridEditComponent implements OnDestroy {
     public dataService: DataService,
     private notificationService: NotificationService,
     private eventService: EventService,
+    private encodingService: EncodingService,
     public locationService: LocationService,
   ) {
     this.eventService.isEditing = true;
@@ -123,6 +126,10 @@ export class GridEditComponent implements OnDestroy {
 
   generateKey(row: GridRow, lengthInput: string, dictLabel: string): void {
     const length: number = parseInt(lengthInput);
+    if (dictLabel === 'base64') {
+      row.value = this.encodingService.uint8ArrayToBase64(getRandomBlock(length));
+      return;
+    }
     let dicts: string[][];
     switch (dictLabel) {
       case 'number': dicts = [numerals]; break;

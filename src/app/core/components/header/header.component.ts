@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { NodeInfo } from '@/core/type';
+import { NodeInfo, BinaryBlock } from '@/core/type';
 import {
   DataService,
   EventService,
@@ -12,6 +12,7 @@ import {
   NodeService,
   SearchService,
   LocationService,
+  ProtoService,
 } from '@/core/services';
 import {
   PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, SortDialogComponent
@@ -48,6 +49,7 @@ export class HeaderComponent {
     private clipboardService: ClipboardService,
     private searchService: SearchService,
     private locationService: LocationService,
+    private protoService: ProtoService,
   ) {
     this.events();
   }
@@ -154,6 +156,10 @@ export class HeaderComponent {
   showProperties(): void {
     this.headerService.isMenu = false;
     const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.tree.root);
+    const blocks: BinaryBlock[] = this.protoService.getProto();
+    const headerSize: number = 30; // [8, "CZIP2.46", iv, tree_size, tail_size]
+    const treeSize: number = blocks[0].binary.length;
+    nodeInfo.size += headerSize + treeSize;
     this.nodeService.showProperties(
       nodeInfo,
       this.dataService.tree.meta.createdTimestamp,

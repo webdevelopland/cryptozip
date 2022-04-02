@@ -31,7 +31,7 @@ export class CryptoService {
     return AES.utils.hex.toBytes(hex);
   }
 
-  // Adds zeros to the end on a block to have 16 block
+  // Adds zeros to the end of a block to have 16 block
   roundBlock(binary: Uint8Array): Uint8Array {
     const hole: number = binary.length % 16;
     if (hole !== 0) {
