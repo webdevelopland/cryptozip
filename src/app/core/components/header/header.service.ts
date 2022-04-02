@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Data } from '@/core/type';
+import { Tree } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -52,25 +52,25 @@ export class HeaderService {
 
   delete(): void {
     this.isMenu = false;
-    this.firebaseService.remove(this.dataService.data.meta.id);
+    this.firebaseService.remove(this.dataService.tree.meta.id);
   }
 
   save(): void {
     this.loadingService.loads++;
     this.dataService.update();
     setTimeout(() => {
-      this.firebaseService.upload(this.dataService.data.meta.id);
+      this.firebaseService.upload(this.dataService.tree.meta.id);
     }, 0);
   }
 
   update(oldId: string): void {
     this.loadingService.loads++;
-    this.firebaseService.replace(this.dataService.data.meta.id, oldId);
+    this.firebaseService.replace(this.dataService.tree.meta.id, oldId);
   }
 
   root(): void {
     this.isMenu = false;
-    this.locationService.updatePath(this.dataService.data.root);
+    this.locationService.updatePath(this.dataService.tree.root);
     this.dataService.unselectAll();
     this.router.navigate(['/browser']);
   }
@@ -80,12 +80,12 @@ export class HeaderService {
     this.firebaseService.download(this.dataService.id).subscribe(binary => {
       try {
         const password: string = this.dataService.password;
-        this.zipService.unpack(binary, password);
-        const data: Data = this.dataService.data;
+        this.zipService.decrypt(binary, password);
+        const tree: Tree = this.dataService.tree;
         const blocks: Uint8Array = this.dataService.blocks;
         this.router.navigate(['/browser']);
         this.destroy();
-        this.dataService.setData(data);
+        this.dataService.setTree(tree);
         this.dataService.blocks = blocks;
         this.dataService.password = password;
         this.loadingService.loads--;
@@ -103,7 +103,7 @@ export class HeaderService {
   export(): void {
     this.isMenu = false;
     setTimeout(() => {
-      this.zipService.export(this.dataService.data.root, this.dataService.id);
+      this.zipService.export(this.dataService.tree.root, this.dataService.id);
     }, 0);
   }
 

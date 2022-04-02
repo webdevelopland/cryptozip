@@ -14,7 +14,6 @@ export class DataGuard implements CanActivate {
     if (!this.dataService.isDecrypted) {
       this.dataService.destroy();
       this.router.navigate(['/']);
-      // /* DEV */ this.dataService.create(this.dataService.generateId(), '');
     }
     return this.dataService.isDecrypted;
   }

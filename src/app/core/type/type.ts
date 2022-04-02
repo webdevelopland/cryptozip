@@ -1,9 +1,9 @@
-import { randstr64 } from 'rndmjs';
+import { getNodeId, getRandomKey } from '@/core/functions';
 
 export class Node {
   name: string;
   path: string;
-  id: string = randstr64(20);
+  id: string = getNodeId();
   isSelected: boolean = false;
   isFolder: boolean = false;
   tags: string[] = [];
@@ -47,7 +47,7 @@ export interface Meta {
   updateVersion: number; // E.g. 6438
 }
 
-export class Data {
+export class Tree {
   meta: Meta;
   root: Folder;
 }
@@ -55,27 +55,30 @@ export class Data {
 export class BinaryBlock {
   binary = new Uint8Array();
   position: number;
-  size: number = 0;
+  size: number;
+  key: Uint8Array;
   isDecrypted: boolean = true;
   isModified: boolean = true;
 
-  constructor(binary?: Uint8Array, isDecrypted?: boolean) {
+  constructor(binary?: Uint8Array) {
     if (binary) {
       this.binary = binary;
-    }
-    if (isDecrypted !== undefined) {
-      this.isDecrypted = isDecrypted;
     }
   }
 
   copy(): BinaryBlock {
     const bb = new BinaryBlock();
     bb.binary = this.binary;
+    bb.key = this.key;
     bb.position = this.position;
     bb.size = this.size;
     bb.isDecrypted = this.isDecrypted;
     bb.isModified = this.isModified;
     return bb;
+  }
+
+  updateKey(): void {
+    this.key = getRandomKey();
   }
 }
 

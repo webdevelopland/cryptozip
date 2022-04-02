@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { NodeInfo } from '@/core/type';
+import { NodeInfo, BinaryBlock } from '@/core/type';
 import {
   DataService,
   EventService,
@@ -12,6 +12,7 @@ import {
   NodeService,
   SearchService,
   LocationService,
+  ProtoService,
 } from '@/core/services';
 import {
   PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, SortDialogComponent
@@ -48,6 +49,7 @@ export class HeaderComponent {
     private clipboardService: ClipboardService,
     private searchService: SearchService,
     private locationService: LocationService,
+    private protoService: ProtoService,
   ) {
     this.events();
   }
@@ -78,7 +80,7 @@ export class HeaderComponent {
   }
 
   print(): void {
-    console.log(this.dataService.data);
+    console.log(this.dataService.tree);
     this.headerService.isMenu = false;
   }
 
@@ -86,7 +88,7 @@ export class HeaderComponent {
     this.headerService.isMenu = false;
     this.loadingService.loads++;
     setTimeout(() => {
-      this.dataService.decryptAllFiles();
+      this.dataService.decryptAllFiles(true);
       this.loadingService.loads--;
       this.notificationService.success('Decrypted');
     }, 0);
@@ -153,11 +155,15 @@ export class HeaderComponent {
 
   showProperties(): void {
     this.headerService.isMenu = false;
-    const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.data.root);
+    const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.tree.root);
+    const blocks: BinaryBlock[] = this.protoService.getProto();
+    const headerSize: number = 30; // [8, "CZIP2.46", iv, tree_size, tail_size]
+    const treeSize: number = blocks[0].binary.length;
+    nodeInfo.size += headerSize + treeSize;
     this.nodeService.showProperties(
       nodeInfo,
-      this.dataService.data.meta.createdTimestamp,
-      this.dataService.data.meta.updatedTimestamp,
+      this.dataService.tree.meta.createdTimestamp,
+      this.dataService.tree.meta.updatedTimestamp,
       'Modified: ' + (this.dataService.isModified || this.dataService.isFileModified).toString(),
     );
   }
@@ -176,7 +182,6 @@ export class HeaderComponent {
 
   openPasswordDialog(): void {
     this.headerService.isMenu = false;
-    this.dataService.decryptAllFiles(true);
     this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
       if (newPass) {
         this.dataService.password = newPass;
@@ -192,9 +197,9 @@ export class HeaderComponent {
       if (newId) {
         const oldId: string = this.dataService.id;
         this.dataService.id = newId;
-        this.dataService.data.root.id = newId;
-        this.dataService.data.root.name = newId;
-        this.dataService.data.meta.id = newId;
+        this.dataService.tree.root.id = newId;
+        this.dataService.tree.root.name = newId;
+        this.dataService.tree.meta.id = newId;
         this.dataService.modify();
         this.headerService.update(oldId);
       }

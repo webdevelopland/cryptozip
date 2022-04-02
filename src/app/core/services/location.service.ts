@@ -24,7 +24,7 @@ export class LocationService {
     private notificationService: NotificationService,
   ) {
     this.dataService.dataChanges.subscribe(() => {
-      this.updatePath(this.dataService.data.root);
+      this.updatePath(this.dataService.tree.root);
     });
   }
 
@@ -98,8 +98,10 @@ export class LocationService {
   updateNode(node: Node): void {
     const now: number = Date.now();
     node.updatedTimestamp = now;
-    if (node instanceof File && node.block.isDecrypted) {
+    if (node instanceof File && node.block.isDecrypted && !node.block.isModified) {
       node.block.isModified = true;
+      node.block.updateKey();
+      this.dataService.isModified = true;
     }
     for (let i = 0; i < 100; i++) {
       const parent: Folder = this.getParent(node);
