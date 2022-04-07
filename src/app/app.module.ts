@@ -10,7 +10,7 @@ import {
   CreateComponent,
   BrowserDataModule,
   LoginComponent,
-  UploadComponent,
+  OpenComponent,
   DownloadComponent,
 } from '@/routes';
 import { CoreModule } from './core/core.module';
@@ -23,7 +23,7 @@ import { SharedModule } from './shared';
     HomeComponent,
     CreateComponent,
     LoginComponent,
-    UploadComponent,
+    OpenComponent,
     DownloadComponent,
   ],
   imports: [

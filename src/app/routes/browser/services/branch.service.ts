@@ -50,7 +50,7 @@ export class BranchService {
       const id: string = this.clipboardService.isCut ? node.id : undefined;
       const newPath: string = Path.join(path, node.name);
       if (node instanceof Folder) {
-        const folder: Folder = this.copyFolder(node, path, id);
+        const folder: Folder = this.copyFolder(node, newPath, id);
         folder.nodes = this.copyFolderNodes(node, newPath);
         children.push(folder);
       } else if (node instanceof File) {
