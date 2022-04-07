@@ -5,11 +5,11 @@ import { Subscription } from 'rxjs';
 import { DataService, NotificationService, ZipService, EventService } from '@/core/services';
 
 @Component({
-  selector: 'page-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss'],
+  selector: 'page-open',
+  templateUrl: './open.component.html',
+  styleUrls: ['./open.component.scss'],
 })
-export class UploadComponent implements OnDestroy {
+export class OpenComponent implements OnDestroy {
   fileList: FileList;
   name: string;
   password: string = '';

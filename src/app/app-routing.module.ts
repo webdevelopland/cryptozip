@@ -7,7 +7,7 @@ import {
   CreateComponent,
   BrowserComponent,
   LoginComponent,
-  UploadComponent,
+  OpenComponent,
   DownloadComponent,
   TextComponent,
   ImageComponent,
@@ -20,7 +20,7 @@ const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'create', component: CreateComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'upload', component: UploadComponent },
+  { path: 'open', component: OpenComponent },
   { path: 'download', component: DownloadComponent },
   {
     path: '',
