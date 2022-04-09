@@ -157,7 +157,7 @@ export class HeaderComponent {
     this.headerService.isMenu = false;
     const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.tree.root);
     const blocks: BinaryBlock[] = this.protoService.getProto();
-    const headerSize: number = 30; // [8, "CZIP2.46", iv, tree_size, tail_size]
+    const headerSize: number = 28; // [8, "CZIP2.46", tree_size, rv]
     const treeSize: number = blocks[0].binary.length;
     nodeInfo.size += headerSize + treeSize;
     this.nodeService.showProperties(

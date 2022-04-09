@@ -1,5 +1,6 @@
 {
   "name": "cryptozip",
+  "description": "Browser app for file encryption",
   "scripts": {
     "start": "ng build --configuration dev --watch",
     "live": "ng serve",

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as AES from 'aes-js';
+import * as AES from 'src/third-party/aes';
 
 import * as Proto from 'src/proto';
 import { Node, File, Folder, SearchResult } from '@/core/type';
