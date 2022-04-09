@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import * as AES from 'aes-js';
+import * as AES from 'src/third-party/aes';
 
 import { Node, File, Folder, Location, LocationType } from '@/core/type';
 import { parsePath } from '@/core/functions';

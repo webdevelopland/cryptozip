@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
-import * as AES from 'aes-js';
+import * as AES from 'src/third-party/aes';
 
 import { Node, File, Folder, BinaryBlock } from '@/core/type';
+import { getIV } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { DataService } from './data.service';
@@ -14,7 +15,7 @@ import { EncodingService } from './encoding.service';
 import { META } from '@/environments/meta';
 
 const INT32BYTES = 4;
-const IVSIZE = 16;
+const BLOCKSIZE = 16;
 
 @Injectable()
 export class ZipService {
@@ -58,14 +59,14 @@ export class ZipService {
   enrypt(blocks: BinaryBlock[]): Blob {
     // Encrypt tree
     const key: Uint8Array = this.cryptoService.getKey(this.dataService.password);
-    const openTree: Uint8Array = blocks.shift().binary;
-    const roundTree: Uint8Array = this.cryptoService.roundBlock(openTree);
-    const treeLength: number = roundTree.length;
-    const tailLength: number = roundTree.length - openTree.length;
-    const tree: Uint8Array = this.cryptoService.encryptCBC(
-      roundTree,
+    const tree: Uint8Array = blocks.shift().binary;
+    const treeRV = new Uint8Array([...this.dataService.rv, ...tree]);
+    const paddingTree: Uint8Array = AES.padding.pkcs7.pad(treeRV);
+    const treeLength: number = paddingTree.length;
+    const RVT: Uint8Array = this.cryptoService.encryptCBC(
+      paddingTree,
       key,
-      this.dataService.iv
+      getIV(),
     );
     // Encrypt blocks
     const encrypted: Uint8Array[] = blocks.map(block => {
@@ -80,17 +81,13 @@ export class ZipService {
     const czipTitleLen = new Uint8Array(1);
     czipTitleLen[0] = czipTitle.length;
     const treeSize: Uint8Array = this.encodingService.int32ToUint8Array(treeLength);
-    const tailSize = new Uint8Array(1);
-    tailSize[0] = tailLength;
     // Download
-    // [8, "CZIP2.46", iv, 9000, 14, tree, blocks]
+    // [8, "CZIP2.46", 9000, rv, tree, blocks]
     return new Blob([
       czipTitleLen,
       czipTitle,
-      this.dataService.iv,
       treeSize,
-      tailSize,
-      tree,
+      RVT,
       ...encrypted
     ]);
   }
@@ -100,36 +97,29 @@ export class ZipService {
     // Removes title. E.g. "CZIP2.46"
     const length: number = binary[0];
     i += length + 1;
-    // Get iv
-    const iv: Uint8Array = binary.slice(i, i + IVSIZE);
-    this.dataService.iv = iv;
-    i += IVSIZE;
     // Get size of tree
     const treeSize: Uint8Array = binary.slice(i, i + INT32BYTES);
     const treeLength: number = this.encodingService.uint8ArrayToint32(treeSize);
     i += INT32BYTES;
-    // Get size of tree tail
-    const tailLength: number = binary[i];
-    i += 1;
+    // Get rv
+    const key: Uint8Array = this.cryptoService.getKey(password);
+    const iv: Uint8Array = getIV();
+    const encryptedRV: Uint8Array = binary.slice(i, i + BLOCKSIZE);
+    this.dataService.rv = this.cryptoService.decryptCBC(encryptedRV, key, iv);
+    if (!this.cryptoService.checkRV(this.dataService.rv)) {
+      throw new Error('Invalid password');
+    }
     // Get encrypted tree
-    const tree: Uint8Array = binary.slice(i, i + treeLength);
+    const RVT: Uint8Array = binary.slice(i, i + treeLength);
     i += treeLength;
     // Get encrypted blocks
     const blocks: Uint8Array = binary.slice(i);
     this.dataService.blocks = blocks;
     // Decrypt
-    const key: Uint8Array = this.cryptoService.getKey(password);
-    const roundTree: Uint8Array = this.cryptoService.decryptCBC(tree, key, iv);
-    const openTree: Uint8Array = roundTree.slice(0, roundTree.length - tailLength);
-    this.protoService.setProto(openTree);
-  }
-
-  // Removes czip header
-  // E.g. "CZIP2.46"
-  private removeHeader(binary: Uint8Array): Uint8Array {
-    // First byte is length of header
-    const length: number = binary[0];
-    return binary.slice(length + 1);
+    const paddingTree: Uint8Array = this.cryptoService.decryptCBC(RVT, key, iv);
+    const treeRV: Uint8Array = AES.padding.pkcs7.strip(paddingTree);
+    const tree: Uint8Array = treeRV.slice(BLOCKSIZE);
+    this.protoService.setProto(tree);
   }
 
   export(node: Node, name: string): void {

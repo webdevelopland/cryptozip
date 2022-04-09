@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { Tree, Node, File, Folder, NodeMap, StringMap, Parse, BinaryBlock } from '@/core/type';
-import { parsePath, getName, getIV } from '@/core/functions';
+import { parsePath, getName, getRV } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { NodeService } from './node.service';
 import { META } from '@/environments/meta';
@@ -15,7 +15,7 @@ export class DataService {
   isFileModified: boolean = false;
   id: string;
   password: string;
-  iv: Uint8Array;
+  rv: Uint8Array;
   tree: Tree;
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
@@ -53,7 +53,7 @@ export class DataService {
       const now = Date.now();
       this.tree.meta.updatedTimestamp = now;
       this.tree.root.updatedTimestamp = now;
-      this.iv = getIV();
+      this.rv = getRV();
       this.isModified = false;
     }
   }
@@ -137,7 +137,7 @@ export class DataService {
   create(id: string, password: string): void {
     this.id = id;
     this.password = password;
-    this.iv = getIV();
+    this.rv = getRV();
     this.setTree(this.getNewTree(this.id));
     this.router.navigate(['/browser']);
   }
@@ -187,7 +187,7 @@ export class DataService {
     if (file && !file.block.isDecrypted) {
       const encrypted: Uint8Array = this.getBlockBinary(file.block);
       if (encrypted.length > 0) {
-        file.block.binary = this.cryptoService.decryptCTR(encrypted, file.block.key);
+        file.block.binary = this.cryptoService.encryptCTR(encrypted, file.block.key);
       }
       file.block.isDecrypted = true;
     }

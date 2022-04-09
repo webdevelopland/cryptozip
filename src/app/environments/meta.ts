@@ -1,4 +1,4 @@
 export const META = {
-  version: '2.8',
+  version: '2.9',
   name: 'CZIP',
 };

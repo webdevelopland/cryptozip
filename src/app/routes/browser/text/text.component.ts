@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription, interval } from 'rxjs';
-import * as AES from 'aes-js';
+import * as AES from 'src/third-party/aes';
 
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { compareBinary } from '@/core/functions';

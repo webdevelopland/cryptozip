@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-import * as AES from 'aes-js';
+import * as AES from 'src/third-party/aes';
 
 import { Node, File, Folder, NodeMap, NodeInfo } from '@/core/type';
 import {
