@@ -5,6 +5,7 @@
     "start": "ng build --configuration dev --watch",
     "live": "ng serve",
     "build": "ng build --configuration prod",
+    "test": "ng test",
     "lint": "ng lint",
     "lint-fix": "ng lint --fix",
     "deploy": "firebase deploy --only hosting",

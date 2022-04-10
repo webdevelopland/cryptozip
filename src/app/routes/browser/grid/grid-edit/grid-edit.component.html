@@ -1,25 +1,47 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
-      <button (click)="tryBack()">&#60;</button>
-      <button (click)="tryClose()">...</button>
-      <button (click)="tryPreview()">Preview</button>
-      <button (click)="add()">Add</button>
-      <button (click)="save()">Save</button>
+      <button (click)="tryBack()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button (click)="tryClose()">
+        <mat-icon>expand_less</mat-icon>
+      </button>
+      <button (click)="tryPreview()">
+        <mat-icon>edit_off</mat-icon>
+      </button>
+      <button (click)="popupService.add()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button (click)="save()">
+        <mat-icon>save</mat-icon>
+      </button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="locationService.file.path">
     </div>
   </div>
-  <div class="flex">
-    <div class="grid">
-      <div class="row" *ngFor="let row of grid.rows">
+  <div class="flex" #flexRef>
+    <div class="grid" [style.height.px]="dragService.totalTabsHeight" #gridRef>
+      <div
+        class="row"
+        [id]="row.id"
+        [ngClass]="{ drag: row.isDrag }"
+        [style.top.px]="row.offset"
+        *ngFor="let row of gridService.grid.rows"
+      >
         <div class="header">
-          <span>{{ row.type }}</span>
+          <span>{{ gridTypeLabels[row.type] }}</span>
           <div class="arrows">
-            <mat-icon class="delete active-button" (click)="delete(row)">delete_outline</mat-icon>
-            <mat-icon class="up active-button" (click)="up(row)">upload</mat-icon>
-            <mat-icon class="down active-button" (click)="down(row)">download</mat-icon>
+          <mat-icon class="delete active-button" (click)="dragService.delete(row)">
+            delete_outline
+          </mat-icon>
+          <mat-icon class="up active-button" (click)="dragService.up(row)">upload</mat-icon>
+          <mat-icon class="down active-button" (click)="dragService.down(row)">download</mat-icon>
+          <mat-icon
+            class="drag active-button"
+            (mousedown)="dragService.dragStart($event, row)"
+          >open_with</mat-icon>
           </div>
         </div>
 
@@ -28,6 +50,7 @@
           spellcheck="false"
           autosize
           *ngIf="row.type === gridType.TEXTBLOCK"
+          (resized)="dragService.textareaResize()"
         ></textarea>
 
         <ng-container *ngIf="row.type === gridType.INPUT">
@@ -47,13 +70,13 @@
             <mat-icon
               class="active-button"
               [ngClass]="row.visibility"
-              (click)="togglePass(row)"
+              (click)="gridService.togglePass(row)"
             >visibility</mat-icon>
           </div>
           <div class="key">
             <mat-icon
               class="active-button"
-              (click)="generateKey(row, length.value, dict.value)"
+              (click)="gridService.generateKey(row, length.value, dict.value)"
             >vpn_key</mat-icon>
             <input type="number" value=16 #length>
             <select #dict>
@@ -78,6 +101,7 @@
             [(ngModel)]="row.value"
             spellcheck="false"
             autosize
+            (resized)="dragService.textareaResize()"
           ></textarea>
         </ng-container>
 
@@ -87,9 +111,15 @@
             [(ngModel)]="row.value"
             spellcheck="false"
             autosize
+            (resized)="dragService.textareaResize()"
           ></textarea>
         </ng-container>
       </div>
     </div>
   </div>
 </div>
+<grid-popup
+  [overlay]="popupService.overlay"
+  *ngIf="popupService.isPopup"
+  (add)="add($event)"
+></grid-popup>

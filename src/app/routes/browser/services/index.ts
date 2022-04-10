@@ -3,3 +3,4 @@ export * from './file.service';
 export * from './get.service';
 export * from './dialog.service';
 export * from './branch.service';
+export * from './controls.service';

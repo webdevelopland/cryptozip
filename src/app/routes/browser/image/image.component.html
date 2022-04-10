@@ -1,8 +1,12 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
-      <button (click)="locationService.back()">&#60;</button>
-      <button (click)="close()">...</button>
+      <button (click)="locationService.back()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button (click)="close()">
+        <mat-icon>expand_less</mat-icon>
+      </button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="locationService.file.path">

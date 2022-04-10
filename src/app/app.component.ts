@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 
 import { EventService } from '@/core/services';
 
@@ -9,5 +9,10 @@ import { EventService } from '@/core/services';
 export class AppComponent {
   constructor(
     private eventService: EventService,
-  ) { }
+    private renderer2: Renderer2,
+  ) {
+    if (this.eventService.isApple) {
+      this.renderer2.addClass(document.body, 'apple');
+    }
+  }
 }

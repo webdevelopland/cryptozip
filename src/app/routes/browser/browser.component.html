@@ -1,15 +1,20 @@
 <div class="page" *ngIf="dataService.isDecrypted">
   <div class="controls">
     <div class="buttons">
-      <button (click)="locationService.back()">&#60;</button>
-      <button (click)="up()">...</button>
-      <button (click)="dialogService.showAddDialog()">+</button>
-      <button (click)="dialogService.showSortDialog()">Sort</button>
-      <button (click)="fileService.readClipboard()">Transfer</button>
-      <button
-        (click)="fileService.paste()"
-        *ngIf="clipboardService.clipboard.length > 0"
-      >Paste</button>
+      <button (click)="locationService.back()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button (click)="up()">
+        <mat-icon>expand_less</mat-icon>
+      </button>
+      <button (click)="controlsService.openAdd()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <div class="placeholder"></div>
+      <button (click)="controlsService.openControls()">
+        <mat-icon *ngIf="!controlsService.isControlsMenu">more_vert</mat-icon>
+        <mat-icon *ngIf="controlsService.isControlsMenu">more_horiz</mat-icon>
+      </button>
     </div>
     <div class="path">
       <input
@@ -28,7 +33,7 @@
       (click)="mouseService.click(node)"
       (dblclick)="mouseService.dblclick(node)"
       (contextmenu)="mouseService.contextmenu($event, node)"
-      (touchstart)="mouseService.touchstart(node)"
+      (touchstart)="mouseService.touchstart($event, node)"
       (touchend)="mouseService.touchend()"
       [ngClass]="{ selected: node.isSelected }"
     >
@@ -47,3 +52,6 @@
     </div>
   </div>
 </div>
+<controls-popup *ngIf="controlsService.isControlsMenu"></controls-popup>
+<add-popup *ngIf="controlsService.isAddMenu"></add-popup>
+<context-popup *ngIf="controlsService.context.isExist"></context-popup>

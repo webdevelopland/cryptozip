@@ -1,29 +1,26 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { Subscription, interval } from 'rxjs';
-import { generatePassword, numerals, alphabet, Alphabet, special, dict64 } from 'rndmjs';
+import { Subscription } from 'rxjs';
 
-import * as Proto from 'src/proto';
-import { Grid, GridType, GridRow } from '@/core/type';
-import { UNICODE, EMOJI, SIMPLE_SMALL, SIMPLE_BIG, SIMPLE_INT, SHIFT_SPECIAL } from '@/core/type';
-import {
-  DataService, NotificationService, EventService, LocationService, EncodingService,
-} from '@/core/services';
-import { compareBinary, getRandomBlock } from '@/core/functions';
+import { GridType } from '@/core/type';
+import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
+import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
-import { GridDialogComponent } from '../../dialogs';
+import { GridService, DragService, PopupService } from './services';
 
 @Component({
   selector: 'page-grid-edit',
   templateUrl: './grid-edit.component.html',
   styleUrls: ['./grid-edit.component.scss'],
 })
-export class GridEditComponent implements OnDestroy {
-  grid = new Grid();
-  keySub = new Subscription();
-  timerSub = new Subscription();
+export class GridEditComponent implements AfterViewInit, OnDestroy {
   gridType = GridType;
+  gridTypeLabels = ['', 'Text Block', 'Input', 'Password', 'Label Textarea', 'Hidden'];
+  fileSub = new Subscription();
+  keySub = new Subscription();
+  @ViewChild('gridRef') gridRef: ElementRef;
+  @ViewChild('flexRef') flexRef: ElementRef;
 
   constructor(
     public router: Router,
@@ -31,8 +28,10 @@ export class GridEditComponent implements OnDestroy {
     public dataService: DataService,
     private notificationService: NotificationService,
     private eventService: EventService,
-    private encodingService: EncodingService,
     public locationService: LocationService,
+    public gridService: GridService,
+    public dragService: DragService,
+    public popupService: PopupService,
   ) {
     this.eventService.isEditing = true;
     this.start();
@@ -43,12 +42,13 @@ export class GridEditComponent implements OnDestroy {
       this.dataService.decryptFile(this.locationService.file);
       this.locationService.updateParent(this.locationService.file);
       try {
-        this.loadProto(this.locationService.file.block.binary);
+        this.gridService.loadProto(this.locationService.file.block.binary);
       } catch (e) {
         this.notificationService.error('Grid invalid');
         this.close();
       }
-      this.keyboardEvents();
+      this.popupService.events();
+      this.keyEvents();
       this.checkModified();
     } else {
       this.notificationService.error('Grid not found');
@@ -57,142 +57,36 @@ export class GridEditComponent implements OnDestroy {
     }
   }
 
-  add(): void {
-    this.matDialog.open(GridDialogComponent, { panelClass: 'context-dialog' })
-      .afterClosed().subscribe(res => {
-        switch (res) {
-          case 'add-input': this.addInput(); break;
-          case 'add-textarea': this.addTextarea(); break;
-          case 'add-pwd': this.addPassword(); break;
-          case 'add-textblock': this.addTextblock(); break;
-          case 'add-hiddenblock': this.addHiddenblock(); break;
-        }
-      });
+  ngAfterViewInit() {
+    this.dragService.init(this.gridRef.nativeElement, this.flexRef.nativeElement);
   }
 
-  addInput(): void {
-    const row = new GridRow();
-    row.type = GridType.INPUT;
-    this.grid.rows.push(row);
-  }
-
-  addTextarea(): void {
-    const row = new GridRow();
-    row.type = GridType.TEXTAREA;
-    this.grid.rows.push(row);
-  }
-
-  addPassword(): void {
-    const row = new GridRow();
-    row.label = 'password';
-    row.type = GridType.PASSWORD;
-    this.grid.rows.push(row);
-  }
-
-  addTextblock(): void {
-    const row = new GridRow();
-    row.type = GridType.TEXTBLOCK;
-    this.grid.rows.push(row);
-  }
-
-  addHiddenblock(): void {
-    const row = new GridRow();
-    row.type = GridType.HIDDENBLOCK;
-    this.grid.rows.push(row);
-  }
-
-  delete(row: GridRow): void {
-    const index: number = this.grid.rows.indexOf(row);
-    if (index !== -1) {
-      this.grid.rows.splice(index, 1);
-    }
-  }
-
-  up(row: GridRow): void {
-    const index: number = this.grid.rows.indexOf(row);
-    if (index !== -1 && index !== 0) {
-      const prev: number = index - 1;
-      [this.grid.rows[prev], this.grid.rows[index]] = [this.grid.rows[index], this.grid.rows[prev]];
-    }
-  }
-
-  down(row: GridRow): void {
-    const index: number = this.grid.rows.indexOf(row);
-    if (index !== -1 && index !== this.grid.rows.length - 1) {
-      const next: number = index + 1;
-      [this.grid.rows[next], this.grid.rows[index]] = [this.grid.rows[index], this.grid.rows[next]];
-    }
-  }
-
-  generateKey(row: GridRow, lengthInput: string, dictLabel: string): void {
-    const length: number = parseInt(lengthInput);
-    if (dictLabel === 'base64') {
-      row.value = this.encodingService.uint8ArrayToBase64(getRandomBlock(length));
-      return;
-    }
-    let dicts: string[][];
-    switch (dictLabel) {
-      case 'number': dicts = [numerals]; break;
-      case 'text': dicts = [alphabet]; break;
-      case 'text_number': dicts = [numerals, alphabet]; break;
-      case 'simple': dicts = [SIMPLE_INT, SIMPLE_SMALL, SIMPLE_BIG]; break;
-      case 'mixed_text_number': dicts = [numerals, alphabet, Alphabet]; break;
-      case 'string64': dicts = [numerals, alphabet, Alphabet, ['-', '_']]; break;
-      case 'hard': dicts = [numerals, alphabet, Alphabet, SHIFT_SPECIAL]; break;
-      case 'special': dicts = [numerals, alphabet, Alphabet, special]; break;
-      case 'unicode': dicts = [numerals, alphabet, Alphabet, special, UNICODE]; break;
-      case 'emoji': dicts = [numerals, alphabet, Alphabet, special, UNICODE, EMOJI]; break;
-
-      default: dicts = [dict64];
-    }
-    row.value = generatePassword(length, ...dicts);
-  }
-
-  togglePass(row: GridRow): void {
-    if (row.visibility === 'text') {
-      row.visibility = 'password';
-    } else {
-      row.visibility = 'text';
-    }
-  }
-
-  loadProto(binary: Uint8Array): void {
-    const grid: Proto.Grid = Proto.Grid.deserializeBinary(binary);
-    grid.getRowList().forEach(protoRow => {
-      const row = new GridRow();
-      row.type = protoRow.getType() as GridType;
-      row.label = protoRow.getLabel();
-      row.value = protoRow.getValue();
-      this.grid.rows.push(row);
-    });
-  }
-
-  getProto(): Uint8Array {
-    const grid = new Proto.Grid();
-    this.grid.rows.forEach(row => {
-      const gridRow = new Proto.GridRow();
-      gridRow.setType(row.type);
-      gridRow.setValue(row.value);
-      gridRow.setLabel(row.label);
-      grid.addRow(gridRow);
-    });
-    return grid.serializeBinary();
-  }
-
-  save(): void {
-    this.locationService.file.block.binary = this.getProto();
-    this.locationService.updateNode(this.locationService.file);
-    this.dataService.modify();
-    this.notificationService.success('Grid saved');
-  }
-
-  keyboardEvents(): void {
+  keyEvents(): void {
     this.keySub = this.eventService.keydown.subscribe(event => {
       if (event.code === 'KeyS' && event.ctrlKey) {
         event.preventDefault();
         this.save();
       }
+      this.popupService.isPopup = false;
     });
+  }
+
+  add(type: string): void {
+    switch (type) {
+      case 'inputblock': this.gridService.addInput(); break;
+      case 'textarea': this.gridService.addTextarea(); break;
+      case 'password': this.gridService.addPassword(); break;
+      case 'textblock': this.gridService.addTextblock(); break;
+      case 'hiddenblock': this.gridService.addHiddenblock(); break;
+    }
+    this.dragService.update();
+  }
+
+  save(): void {
+    this.locationService.file.block.binary = this.gridService.getProto();
+    this.locationService.updateNode(this.locationService.file);
+    this.dataService.modify();
+    this.notificationService.success('Grid saved');
   }
 
   tryBack(): void {
@@ -208,7 +102,7 @@ export class GridEditComponent implements OnDestroy {
   }
 
   checkSave(callback: Function): void {
-    if (compareBinary(this.locationService.file.block.binary, this.getProto())) {
+    if (compareBinary(this.locationService.file.block.binary, this.gridService.getProto())) {
       callback();
     } else {
       this.matDialog.open(ConfirmDialogComponent, {
@@ -223,10 +117,10 @@ export class GridEditComponent implements OnDestroy {
   }
 
   checkModified(): void {
-    this.timerSub = interval(1000).subscribe(() => {
+    this.fileSub = this.dataService.fileChanges.subscribe(() => {
       const isFileModified: boolean = !compareBinary(
         this.locationService.file.block.binary,
-        this.getProto(),
+        this.gridService.getProto(),
       );
       this.dataService.isFileModified = isFileModified;
     });
@@ -242,9 +136,11 @@ export class GridEditComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.gridService.grid = undefined;
     this.eventService.isEditing = false;
     this.dataService.isFileModified = false;
     this.keySub.unsubscribe();
-    this.timerSub.unsubscribe();
+    this.fileSub.unsubscribe();
+    this.popupService.destroy();
   }
 }

@@ -12,8 +12,8 @@ import {
 } from '@/core/services';
 import { FileService } from './file.service';
 import { GetService } from './get.service';
-import { DialogService } from './dialog.service';
 import { BranchService } from './branch.service';
+import { ControlsService } from './controls.service';
 
 @Injectable()
 export class MouseService {
@@ -27,9 +27,9 @@ export class MouseService {
     private mediaService: MediaService,
     private fileService: FileService,
     private getService: GetService,
-    private dialogService: DialogService,
     private branchService: BranchService,
     private locationService: LocationService,
+    private controlsService: ControlsService,
   ) { }
 
   click(node: Node): void {
@@ -43,14 +43,20 @@ export class MouseService {
 
   contextmenu(event: MouseEvent, node: Node): void {
     event.preventDefault();
-    this.dialogService.openContextmenu(node);
+    this.controlsService.context.node = node;
+    this.eventService.click.next({ x: event.pageX, y: event.pageY });
+    this.controlsService.openContextMenu(node, { x: event.pageX, y: event.pageY });
   }
 
-  touchstart(node: Node): void {
+  touchstart(event: TouchEvent, node: Node): void {
     if (this.eventService.isApple) {
       this.touchSub.unsubscribe();
-      this.touchSub = timer(500).subscribe(() => {
-        this.dialogService.openContextmenu(node);
+      this.touchSub = timer(400).subscribe(() => {
+        event.preventDefault();
+        this.controlsService.context.node = node;
+        const touch: Touch = event.touches[0];
+        this.eventService.click.next({ x: touch.pageX, y: touch.pageY });
+        this.controlsService.openContextMenu(node, { x: touch.pageX, y: touch.pageY });
       });
     }
   }

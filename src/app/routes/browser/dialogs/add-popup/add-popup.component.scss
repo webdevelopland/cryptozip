@@ -1,0 +1,19 @@
+.popup {
+  top: 50px;
+  left: 170px;
+  width: 176px;
+  z-index: 10;
+  >.upload {
+    padding: 0;
+    label {
+      cursor: pointer;
+      width: 100%;
+      display: inline-block;
+      padding: 8px 15px;
+      box-sizing: border-box;
+    }
+    input {
+      display: none;
+    }
+  }
+}

@@ -1,8 +1,13 @@
 import { Parse } from '@/core/type';
 
 export function parsePath(path: string): Parse {
+  path = path.replace(/(\\)+/g, '/');
+  path = path.replace(/(\/)+/g, '/');
+  if (path.startsWith('/')) {
+    path = path.replace(/^(\/)+/g, '');
+  }
   // /root/path/to/file.java -> ['root', 'path', 'to', 'file.java']
-  const nodes: string[] = path.split('/').slice(1);
+  const nodes: string[] = path.split('/');
   return {
     length: nodes.length, // 4
     name: nodes.pop(), // 'file.java'

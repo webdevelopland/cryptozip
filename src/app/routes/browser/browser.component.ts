@@ -14,7 +14,14 @@ import {
   LocationService,
 } from '@/core/services';
 import { HeaderService } from '@/core/components/header';
-import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
+import {
+  MouseService,
+  FileService,
+  GetService,
+  DialogService,
+  BranchService,
+  ControlsService,
+} from './services';
 
 @Component({
   selector: 'page-browser',
@@ -41,8 +48,10 @@ export class BrowserComponent implements OnDestroy {
     public getService: GetService,
     public dialogService: DialogService,
     public branchService: BranchService,
+    public controlsService: ControlsService,
   ) {
     this.keyboardEvents();
+    this.controlsService.events();
   }
 
   up(): void {
@@ -88,7 +97,7 @@ export class BrowserComponent implements OnDestroy {
       }
       if (event.code === 'KeyF' && event.ctrlKey) {
         event.preventDefault();
-        this.headerService.search();
+        this.controlsService.search();
         this.router.navigate(['/browser/search']);
       }
       if (event.code === 'Delete') {
@@ -149,6 +158,7 @@ export class BrowserComponent implements OnDestroy {
 
   blur(): void {
     this.isFocus = false;
+    this.locationService.path = this.locationService.folder.path;
   }
 
   sub(sub: Subscription): void {
@@ -159,5 +169,6 @@ export class BrowserComponent implements OnDestroy {
     this.subs.forEach(sub => sub.unsubscribe());
     this.mouseService.destroy();
     this.fileService.destroy();
+    this.controlsService.destroy();
   }
 }

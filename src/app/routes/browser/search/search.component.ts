@@ -6,6 +6,7 @@ import { SearchResult } from '@/core/type';
 import {
   DataService, SearchService, MediaService, EventService, LocationService
 } from '@/core/services';
+import { HeaderService } from '@/core/components/header';
 
 @Component({
   selector: 'page-search',
@@ -22,9 +23,11 @@ export class SearchComponent implements OnDestroy {
     private mediaService: MediaService,
     private eventService: EventService,
     public locationService: LocationService,
+    private headerService: HeaderService,
   ) {
     this.locationService.updatePath(this.searchService.folder, false);
     this.dataService.unselectAll();
+    this.headerService.sortTop = 202;
     this.keyboardEvents();
   }
 
@@ -69,6 +72,7 @@ export class SearchComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.headerService.resetSortTop();
     this.keySub.unsubscribe();
   }
 }

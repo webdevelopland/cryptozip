@@ -1,11 +1,24 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
-      <button (click)="locationService.back()">&#60;</button>
-      <button (click)="close()">...</button>
-      <button (click)="search()">Search</button>
-      <button (click)="all()">All</button>
-      <button (click)="clear()">Clear</button>
+      <button (click)="locationService.back()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button (click)="close()">
+        <mat-icon>expand_less</mat-icon>
+      </button>
+      <button (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
+      <button (click)="all()">
+        <mat-icon>manage_search</mat-icon>
+      </button>
+      <button (click)="clear()">
+        <mat-icon>clear</mat-icon>
+      </button>
+      <span class="length" *ngIf="searchService.searchResults.length > 0">
+        {{ searchService.searchResults.length }} nodes
+      </span>
     </div>
     <div class="path">
       <input

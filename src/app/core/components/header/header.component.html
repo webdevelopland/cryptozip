@@ -15,15 +15,18 @@
     <mat-icon *ngIf="headerService.isMenu">menu_open</mat-icon>
   </div>
 </header>
-<div class="popup-menu" *ngIf="headerService.isMenu" #menu>
-  <div class="option" (click)="clear()">Clear</div>
+<div class="popup" *ngIf="headerService.isMenu" #menu>
+  <div class="option" (click)="clear()">Clear Clipboard</div>
   <div class="option" (click)="askToRoot()">Root</div>
   <div class="option" (click)="openIdDialog()">Change id</div>
   <div class="option" (click)="openPasswordDialog()">Change Password</div>
   <div class="option" (click)="decrypt()">Decrypt</div>
-  <div class="option" (click)="sort()">Sort</div>
   <div class="option" (click)="print()">Print</div>
-  <div class="option" (click)="search()">Search</div>
+  <div
+    class="option"
+    [ngClass]= "{ selected: headerService.isSortSelected }"
+    (click)="sort()"
+  >Sort</div>
   <div class="option" (click)="showProperties()">Properties</div>
   <div class="option" (click)="exportZip()">Export as Zip</div>
   <div class="option" (click)="headerService.download()">Download</div>
@@ -38,3 +41,4 @@
     [style.background]="notificationService.color"
   >{{ notificationService.message }}</span>
 </div>
+<sort-popup *ngIf="headerService.isSortPopup"></sort-popup>

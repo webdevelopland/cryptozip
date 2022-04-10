@@ -3,50 +3,28 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { Node } from '@/core/type';
 import { DataService, ZipService, NotificationService, LocationService } from '@/core/services';
-import { ConfirmDialogComponent, SortDialogComponent } from '@/shared/dialogs';
+import { ConfirmDialogComponent } from '@/shared/dialogs';
 import {
-  ContextDialogComponent,
   RenameDialogComponent,
-  AddDialogComponent,
   TagDialogComponent,
   IndexDialogComponent,
 } from '../dialogs';
 import { FileService } from './file.service';
 import { BranchService } from './branch.service';
+import { ControlsService } from './controls.service';
 
 @Injectable()
 export class DialogService {
   constructor(
     private matDialog: MatDialog,
-    public dataService: DataService,
-    public zipService: ZipService,
-    public fileService: FileService,
-    public branchService: BranchService,
-    public notificationService: NotificationService,
-    public locationService: LocationService,
+    private dataService: DataService,
+    private zipService: ZipService,
+    private fileService: FileService,
+    private branchService: BranchService,
+    private notificationService: NotificationService,
+    private locationService: LocationService,
+    private controlsService: ControlsService,
   ) { }
-
-  openContextmenu(node: Node): void {
-    if (!node.isSelected) {
-      this.dataService.unselectAll();
-      node.isSelected = true;
-    }
-    this.matDialog.open(ContextDialogComponent, { panelClass: 'context-dialog' })
-      .afterClosed().subscribe(res => {
-        switch (res) {
-          case 'delete': this.askToDelete(); break;
-          case 'copy': this.fileService.copy(); break;
-          case 'cut': this.fileService.cut(); break;
-          case 'rename': this.openRenameDialog(node); break;
-          case 'transfer': this.fileService.transferTo(); break;
-          case 'link': this.fileService.createLink(node); break;
-          case 'export': this.zipService.export(node, node.name); break;
-          case 'tags': this.openTagsDialog(node); break;
-          case 'index': this.openIndexDialog(node); break;
-          case 'properties': this.fileService.showProperties(node); break;
-        }
-      });
-  }
 
   openRenameDialog(node: Node): void {
     this.dataService.unselectAll();
@@ -67,6 +45,17 @@ export class DialogService {
     }).afterClosed().subscribe(res => {
       if (res) {
         this.fileService.delete();
+      }
+    });
+  }
+
+  askToIndex(): void {
+    this.matDialog.open(ConfirmDialogComponent, {
+      data: { message: 'Reset index?' },
+      autoFocus: false,
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.dataService.resetIndex(this.locationService.folder);
       }
     });
   }
@@ -92,38 +81,14 @@ export class DialogService {
       data: node
     }).afterClosed().subscribe(index => {
       if (index !== undefined) {
+        if (-2147483648 > index || index > 2147483647) {
+          this.notificationService.error('Index is too big');
+          return;
+        }
         node.index = index;
         this.locationService.updateNode(node);
         this.dataService.modify();
       }
     });
-  }
-
-  showAddDialog(): void {
-    this.matDialog.open(AddDialogComponent, { panelClass: 'context-dialog' })
-      .afterClosed().subscribe(res => {
-        if (res) {
-          switch (res.type) {
-            case 'add-file': this.fileService.addTxtFile(); break;
-            case 'add-folder': this.fileService.addFolder(); break;
-            case 'add-grid': this.fileService.addGrid(); break;
-            case 'import-file': this.fileService.importFiles(res.list); break;
-            case 'import-folder': this.fileService.importFolder(res.list); break;
-          }
-        }
-      });
-  }
-
-  showSortDialog(): void {
-    this.matDialog.open(SortDialogComponent, {
-      panelClass: 'context-dialog',
-      data: { message: this.locationService.folder.sortBy }
-    })
-      .afterClosed().subscribe(sortBy => {
-        if (sortBy) {
-          this.locationService.folder.sortBy = sortBy;
-          this.dataService.sort(this.locationService.folder);
-        }
-      });
   }
 }

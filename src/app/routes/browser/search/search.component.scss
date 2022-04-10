@@ -2,6 +2,15 @@
   display: flex;
   flex-direction: column;
   >.controls {
+    >.buttons {
+      >.length {
+        display: flex;
+        align-items: center;
+        color: white;
+        padding-top: 2px;
+        font-size: 14px;
+      }
+    }
     >.path {
       margin-bottom: 10px;
       &:last-child {

@@ -4,35 +4,49 @@ import { SharedModule } from '@/shared';
 import { BrowserComponent } from './browser.component';
 import { TextComponent } from './text';
 import { ImageComponent } from './image';
-import { GridViewComponent, GridEditComponent } from './grid';
+import { GridModule } from './grid';
 import { SearchComponent } from './search';
 import {
-  ContextDialogComponent,
   RenameDialogComponent,
-  AddDialogComponent,
-  GridDialogComponent,
   TagDialogComponent,
   IndexDialogComponent,
+  ControlsPopupComponent,
+  AddPopupComponent,
+  ContextPopupComponent,
 } from './dialogs';
-import { MouseService, FileService, GetService, DialogService, BranchService } from './services';
+import {
+  MouseService,
+  FileService,
+  GetService,
+  DialogService,
+  BranchService,
+  ControlsService,
+} from './services';
 
 @NgModule({
   imports: [
     SharedModule,
+    GridModule,
   ],
   declarations: [
     BrowserComponent,
-    ContextDialogComponent,
     RenameDialogComponent,
-    AddDialogComponent,
-    GridDialogComponent,
     TagDialogComponent,
     IndexDialogComponent,
+    ControlsPopupComponent,
+    AddPopupComponent,
+    ContextPopupComponent,
     TextComponent,
     ImageComponent,
-    GridViewComponent, GridEditComponent,
     SearchComponent,
   ],
-  providers: [MouseService, FileService, GetService, DialogService, BranchService],
+  providers: [
+    MouseService,
+    FileService,
+    GetService,
+    DialogService,
+    BranchService,
+    ControlsService,
+  ],
 })
 export class BrowserDataModule { }

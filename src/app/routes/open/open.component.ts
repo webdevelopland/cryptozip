@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
+import { ZipError } from '@/core/type';
 import { DataService, NotificationService, ZipService, EventService } from '@/core/services';
 
 @Component({
@@ -47,8 +48,17 @@ export class OpenComponent implements OnDestroy {
       this.zipService.unzip(this.fileList, this.password).subscribe(() => {
         this.dataService.password = this.password;
         this.router.navigate(['/browser']);
-      }, () => {
-        this.notificationService.error('Password is incorrect');
+      }, error => {
+        switch (error) {
+          case ZipError.WRONG_PASS:
+            this.notificationService.error('Password is incorrect');
+            break;
+          case ZipError.FILE_READER:
+            this.notificationService.error('File is too big');
+            break;
+          default:
+            this.notificationService.error('Error');
+        }
         this.isLoading = false;
       });
     } else {

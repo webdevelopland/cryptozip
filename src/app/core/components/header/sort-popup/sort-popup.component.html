@@ -1,22 +1,22 @@
-<div class="dialog">
+<div class="popup" #popup [style.top.px]="headerService.sortTop">
   <div
     class="option"
     [ngClass]= "{ selected: sortBy === 'az' }"
-    (click)="az()"
+    (click)="select('az')"
   >A-Z</div>
   <div
     class="option"
     [ngClass]= "{ selected: sortBy === 'modified' }"
-    (click)="modified()"
+    (click)="select('modified')"
   >Modified</div>
   <div
     class="option"
     [ngClass]= "{ selected: sortBy === 'size' }"
-    (click)="size()"
+    (click)="select('size')"
   >Size</div>
   <div
     class="option"
     [ngClass]= "{ selected: sortBy === 'default' }"
-    (click)="default()"
+    (click)="select('default')"
   >Default</div>
 </div>

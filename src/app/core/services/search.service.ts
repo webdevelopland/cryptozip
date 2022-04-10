@@ -37,6 +37,8 @@ export class SearchService {
         ) {
           if (this.what) {
             this.setTextRank(this.what, searchResult);
+          } else if (this.isAll) {
+            this.setTextRank('', searchResult);
           }
           searchResults.push(searchResult);
         }
@@ -88,6 +90,10 @@ export class SearchService {
   }
 
   private isTag(searchResult: SearchResult): boolean {
+    if (searchResult.node.tags.length > 0 && this.tagString === '*') {
+      // Search for all tags
+      return true;
+    }
     // Every tag from tags input must be inside the search results
     let isTag: boolean = true;
     for (const tag of this.tags) {

@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import * as AES from 'src/third-party/aes';
 
-import { Node, File, Folder, BinaryBlock } from '@/core/type';
+import { Node, File, Folder, BinaryBlock, ZipError } from '@/core/type';
 import { getIV } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
@@ -38,11 +38,15 @@ export class ZipService {
           this.decrypt(binary, password);
           observer.next();
         } catch (e) {
-          observer.error();
+          if (e.message === 'Invalid password') {
+            observer.error(ZipError.WRONG_PASS);
+          } else {
+            observer.error(ZipError.UNDEFINED);
+          }
         }
       };
       reader.onerror = () => {
-        observer.error();
+        observer.error(ZipError.FILE_READER);
       };
     });
   }
@@ -80,7 +84,7 @@ export class ZipService {
     const czipTitle: Uint8Array = AES.utils.utf8.toBytes(META.name + META.version);
     const czipTitleLen = new Uint8Array(1);
     czipTitleLen[0] = czipTitle.length;
-    const treeSize: Uint8Array = this.encodingService.int32ToUint8Array(treeLength);
+    const treeSize: Uint8Array = this.encodingService.uint32ToUint8Array(treeLength);
     // Download
     // [8, "CZIP2.46", 9000, rv, tree, blocks]
     return new Blob([
@@ -99,7 +103,7 @@ export class ZipService {
     i += length + 1;
     // Get size of tree
     const treeSize: Uint8Array = binary.slice(i, i + INT32BYTES);
-    const treeLength: number = this.encodingService.uint8ArrayToint32(treeSize);
+    const treeLength: number = this.encodingService.uint8ArrayToUint32(treeSize);
     i += INT32BYTES;
     // Get rv
     const key: Uint8Array = this.cryptoService.getKey(password);

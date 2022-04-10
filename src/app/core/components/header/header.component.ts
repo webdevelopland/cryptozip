@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { debounceTime, Subject } from 'rxjs';
 
 import { NodeInfo, BinaryBlock } from '@/core/type';
 import {
@@ -15,17 +16,10 @@ import {
   ProtoService,
 } from '@/core/services';
 import {
-  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, SortDialogComponent
+  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent
 } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 import { META } from '@/environments/meta';
-
-interface Overlay {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-}
 
 @Component({
   selector: 'app-header',
@@ -34,7 +28,7 @@ interface Overlay {
 })
 export class HeaderComponent {
   version: string = META.version;
-  overlay: Overlay;
+  menuClick = new Subject<void>();
   @ViewChild('menu') menuRef: ElementRef<HTMLDivElement>;
 
   constructor(
@@ -64,28 +58,51 @@ export class HeaderComponent {
         event.preventDefault();
         this.clear();
       }
+      this.headerService.close();
+      this.headerService.isSortPopup = false;
     });
-    this.eventService.mouseup.subscribe(event => {
-      if (this.overlay) {
-        if (
-          event.pageX < this.overlay.x || event.pageX > this.overlay.x + this.overlay.width ||
-          event.pageY < this.overlay.y || event.pageY > this.overlay.y + this.overlay.height
-        ) {
-          this.headerService.isMenu = false;
+    this.eventService.click
+      .pipe(debounceTime(1))
+      .subscribe(point => {
+        if (this.headerService.menuOverlay) {
+          if (this.eventService.boxTest(point, this.headerService.menuOverlay)) {
+            this.headerService.close();
+          }
         }
-      } else {
-        this.headerService.isMenu = false;
-      }
-    });
+        if (this.headerService.sortOverlay) {
+          if (this.eventService.boxTest(point, this.headerService.sortOverlay)) {
+            this.headerService.isSortPopup = false;
+          }
+        }
+      });
+    this.menuClick
+      .pipe(debounceTime(10))
+      .subscribe(() => {
+        this.headerService.isMenu = true;
+        setTimeout(() => {
+          this.setMenuOverlay();
+        }, 0);
+      });
+    this.headerService.sortClick
+      .pipe(debounceTime(10))
+      .subscribe(() => {
+        this.headerService.isSortPopup = true;
+      });
+  }
+
+  toggleMenu(): void {
+    if (!this.headerService.isMenu) {
+      this.menuClick.next();
+    }
   }
 
   print(): void {
     console.log(this.dataService.tree);
-    this.headerService.isMenu = false;
+    this.headerService.close();
   }
 
   decrypt(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     this.loadingService.loads++;
     setTimeout(() => {
       this.dataService.decryptAllFiles(true);
@@ -95,46 +112,26 @@ export class HeaderComponent {
   }
 
   sort(): void {
-    this.headerService.isMenu = false;
-    this.matDialog.open(SortDialogComponent, {
-      panelClass: 'context-dialog',
-    })
-      .afterClosed().subscribe(sortBy => {
-        if (sortBy) {
-          this.dataService.sortAll(sortBy);
-          this.searchService.sortAll(sortBy);
-        }
-      });
-  }
-
-  search(): void {
-    this.headerService.isMenu = false;
-    this.headerService.search();
-    this.router.navigate(['/browser/search']);
-  }
-
-  clear(): void {
-    this.clipboardService.clear();
-    this.headerService.isMenu = false;
-    this.dataService.unselectAll();
-    this.locationService.path = this.locationService.folder.path;
-    this.notificationService.success('Cleared');
-  }
-
-  toggleMenu(): void {
-    this.headerService.isMenu = !this.headerService.isMenu;
-    if (this.headerService.isMenu) {
-      setTimeout(() => {
-        this.setMenuOverlay();
-      }, 0);
+    this.headerService.isSortGlobal = true;
+    this.headerService.isSortSelected = !this.headerService.isSortPopup;
+    if (!this.headerService.isSortPopup) {
+      this.headerService.sortClick.next();
     }
   }
 
+  clear(): void {
+    this.headerService.close();
+    this.clipboardService.clear();
+    this.notificationService.success('Clipboard cleared');
+  }
+
   setMenuOverlay(): void {
-    if (this.menuRef.nativeElement) {
-      this.overlay = {
-        x: this.menuRef.nativeElement.offsetLeft,
-        y: this.menuRef.nativeElement.offsetTop,
+    if (this.menuRef && this.menuRef.nativeElement) {
+      this.headerService.menuOverlay = {
+        point: {
+          x: this.menuRef.nativeElement.offsetLeft,
+          y: this.menuRef.nativeElement.offsetTop,
+        },
         width: this.menuRef.nativeElement.offsetWidth,
         height: this.menuRef.nativeElement.offsetHeight,
       };
@@ -142,7 +139,7 @@ export class HeaderComponent {
   }
 
   exportZip(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     this.matDialog.open(ConfirmDialogComponent, {
       data: { message: 'Export as zip?' },
       autoFocus: false,
@@ -154,12 +151,13 @@ export class HeaderComponent {
   }
 
   showProperties(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.tree.root);
     const blocks: BinaryBlock[] = this.protoService.getProto();
     const headerSize: number = 28; // [8, "CZIP2.46", tree_size, rv]
     const treeSize: number = blocks[0].binary.length;
     nodeInfo.size += headerSize + treeSize;
+    this.dataService.fileChanges.next();
     this.nodeService.showProperties(
       nodeInfo,
       this.dataService.tree.meta.createdTimestamp,
@@ -169,7 +167,7 @@ export class HeaderComponent {
   }
 
   delete(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     this.matDialog.open(ConfirmDialogComponent, {
       data: { message: 'Delete from server cloud?' },
       autoFocus: false,
@@ -181,7 +179,7 @@ export class HeaderComponent {
   }
 
   openPasswordDialog(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
       if (newPass) {
         this.dataService.password = newPass;
@@ -192,7 +190,7 @@ export class HeaderComponent {
   }
 
   openIdDialog(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
     this.matDialog.open(IdDialogComponent).afterClosed().subscribe(newId => {
       if (newId) {
         const oldId: string = this.dataService.id;
@@ -207,7 +205,8 @@ export class HeaderComponent {
   }
 
   askToRoot(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
+    this.dataService.fileChanges.next();
     if (this.eventService.isEditing && this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved file. Open root?' },
@@ -223,7 +222,8 @@ export class HeaderComponent {
   }
 
   askToExit(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
+    this.dataService.fileChanges.next();
     if (this.dataService.isModified || this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved progress. Close czip?' },
@@ -239,7 +239,8 @@ export class HeaderComponent {
   }
 
   askToSave(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
+    this.dataService.fileChanges.next();
     if (this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved file. Save czip?' },
@@ -255,7 +256,8 @@ export class HeaderComponent {
   }
 
   askToReload(): void {
-    this.headerService.isMenu = false;
+    this.headerService.close();
+    this.dataService.fileChanges.next();
     if (this.dataService.isModified || this.dataService.isFileModified) {
       this.matDialog.open(ConfirmDialogComponent, {
         data: { message: 'You have unsaved progress. Reload czip?' },
