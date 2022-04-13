@@ -1,9 +1,15 @@
 <div class="page">
   <div class="controls">
     <div class="buttons">
-      <button (click)="askBack()">&#60;</button>
-      <button (click)="askClose()">...</button>
-      <button (click)="save()">Save</button>
+      <button (click)="askBack()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button (click)="askClose()">
+        <mat-icon>expand_less</mat-icon>
+      </button>
+      <button (click)="save()">
+        <mat-icon>save</mat-icon>
+      </button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="locationService.file.path">

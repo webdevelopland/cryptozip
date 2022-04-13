@@ -53,6 +53,7 @@
       align-items: center;
     }
     &.selected {
+      background: $color-hover;
       >.icon {
         >mat-icon {
           color: $color-primary;
@@ -60,7 +61,7 @@
       }
       >.text {
         >span {
-          color: #131313;
+          color: $color-primary;
         }
       }
     }

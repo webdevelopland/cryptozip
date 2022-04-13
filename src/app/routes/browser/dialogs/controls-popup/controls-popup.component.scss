@@ -1,0 +1,12 @@
+@import 'styles/variables';
+
+.popup {
+  top: 138px;
+  right: 10px;
+  width: 210px;
+  z-index: 10;
+  >.selected {
+    background: $color-primary;
+    color: white;
+  }
+}

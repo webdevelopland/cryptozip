@@ -1,4 +1,4 @@
-<div class="dialog">
+<div class="popup" #popup>
   <div class="option" (click)="addFile()">Create File</div>
   <div class="option" (click)="addFolder()">Create Folder</div>
   <div class="option" (click)="addGrid()">Create Grid</div>
@@ -24,4 +24,6 @@
       (change)="importFolder($event.target.files)"
     />
   </div>
+  <div class="option" (click)="transfer()">Transfer</div>
+  <div class="option" (click)="paste()" *ngIf="clipboardService.clipboard.length > 0">Paste</div>
 </div>

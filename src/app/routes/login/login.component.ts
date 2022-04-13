@@ -45,7 +45,11 @@ export class LoginComponent implements OnDestroy {
           this.dataService.password = this.password;
           this.router.navigate(['/browser']);
         } catch (e) {
-          this.notificationService.error('Password is incorrect');
+          if (e.message === 'Invalid password') {
+            this.notificationService.error('Password is incorrect');
+          } else {
+            this.notificationService.error('Error');
+          }
           this.isLoading = false;
         }
       }, () => {

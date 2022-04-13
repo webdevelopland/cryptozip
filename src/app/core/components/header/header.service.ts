@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
-import { Tree } from '@/core/type';
+import { Tree, Overlay } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -14,9 +15,18 @@ import {
   LocationService,
 } from '@/core/services';
 
+const SORT_TOP = 138;
+
 @Injectable()
 export class HeaderService {
   isMenu: boolean = false;
+  isSortSelected: boolean = false;
+  isSortPopup: boolean = false;
+  isSortGlobal: boolean;
+  menuOverlay: Overlay;
+  sortOverlay: Overlay;
+  sortTop: number = SORT_TOP;
+  sortClick = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -31,17 +41,8 @@ export class HeaderService {
     private locationService: LocationService,
   ) { }
 
-  search(): void {
-    this.searchService.folder = this.locationService.folder;
-    this.searchService.where = this.locationService.folder.path;
-    this.searchService.what = '';
-    this.searchService.tagString = '';
-    this.searchService.tags = [];
-    this.locationService.openSearch(this.locationService.folder.path);
-  }
-
   download(): void {
-    this.isMenu = false;
+    this.close();
     this.loadingService.loads++;
     this.dataService.update();
     setTimeout(() => {
@@ -51,7 +52,7 @@ export class HeaderService {
   }
 
   delete(): void {
-    this.isMenu = false;
+    this.close();
     this.firebaseService.remove(this.dataService.tree.meta.id);
   }
 
@@ -69,7 +70,7 @@ export class HeaderService {
   }
 
   root(): void {
-    this.isMenu = false;
+    this.close();
     this.locationService.updatePath(this.dataService.tree.root);
     this.dataService.unselectAll();
     this.router.navigate(['/browser']);
@@ -101,14 +102,28 @@ export class HeaderService {
   }
 
   export(): void {
-    this.isMenu = false;
+    this.close();
     setTimeout(() => {
       this.zipService.export(this.dataService.tree.root, this.dataService.id);
     }, 0);
   }
 
+  resetSortTop(): void {
+    this.sortTop = SORT_TOP;
+  }
+
+  close(): void {
+    this.isMenu = false;
+    this.isSortSelected = false;
+  }
+
   destroy(): void {
     this.isMenu = false;
+    this.isSortSelected = false;
+    this.isSortPopup = false;
+    this.isSortGlobal = undefined;
+    this.menuOverlay = undefined;
+    this.sortOverlay = undefined;
     this.dataService.destroy();
     this.clipboardService.destroy();
     this.eventService.destroy();
@@ -116,6 +131,7 @@ export class HeaderService {
     this.loadingService.destroy();
     this.notificationService.destroy();
     this.locationService.destroy();
+    this.resetSortTop();
   }
 
   exit(): void {

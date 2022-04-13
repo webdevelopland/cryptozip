@@ -21,6 +21,7 @@ export class DataService {
   pathMap: StringMap = {};
   blocks: Uint8Array;
   dataChanges = new Subject<void>();
+  fileChanges = new Subject<void>(); // Request to check "is file modified?"
 
   constructor(
     private router: Router,
@@ -132,6 +133,15 @@ export class DataService {
 
   unselectAll(): void {
     Object.values(this.nodeMap).forEach(node => node.isSelected = false);
+  }
+
+  resetIndex(folder: Folder): void {
+    let path: string = folder.path + '/';
+    path = path.replace(/(\/)+/g, '/');
+    Object.values(this.nodeMap)
+      .filter(node => node.path.startsWith(path) || node.path === folder.path)
+      .forEach(node => node.index = 0);
+    this.sortAll();
   }
 
   create(id: string, password: string): void {

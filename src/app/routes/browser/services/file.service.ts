@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 import * as AES from 'src/third-party/aes';
 
-import { Node, File, Folder, NodeMap, NodeInfo } from '@/core/type';
+import { Node, File, Folder, NodeMap } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -260,28 +260,6 @@ export class FileService {
       this.locationService.updateNode(this.locationService.folder);
       this.dataService.modify();
     }));
-  }
-
-  showProperties(node: Node): void {
-    const selectFolder = new Folder();
-    selectFolder.nodes = this.getSelectedList();
-    if (selectFolder.nodes.length > 1) {
-      this.showListProperties(selectFolder);
-    } else {
-      this.showNodeProperties(node);
-    }
-  }
-
-  private showNodeProperties(node: Node): void {
-    const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(node);
-    const createdTimestamp: number = node.createdTimestamp;
-    const updatedTimestamp: number = node.updatedTimestamp;
-    this.nodeService.showProperties(nodeInfo, createdTimestamp, updatedTimestamp);
-  }
-
-  private showListProperties(folder: Folder): void {
-    const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(folder);
-    this.nodeService.showListProperties(nodeInfo);
   }
 
   sub(sub: Subscription): void {

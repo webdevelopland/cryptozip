@@ -28,36 +28,27 @@
     }
     >.menu-button {
       position: absolute;
-      right: 18px;
+      right: 0;
       top: 0;
       height: 40px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
-      cursor: pointer;
       user-select: none;
+      cursor: pointer;
       >.mat-icon {
         color: #0366d6;
       }
     }
   }
-  >.popup-menu {
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    border: 1px solid $color-primary;
-    width: 200px;
-    background: white;
-    z-index: 10;
-    user-select: none;
-    >.option {
-      padding: 8px 15px;
-      white-space: nowrap;
-      font-size: 14px;
-      &:hover {
-        background: $color-primary;
-        color: white;
-        cursor: pointer;
-      }
+  >.popup {
+    top: 10px;
+    right: 64px;
+    width: 156px;
+    z-index: 20;
+    >.selected {
+      background: $color-primary;
+      color: white;
     }
   }
   >.notification {

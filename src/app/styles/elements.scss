@@ -23,11 +23,6 @@ body {
     @include dark-input();
     resize: none;
   }
-  .context-dialog {
-    >.mat-dialog-container {
-      padding: 0;
-    }
-  }
   // Hide number arrows
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {

@@ -9,7 +9,7 @@
   text-align: center;
   background: white;
   &:hover {
-    background: #e7f3ff;
+    background: $color-hover;
   }
   &:active {
     background: $color-primary;

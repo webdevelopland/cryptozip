@@ -103,6 +103,17 @@ export interface Parse {
 
 export class Grid {
   rows: GridRow[] = [];
+
+  add(row: GridRow): void {
+    row.index = this.rows.length;
+    this.rows.push(row);
+  }
+}
+
+export enum ZipError {
+  UNDEFINED = 0,
+  WRONG_PASS = 1,
+  FILE_READER = 2,
 }
 
 export enum GridType {
@@ -115,10 +126,15 @@ export enum GridType {
 }
 
 export class GridRow {
+  id: string = getNodeId();
   label: string = '';
   value: string = '';
   type: GridType = GridType.INPUT;
   visibility: string = 'password';
+  index: number;
+  offset: number;
+  height: number;
+  isDrag: boolean = false;
 }
 
 export interface NodeInfo {
@@ -152,4 +168,15 @@ export interface Location {
   type: LocationType;
   path: string;
   node?: Node;
+}
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Overlay {
+  point: Point;
+  width?: number;
+  height?: number;
 }

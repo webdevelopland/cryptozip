@@ -1,0 +1,10 @@
+<div class="popup" #popup>
+  <div class="option" (click)="search()">Search</div>
+  <div class="option" (click)="select()">Clear Select</div>
+  <div
+    class="option"
+    [ngClass]= "{ selected: isSort }"
+    (click)="sort()"
+  >Sort</div>
+  <div class="option" (click)="index()">Reset Index</div>
+</div>
