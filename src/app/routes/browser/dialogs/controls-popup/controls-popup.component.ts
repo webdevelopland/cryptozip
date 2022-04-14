@@ -10,18 +10,17 @@ import { ControlsService, DialogService } from '../../services';
   styleUrls: ['./controls-popup.component.scss'],
 })
 export class ControlsPopupComponent implements AfterViewInit {
-  isSort: boolean = false;
   @ViewChild('popup') popupRef: ElementRef<HTMLDivElement>;
 
   constructor(
     public controlsService: ControlsService,
     private dialogService: DialogService,
     private dataService: DataService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
   ) { }
 
   ngAfterViewInit() {
-    this.controlsService.overlayMenu = {
+    this.controlsService.controls.overlay = {
       point: {
         x: this.popupRef.nativeElement.offsetLeft,
         y: this.popupRef.nativeElement.offsetTop,
@@ -33,24 +32,20 @@ export class ControlsPopupComponent implements AfterViewInit {
 
   sort(): void {
     this.headerService.isSortGlobal = false;
-    this.isSort = !this.headerService.isSortPopup;
-    if (!this.headerService.isSortPopup) {
-      this.headerService.sortClick.next();
-    }
+    this.headerService.sort.click();
   }
 
   search(): void {
-    this.controlsService.isControlsMenu = false;
+    this.controlsService.controls.hide();
     this.controlsService.search();
   }
 
   select(): void {
-    this.controlsService.isControlsMenu = false;
+    this.controlsService.controls.hide();
     this.dataService.unselectAll();
   }
 
   index(): void {
-    this.controlsService.isControlsMenu = false;
-    this.dialogService.askToIndex();
+    this.controlsService.index.click();
   }
 }

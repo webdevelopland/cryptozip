@@ -10,7 +10,7 @@ import { EventService } from '@/core/services';
   styleUrls: ['./password-dialog.component.scss'],
 })
 export class PasswordDialogComponent implements OnDestroy {
-  newPass: string;
+  newPass: string = '';
   keySubscription = new Subscription();
 
   constructor(

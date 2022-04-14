@@ -64,6 +64,7 @@ export class SearchComponent implements OnDestroy {
     this.searchService.tags = [];
     this.searchService.searchResults = [];
     this.searchService.isAll = false;
+    this.searchService.isParam = false;
   }
 
   close(): void {

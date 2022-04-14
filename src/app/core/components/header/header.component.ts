@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { debounceTime, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs';
 
 import { NodeInfo, BinaryBlock } from '@/core/type';
 import {
@@ -28,7 +28,6 @@ import { META } from '@/environments/meta';
 })
 export class HeaderComponent {
   version: string = META.version;
-  menuClick = new Subject<void>();
   @ViewChild('menu') menuRef: ElementRef<HTMLDivElement>;
 
   constructor(
@@ -59,41 +58,16 @@ export class HeaderComponent {
         this.clear();
       }
       this.headerService.close();
-      this.headerService.isSortPopup = false;
+      this.headerService.sort.hide();
     });
     this.eventService.click
       .pipe(debounceTime(1))
       .subscribe(point => {
-        if (this.headerService.menuOverlay) {
-          if (this.eventService.boxTest(point, this.headerService.menuOverlay)) {
-            this.headerService.close();
-          }
-        }
-        if (this.headerService.sortOverlay) {
-          if (this.eventService.boxTest(point, this.headerService.sortOverlay)) {
-            this.headerService.isSortPopup = false;
-          }
-        }
+        this.headerService.menu.boxTest(point);
+        this.headerService.sort.boxTest(point);
       });
-    this.menuClick
-      .pipe(debounceTime(10))
-      .subscribe(() => {
-        this.headerService.isMenu = true;
-        setTimeout(() => {
-          this.setMenuOverlay();
-        }, 0);
-      });
-    this.headerService.sortClick
-      .pipe(debounceTime(10))
-      .subscribe(() => {
-        this.headerService.isSortPopup = true;
-      });
-  }
-
-  toggleMenu(): void {
-    if (!this.headerService.isMenu) {
-      this.menuClick.next();
-    }
+    this.headerService.menu.subscribe();
+    this.headerService.sort.subscribe();
   }
 
   print(): void {
@@ -111,31 +85,10 @@ export class HeaderComponent {
     }, 0);
   }
 
-  sort(): void {
-    this.headerService.isSortGlobal = true;
-    this.headerService.isSortSelected = !this.headerService.isSortPopup;
-    if (!this.headerService.isSortPopup) {
-      this.headerService.sortClick.next();
-    }
-  }
-
   clear(): void {
     this.headerService.close();
     this.clipboardService.clear();
     this.notificationService.success('Clipboard cleared');
-  }
-
-  setMenuOverlay(): void {
-    if (this.menuRef && this.menuRef.nativeElement) {
-      this.headerService.menuOverlay = {
-        point: {
-          x: this.menuRef.nativeElement.offsetLeft,
-          y: this.menuRef.nativeElement.offsetTop,
-        },
-        width: this.menuRef.nativeElement.offsetWidth,
-        height: this.menuRef.nativeElement.offsetHeight,
-      };
-    }
   }
 
   exportZip(): void {
@@ -157,12 +110,17 @@ export class HeaderComponent {
     const headerSize: number = 28; // [8, "CZIP2.46", tree_size, rv]
     const treeSize: number = blocks[0].binary.length;
     nodeInfo.size += headerSize + treeSize;
+    let extra: string = '';
+    extra += 'Update version: ' + this.dataService.tree.meta.updateVersion + '\n';
+    extra += 'Encryptor version: ' + this.dataService.tree.meta.encryptorVersion + '\n';
+    extra += 'Modified: ';
+    extra += (this.dataService.isModified || this.dataService.isFileModified).toString();
     this.dataService.fileChanges.next();
     this.nodeService.showProperties(
       nodeInfo,
       this.dataService.tree.meta.createdTimestamp,
       this.dataService.tree.meta.updatedTimestamp,
-      'Modified: ' + (this.dataService.isModified || this.dataService.isFileModified).toString(),
+      extra,
     );
   }
 
@@ -181,7 +139,7 @@ export class HeaderComponent {
   openPasswordDialog(): void {
     this.headerService.close();
     this.matDialog.open(PasswordDialogComponent).afterClosed().subscribe(newPass => {
-      if (newPass) {
+      if (newPass !== undefined) {
         this.dataService.password = newPass;
         this.dataService.modify();
         this.notificationService.success('Password updated');
@@ -269,6 +227,23 @@ export class HeaderComponent {
       });
     } else {
       this.headerService.reload();
+    }
+  }
+
+  open(func: string): void {
+    switch (func) {
+      case 'clear': this.clear(); break;
+      case 'askToRoot': this.askToRoot(); break;
+      case 'openIdDialog': this.openIdDialog(); break;
+      case 'openPasswordDialog': this.openPasswordDialog(); break;
+      case 'decrypt': this.decrypt(); break;
+      case 'print': this.print(); break;
+      case 'showProperties': this.showProperties(); break;
+      case 'exportZip': this.exportZip(); break;
+      case 'askToSave': this.askToSave(); break;
+      case 'delete': this.delete(); break;
+      case 'askToReload': this.askToReload(); break;
+      case 'askToExit': this.askToExit(); break;
     }
   }
 }

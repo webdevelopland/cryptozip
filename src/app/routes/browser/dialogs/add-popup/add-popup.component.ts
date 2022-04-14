@@ -20,7 +20,7 @@ export class AddPopupComponent implements AfterViewInit {
   ) { }
 
   ngAfterViewInit() {
-    this.controlsService.overlayAdd = {
+    this.controlsService.add.overlay = {
       point: {
         x: this.popupRef.nativeElement.offsetLeft,
         y: this.popupRef.nativeElement.offsetTop,
@@ -31,37 +31,37 @@ export class AddPopupComponent implements AfterViewInit {
   }
 
   addFile(): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.addTxtFile();
   }
 
   addFolder(): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.addFolder();
   }
 
   addGrid(): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.addGrid();
   }
 
   importFile(fileList: FileList): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.importFiles(fileList);
   }
 
   importFolder(fileList: FileList): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.importFolder(fileList);
   }
 
   transfer(): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.readClipboard();
   }
 
   paste(): void {
-    this.controlsService.isAddMenu = false;
+    this.controlsService.add.hide();
     this.fileService.paste();
   }
 }

@@ -4,6 +4,7 @@
   [style.left.px]="controlsService.context.overlay.point.x"
   [ngClass]="{ visible: controlsService.context.isVisible }"
 >
+  <div class="option" (click)="open()">Open</div>
   <div class="option" (click)="copy()">Copy</div>
   <div class="option" (click)="transfer()">Copy as Binary</div>
   <div class="option" (click)="cut()">Cut</div>

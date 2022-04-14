@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 
-import { Point, Overlay } from '@/core/type';
+import { Point } from '@/core/type';
 import { isApple } from '@/core/functions';
 
 @Injectable()
@@ -43,12 +43,6 @@ export class EventService {
       this.mouseWheelChanges.next(event);
     });
     this.resize();
-  }
-
-  boxTest(point: Point, overlay: Overlay): boolean {
-    return true &&
-      point.x < overlay.point.x || point.x > overlay.point.x + overlay.width ||
-      point.y < overlay.point.y || point.y > overlay.point.y + overlay.height;
   }
 
   resize() {

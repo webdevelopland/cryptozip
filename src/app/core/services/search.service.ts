@@ -16,6 +16,7 @@ export class SearchService {
   tags: string[] = [];
   searchResults: SearchResult[] = [];
   folder: Folder;
+  isParam: boolean = false;
 
   constructor(
     private mediaService: MediaService,
@@ -152,6 +153,7 @@ export class SearchService {
     if (this.searchResults && this.searchResults.length > 0) {
       this.sortBy = sortBy;
       this.sort(this.searchResults);
+      this.isParam = this.sortBy === 'size' || this.sortBy === 'modified';
     }
   }
 
@@ -160,6 +162,7 @@ export class SearchService {
     this.where = undefined;
     this.sortBy = undefined;
     this.isAll = false;
+    this.isParam = false;
     this.what = '';
     this.tagString = '';
     this.tags = [];

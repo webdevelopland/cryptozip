@@ -3,9 +3,6 @@
   border: 1px solid $color-primary;
   background: white;
   user-select: none;
-  >.selected {
-    color: $color-primary;
-  }
   >.option {
     padding: 8px 15px;
     white-space: nowrap;
@@ -15,6 +12,10 @@
       background: $color-hover;
     }
     &:active {
+      background: $color-primary;
+      color: white;
+    }
+    &.opened {
       background: $color-primary;
       color: white;
     }

@@ -3,8 +3,12 @@
   <div class="option" (click)="select()">Clear Select</div>
   <div
     class="option"
-    [ngClass]= "{ selected: isSort }"
+    [ngClass]= "{ opened: headerService.sort.isClicked }"
     (click)="sort()"
   >Sort</div>
-  <div class="option" (click)="index()">Reset Index</div>
+  <div
+    class="option"
+    [ngClass]= "{ opened: controlsService.index.isClicked }"
+    (click)="index()"
+  >Reset Index</div>
 </div>

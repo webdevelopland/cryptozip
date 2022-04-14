@@ -43,9 +43,11 @@ export class MouseService {
 
   contextmenu(event: MouseEvent, node: Node): void {
     event.preventDefault();
-    this.controlsService.context.node = node;
-    this.eventService.click.next({ x: event.pageX, y: event.pageY });
-    this.controlsService.openContextMenu(node, { x: event.pageX, y: event.pageY });
+    if (!this.eventService.isApple) {
+      this.controlsService.context.node = node;
+      this.eventService.click.next({ x: event.pageX, y: event.pageY });
+      this.controlsService.openContextMenu(node, { x: event.pageX, y: event.pageY });
+    }
   }
 
   touchstart(event: TouchEvent, node: Node): void {

@@ -95,14 +95,33 @@ export class LocationService {
     }
   }
 
-  updateNode(node: Node): void {
-    const now: number = Date.now();
-    node.updatedTimestamp = now;
-    if (node instanceof File && node.block.isDecrypted && !node.block.isModified) {
-      node.block.isModified = true;
-      node.block.updateKey();
-      this.dataService.isModified = true;
+  // Reset index for current folder and all its children
+  resetIndexGlobally(folder: Folder): void {
+    let path: string = folder.path + '/';
+    path = path.replace(/(\/)+/g, '/');
+    Object.values(this.dataService.nodeMap)
+      .filter(node => node.path.startsWith(path) || node.path === folder.path)
+      .forEach(node => this.resetIndex(node));
+    this.dataService.sortAll();
+    this.dataService.modify();
+  }
+
+  resetIndexLocally(folder: Folder): void {
+    folder.nodes.forEach(node => this.resetIndex(node));
+    this.updateNodeAndAllParents(folder);
+    this.dataService.sort(folder);
+    this.dataService.modify();
+  }
+
+  resetIndex(node: Node): void {
+    if (node.index !== 0) {
+      node.index = 0;
+      this.updateNodeAndAllParents(node);
     }
+  }
+
+  updateNodeAndAllParents(node: Node): void {
+    const now: number = this.dataService.updateNode(node);
     for (let i = 0; i < 100; i++) {
       const parent: Folder = this.getParent(node);
       if (!parent || parent.path === '/') {

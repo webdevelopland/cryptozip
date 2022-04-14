@@ -46,10 +46,6 @@
     right: 64px;
     width: 156px;
     z-index: 20;
-    >.selected {
-      background: $color-primary;
-      color: white;
-    }
   }
   >.notification {
     position: fixed;

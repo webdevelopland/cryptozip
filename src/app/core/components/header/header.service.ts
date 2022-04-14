@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 
-import { Tree, Overlay } from '@/core/type';
+import { Tree, Popup } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -19,14 +18,10 @@ const SORT_TOP = 138;
 
 @Injectable()
 export class HeaderService {
-  isMenu: boolean = false;
-  isSortSelected: boolean = false;
-  isSortPopup: boolean = false;
   isSortGlobal: boolean;
-  menuOverlay: Overlay;
-  sortOverlay: Overlay;
   sortTop: number = SORT_TOP;
-  sortClick = new Subject<void>();
+  menu = new Popup();
+  sort = new Popup();
 
   constructor(
     private router: Router,
@@ -92,7 +87,11 @@ export class HeaderService {
         this.loadingService.loads--;
         this.notificationService.success('Reloaded');
       } catch (e) {
-        this.notificationService.warning('Wrong password');
+        if (e.message === 'Invalid password') {
+          this.notificationService.warning('Wrong password');
+        } else {
+          this.notificationService.error('Error');
+        }
         this.loadingService.loads--;
       }
     }, () => {
@@ -112,18 +111,25 @@ export class HeaderService {
     this.sortTop = SORT_TOP;
   }
 
+  resetPopup(): void {
+    this.menu.destroy();
+    this.sort.destroy();
+    this.menu.subscribe();
+    this.sort.subscribe();
+  }
+
+  sortAll(): void {
+    this.isSortGlobal = true;
+    this.sort.click();
+  }
+
   close(): void {
-    this.isMenu = false;
-    this.isSortSelected = false;
+    this.menu.hide();
   }
 
   destroy(): void {
-    this.isMenu = false;
-    this.isSortSelected = false;
-    this.isSortPopup = false;
+    this.resetPopup();
     this.isSortGlobal = undefined;
-    this.menuOverlay = undefined;
-    this.sortOverlay = undefined;
     this.dataService.destroy();
     this.clipboardService.destroy();
     this.eventService.destroy();

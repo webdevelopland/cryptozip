@@ -1,0 +1,20 @@
+<div class="popup" #popup>
+  <div class="option" (click)="click('clear')">Clear Clipboard</div>
+  <div class="option" (click)="click('askToRoot')">Root</div>
+  <div class="option" (click)="click('openIdDialog')">Change id</div>
+  <div class="option" (click)="click('openPasswordDialog')">Change Password</div>
+  <div class="option" (click)="click('decrypt')">Decrypt</div>
+  <div class="option" (click)="click('print')">Print</div>
+  <div
+    class="option"
+    [ngClass]= "{ opened: headerService.sort.isClicked }"
+    (click)="headerService.sortAll()"
+  >Sort</div>
+  <div class="option" (click)="click('showProperties')">Properties</div>
+  <div class="option" (click)="click('exportZip')">Export as Zip</div>
+  <div class="option" (click)="headerService.download()">Download</div>
+  <div class="option" (click)="click('askToSave')">Save</div>
+  <div class="option" (click)="click('delete')">Delete</div>
+  <div class="option" (click)="click('askToReload')">Reload</div>
+  <div class="option" (click)="click('askToExit')">Exit</div>
+</div>
