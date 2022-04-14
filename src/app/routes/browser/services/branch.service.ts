@@ -94,7 +94,7 @@ export class BranchService {
     const observableList: Observable<File>[] = [];
     const sizeLimitFileList: string[] = [];
     for (const bitFile of Array.from(fileList)) {
-      // TODO: update, when webkitRelativePath will be standard.
+      // NOTE: update, when webkitRelativePath will be standard.
       // https://developer.mozilla.org/en-US/docs/Web/API/File/webkitRelativePath
       const path: string = bitFile['webkitRelativePath'] || '';
       if (bitFile.size > 30000000) {

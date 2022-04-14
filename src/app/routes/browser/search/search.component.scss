@@ -18,4 +18,26 @@
       }
     }
   }
+  .node {
+    >.name {
+      width: calc(100% - 50px - 100px);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+    >.param {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    &.long {
+      >.name {
+        width: calc(100% - 50px);
+      }
+    }
+  }
 }

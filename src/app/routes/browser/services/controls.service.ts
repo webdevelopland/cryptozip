@@ -1,33 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { debounceTime, Subject, Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 
-import { Node, Folder, NodeInfo, Overlay, Point } from '@/core/type';
+import { Node, Folder, NodeInfo, Point, Popup, Context } from '@/core/type';
 import {
   NodeService, SearchService, DataService, LocationService, EventService,
 } from '@/core/services';
 import { FileService } from './file.service';
 
-export class Context {
-  isExist: boolean;
-  isVisible: boolean;
-  overlay: Overlay = { point: { x: 0, y: 0 } };
-  node: Node;
-  changes = new Subject<void>();
-  sub = new Subscription();
-}
-
 @Injectable()
 export class ControlsService {
-  isControlsMenu: boolean = false;
-  isAddMenu: boolean = false;
+  controls = new Popup();
+  add = new Popup();
+  index = new Popup();
   context = new Context();
-  overlayMenu: Overlay;
-  overlayAdd: Overlay;
-  menuClick = new Subject<void>();
-  addClick = new Subject<void>();
-  menuSub = new Subscription();
-  addSub = new Subscription();
   eventSub = new Subscription();
   keySub = new Subscription();
 
@@ -45,46 +31,25 @@ export class ControlsService {
     this.eventSub = this.eventService.click
       .pipe(debounceTime(1))
       .subscribe(point => {
-        if (this.overlayMenu) {
-          if (this.eventService.boxTest(point, this.overlayMenu)) {
-            this.isControlsMenu = false;
-          }
-        }
-        if (this.overlayAdd) {
-          if (this.eventService.boxTest(point, this.overlayAdd)) {
-            this.isAddMenu = false;
-          }
-        }
-        if (this.context.overlay) {
-          if (this.eventService.boxTest(point, this.context.overlay)) {
-            this.closeContextMenu();
-          }
-        }
+        this.controls.boxTest(point);
+        this.add.boxTest(point);
+        this.index.boxTest(point);
+        this.context.boxTest(point);
       });
     this.keySub = this.eventService.keydown.subscribe(() => {
-      this.isControlsMenu = false;
-      this.isAddMenu = false;
-      this.closeContextMenu();
+      this.controls.hide();
+      this.add.hide();
+      this.index.hide();
+      this.context.hide();
     });
-    this.menuSub = this.menuClick
-      .pipe(debounceTime(10))
-      .subscribe(() => {
-        this.isControlsMenu = true;
-      });
-    this.addSub = this.addClick
-      .pipe(debounceTime(10))
-      .subscribe(() => {
-        this.isAddMenu = true;
-      });
-    this.context.sub = this.context.changes
-      .pipe(debounceTime(10))
-      .subscribe(() => {
-        this.context.isExist = true;
-      });
+    this.controls.subscribe();
+    this.add.subscribe();
+    this.index.subscribe();
+    this.context.subscribe();
   }
 
   openContextMenu(node: Node, point: Point): void {
-    this.closeContextMenu();
+    this.context.hide();
     if (!node.isSelected) {
       this.dataService.unselectAll();
       node.isSelected = true;
@@ -96,7 +61,7 @@ export class ControlsService {
         y: point.y + 10,
       }
     };
-    this.context.changes.next();
+    this.context.click();
   }
 
   calculateContextPosition(): void {
@@ -121,11 +86,6 @@ export class ControlsService {
       }
       this.context.isVisible = true;
     }
-  }
-
-  closeContextMenu(): void {
-    this.context.isExist = false;
-    this.context.isVisible = false;
   }
 
   showProperties(node: Node): void {
@@ -160,27 +120,11 @@ export class ControlsService {
     this.router.navigate(['/browser/search']);
   }
 
-  openControls(): void {
-    if (!this.isControlsMenu) {
-      this.menuClick.next();
-    }
-  }
-
-  openAdd(): void {
-    if (!this.isAddMenu) {
-      this.addClick.next();
-    }
-  }
-
   destroy() {
-    this.isControlsMenu = false;
-    this.isAddMenu = false;
-    this.context.sub.unsubscribe();
-    this.context = new Context();
-    this.overlayMenu = undefined;
-    this.overlayAdd = undefined;
-    this.menuSub.unsubscribe();
-    this.addSub.unsubscribe();
+    this.controls.destroy();
+    this.add.destroy();
+    this.index.destroy();
+    this.context.destroy();
     this.eventSub.unsubscribe();
     this.keySub.unsubscribe();
   }

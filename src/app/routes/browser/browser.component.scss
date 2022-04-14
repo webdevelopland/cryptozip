@@ -1,4 +1,28 @@
 .page {
   display: flex;
   flex-direction: column;
+  .node {
+    >.name {
+      width: calc(100% - 50px - 100px - 100px);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+    >.size {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    >.modified {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }

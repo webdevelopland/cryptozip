@@ -47,8 +47,8 @@ export class TextComponent implements OnDestroy {
   save(): void {
     try {
       this.locationService.file.block.binary = AES.utils.utf8.toBytes(this.content);
-      this.locationService.updateNode(this.locationService.file);
-      this.dataService.modify();
+      this.locationService.updateNodeAndAllParents(this.locationService.file);
+      this.dataService.modifyAndRefresh();
       this.dataService.isFileModified = false;
       this.notificationService.success('File saved');
     } catch (e) {

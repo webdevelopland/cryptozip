@@ -49,17 +49,6 @@ export class DialogService {
     });
   }
 
-  askToIndex(): void {
-    this.matDialog.open(ConfirmDialogComponent, {
-      data: { message: 'Reset index?' },
-      autoFocus: false,
-    }).afterClosed().subscribe(res => {
-      if (res) {
-        this.dataService.resetIndex(this.locationService.folder);
-      }
-    });
-  }
-
   openTagsDialog(node: Node): void {
     this.dataService.unselectAll();
     node.isSelected = true;
@@ -68,7 +57,7 @@ export class DialogService {
     }).afterClosed().subscribe(tags => {
       if (tags !== undefined) {
         node.tags = tags;
-        this.locationService.updateNode(node);
+        this.locationService.updateNodeAndAllParents(node);
         this.dataService.modify();
       }
     });
@@ -86,7 +75,7 @@ export class DialogService {
           return;
         }
         node.index = index;
-        this.locationService.updateNode(node);
+        this.locationService.updateNodeAndAllParents(node);
         this.dataService.modify();
       }
     });

@@ -40,11 +40,15 @@ export class DataService {
     this.isDecrypted = true;
   }
 
-  modify(): void {
+  modifyAndRefresh(): void {
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.tree.root);
     this.nodeService.getNodeInfo(this.tree.root);
+    this.isModified = true;
+  }
+
+  modify(): void {
     this.isModified = true;
   }
 
@@ -135,13 +139,15 @@ export class DataService {
     Object.values(this.nodeMap).forEach(node => node.isSelected = false);
   }
 
-  resetIndex(folder: Folder): void {
-    let path: string = folder.path + '/';
-    path = path.replace(/(\/)+/g, '/');
-    Object.values(this.nodeMap)
-      .filter(node => node.path.startsWith(path) || node.path === folder.path)
-      .forEach(node => node.index = 0);
-    this.sortAll();
+  updateNode(node: Node): number {
+    const now: number = Date.now();
+    node.updatedTimestamp = now;
+    if (node instanceof File && node.block.isDecrypted && !node.block.isModified) {
+      node.block.isModified = true;
+      node.block.updateKey();
+      this.isModified = true;
+    }
+    return now;
   }
 
   create(id: string, password: string): void {

@@ -1,4 +1,4 @@
-import { getNodeId, getRandomKey } from '@/core/functions';
+import { getNodeId, getRandomKey, parsePath } from '@/core/functions';
 
 export class Node {
   name: string;
@@ -150,9 +150,13 @@ export class SearchResult {
   rank: number = 0;
   isName: boolean = false;
   isContent: boolean = false;
+  path: string;
 
   constructor(node: Node) {
     this.node = node;
+    const parse = parsePath(node.path);
+    parse.nodes.push(parse.name);
+    this.path = parse.nodes.reverse().join('/');
   }
 }
 
@@ -168,15 +172,4 @@ export interface Location {
   type: LocationType;
   path: string;
   node?: Node;
-}
-
-export interface Point {
-  x: number;
-  y: number;
-}
-
-export interface Overlay {
-  point: Point;
-  width?: number;
-  height?: number;
 }

@@ -67,7 +67,7 @@ export class GridEditComponent implements AfterViewInit, OnDestroy {
         event.preventDefault();
         this.save();
       }
-      this.popupService.isPopup = false;
+      this.popupService.popup.hide();
     });
   }
 
@@ -84,8 +84,8 @@ export class GridEditComponent implements AfterViewInit, OnDestroy {
 
   save(): void {
     this.locationService.file.block.binary = this.gridService.getProto();
-    this.locationService.updateNode(this.locationService.file);
-    this.dataService.modify();
+    this.locationService.updateNodeAndAllParents(this.locationService.file);
+    this.dataService.modifyAndRefresh();
     this.notificationService.success('Grid saved');
   }
 

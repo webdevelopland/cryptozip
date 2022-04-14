@@ -10,35 +10,20 @@
   <div class="loading" *ngIf="loadingService.loads > 0">
     <mat-spinner [diameter]="25"></mat-spinner>
   </div>
-  <div class="menu-button" (click)="toggleMenu()" *ngIf="dataService.isDecrypted">
-    <mat-icon *ngIf="!headerService.isMenu">menu</mat-icon>
-    <mat-icon *ngIf="headerService.isMenu">menu_open</mat-icon>
+  <div class="menu-button" (click)="headerService.menu.click()" *ngIf="dataService.isDecrypted">
+    <mat-icon *ngIf="!headerService.menu.isClicked">menu</mat-icon>
+    <mat-icon *ngIf="headerService.menu.isClicked">menu_open</mat-icon>
   </div>
 </header>
-<div class="popup" *ngIf="headerService.isMenu" #menu>
-  <div class="option" (click)="clear()">Clear Clipboard</div>
-  <div class="option" (click)="askToRoot()">Root</div>
-  <div class="option" (click)="openIdDialog()">Change id</div>
-  <div class="option" (click)="openPasswordDialog()">Change Password</div>
-  <div class="option" (click)="decrypt()">Decrypt</div>
-  <div class="option" (click)="print()">Print</div>
-  <div
-    class="option"
-    [ngClass]= "{ selected: headerService.isSortSelected }"
-    (click)="sort()"
-  >Sort</div>
-  <div class="option" (click)="showProperties()">Properties</div>
-  <div class="option" (click)="exportZip()">Export as Zip</div>
-  <div class="option" (click)="headerService.download()">Download</div>
-  <div class="option" (click)="askToSave()">Save</div>
-  <div class="option" (click)="delete()">Delete</div>
-  <div class="option" (click)="askToReload()">Reload</div>
-  <div class="option" (click)="askToExit()">Exit</div>
-</div>
 <div class="notification" *ngIf="notificationService.message">
   <span
     class="message"
     [style.background]="notificationService.color"
   >{{ notificationService.message }}</span>
 </div>
-<sort-popup *ngIf="headerService.isSortPopup"></sort-popup>
+<sort-popup *ngIf="headerService.sort.isClicked"></sort-popup>
+<menu-popup
+  [overlay]="headerService.menu.overlay"
+  *ngIf="headerService.menu.isClicked"
+  (openMenu)="open($event)"
+></menu-popup>

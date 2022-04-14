@@ -10,7 +10,7 @@
       <button (click)="tryPreview()">
         <mat-icon>edit_off</mat-icon>
       </button>
-      <button (click)="popupService.add()">
+      <button (click)="popupService.popup.click()">
         <mat-icon>add</mat-icon>
       </button>
       <button (click)="save()">
@@ -119,7 +119,7 @@
   </div>
 </div>
 <grid-popup
-  [overlay]="popupService.overlay"
-  *ngIf="popupService.isPopup"
+  [overlay]="popupService.popup.overlay"
+  *ngIf="popupService.popup.isClicked"
   (add)="add($event)"
 ></grid-popup>

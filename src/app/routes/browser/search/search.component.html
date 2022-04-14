@@ -34,7 +34,6 @@
         spellcheck=false
         placeholder="What"
         [(ngModel)]="searchService.what"
-        focus=true
       >
     </div>
     <div class="path">
@@ -50,19 +49,20 @@
     <div
       class="node"
       *ngFor="let searchResult of searchService.searchResults"
+      [ngClass]="{ long: !searchService.isParam }"
       (click)="open(searchResult)"
     >
       <div class="icon">
         <mat-icon>{{ searchResult.icon }}</mat-icon>
       </div>
       <div class="name text">
-        <span class="ellipsis">{{ searchResult.node.path }}</span>
+        <span class="ellipsis">{{ searchResult.path }}</span>
       </div>
-      <div class="size text">
-        <span>{{ searchResult.node.sizeString }}</span>
-      </div>
-      <div class="modified text">
-        <span>{{ searchResult.node.updatedTimestamp | date:'dd/MM/yyyy' }}</span>
+      <div class="param text" *ngIf="searchService.isParam">
+        <span *ngIf="searchService.sortBy === 'size'">{{ searchResult.node.sizeString }}</span>
+        <span *ngIf="searchService.sortBy === 'modified'">
+          {{ searchResult.node.updatedTimestamp | date:'dd/MM/yyyy' }}
+        </span>
       </div>
     </div>
   </div>

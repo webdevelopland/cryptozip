@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 import { SearchService, DataService, LocationService } from '@/core/services';
 import { HeaderService } from '@/core/components/header';
@@ -25,7 +25,7 @@ export class SortPopupComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.headerService.sortOverlay = {
+    this.headerService.sort.overlay = {
       point: {
         x: this.popupRef.nativeElement.offsetLeft,
         y: this.popupRef.nativeElement.offsetTop,
@@ -43,7 +43,7 @@ export class SortPopupComponent implements AfterViewInit {
       this.locationService.folder.sortBy = sortBy;
       this.dataService.sort(this.locationService.folder);
     }
-    this.headerService.isSortPopup = false;
+    this.headerService.sort.hide();
     this.headerService.isSortGlobal = undefined;
   }
 }

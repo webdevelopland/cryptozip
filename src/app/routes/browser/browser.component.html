@@ -7,11 +7,11 @@
       <button (click)="up()">
         <mat-icon>expand_less</mat-icon>
       </button>
-      <button (click)="controlsService.openAdd()">
+      <button (click)="controlsService.add.click()">
         <mat-icon>add</mat-icon>
       </button>
       <div class="placeholder"></div>
-      <button (click)="controlsService.openControls()">
+      <button (click)="controlsService.controls.click()">
         <mat-icon *ngIf="!controlsService.isControlsMenu">more_vert</mat-icon>
         <mat-icon *ngIf="controlsService.isControlsMenu">more_horiz</mat-icon>
       </button>
@@ -52,6 +52,7 @@
     </div>
   </div>
 </div>
-<controls-popup *ngIf="controlsService.isControlsMenu"></controls-popup>
-<add-popup *ngIf="controlsService.isAddMenu"></add-popup>
-<context-popup *ngIf="controlsService.context.isExist"></context-popup>
+<controls-popup *ngIf="controlsService.controls.isClicked"></controls-popup>
+<add-popup *ngIf="controlsService.add.isClicked"></add-popup>
+<index-popup *ngIf="controlsService.index.isClicked"></index-popup>
+<context-popup *ngIf="controlsService.context.isActivated"></context-popup>
