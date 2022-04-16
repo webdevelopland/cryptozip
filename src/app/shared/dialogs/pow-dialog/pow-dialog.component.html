@@ -1,0 +1,19 @@
+<div class="dialog">
+  <div class="title">Change PoW</div>
+  <div class="info">
+    <div>12: fast (50ms)</div>
+    <div>14: normal (150ms)</div>
+    <div>17: slow (1s)</div>
+  </div>
+  <div class="name">
+    <input
+      type="number"
+      placeholder="Cost factor pow"
+      [(ngModel)]="newPow"
+      spellcheck=false
+    >
+  </div>
+  <div class="button">
+    <button (click)="save()">Save</button>
+  </div>
+</div>

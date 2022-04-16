@@ -16,7 +16,7 @@ import {
   ProtoService,
 } from '@/core/services';
 import {
-  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent
+  PasswordDialogComponent, IdDialogComponent, ConfirmDialogComponent, PowDialogComponent
 } from '@/shared/dialogs';
 import { HeaderService } from './header.service';
 import { META } from '@/environments/meta';
@@ -107,7 +107,7 @@ export class HeaderComponent {
     this.headerService.close();
     const nodeInfo: NodeInfo = this.nodeService.getNodeInfo(this.dataService.tree.root);
     const blocks: BinaryBlock[] = this.protoService.getProto();
-    const headerSize: number = 28; // [8, "CZIP2.46", tree_size, rv]
+    const headerSize: number = 30; // [8, "CZIP2.46", pow, tree_size, rv]
     const treeSize: number = blocks[0].binary.length;
     nodeInfo.size += headerSize + treeSize;
     let extra: string = '';
@@ -147,12 +147,17 @@ export class HeaderComponent {
     });
   }
 
+  openPowDialog(): void {
+    this.headerService.close();
+    this.matDialog.open(PowDialogComponent);
+  }
+
   openIdDialog(): void {
     this.headerService.close();
     this.matDialog.open(IdDialogComponent).afterClosed().subscribe(newId => {
       if (newId) {
-        const oldId: string = this.dataService.id;
-        this.dataService.id = newId;
+        const oldId: string = this.dataService.tree.meta.id;
+        this.dataService.tree.meta.id = newId;
         this.dataService.tree.root.id = newId;
         this.dataService.tree.root.name = newId;
         this.dataService.tree.meta.id = newId;
@@ -236,6 +241,7 @@ export class HeaderComponent {
       case 'askToRoot': this.askToRoot(); break;
       case 'openIdDialog': this.openIdDialog(); break;
       case 'openPasswordDialog': this.openPasswordDialog(); break;
+      case 'openPowDialog': this.openPowDialog(); break;
       case 'decrypt': this.decrypt(); break;
       case 'print': this.print(); break;
       case 'showProperties': this.showProperties(); break;

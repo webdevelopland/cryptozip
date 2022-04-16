@@ -19,6 +19,7 @@ export class ProtoService {
     meta.setUpdateVersion(this.dataService.tree.meta.updateVersion);
     meta.setCreatedTimestamp(this.dataService.tree.meta.createdTimestamp);
     meta.setUpdatedTimestamp(this.dataService.tree.meta.updatedTimestamp);
+    meta.setWriteKey(this.dataService.tree.meta.writeKey);
     tree.setMeta(meta);
 
     let position: number = 0;
@@ -65,6 +66,7 @@ export class ProtoService {
       updateVersion: protoMeta.getUpdateVersion(),
       createdTimestamp: protoMeta.getCreatedTimestamp(),
       updatedTimestamp: protoMeta.getUpdatedTimestamp(),
+      writeKey: protoMeta.getWriteKey_asU8(),
     };
     tree.root = this.getRoot(protoTree);
     tree.root.id = protoTree.getMeta().getId();

@@ -12,7 +12,7 @@ import { GetService } from '../../services/get.service';
   styleUrls: ['./index-dialog.component.scss'],
 })
 export class IndexDialogComponent implements OnDestroy {
-  index: string;
+  index: number;
   keySubscription = new Subscription();
 
   constructor(
@@ -24,20 +24,28 @@ export class IndexDialogComponent implements OnDestroy {
     private dataService: DataService,
   ) {
     this.eventService.isDialog = true;
-    this.index = this.node.index.toString();
+    this.index = this.node.index;
     this.subscribeOnKeydown();
   }
 
   private subscribeOnKeydown(): void {
     this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
-        case 'Enter': this.save();
+        case 'Enter': this.check();
       }
     });
   }
 
+  check(): void {
+    if (-2147483648 > this.index || this.index > 2147483647) {
+      this.notificationService.warning('Index is too big');
+    } else {
+      this.save();
+    }
+  }
+
   save(): void {
-    this.dialogRef.close(parseInt(this.index));
+    this.dialogRef.close(this.index);
   }
 
   close(): void {

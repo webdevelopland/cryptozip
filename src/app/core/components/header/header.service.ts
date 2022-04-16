@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Tree, Popup } from '@/core/type';
+import { Popup } from '@/core/type';
 import {
   DataService,
   ZipService,
@@ -73,17 +73,12 @@ export class HeaderService {
 
   reload(): void {
     this.loadingService.loads++;
-    this.firebaseService.download(this.dataService.id).subscribe(binary => {
+    this.firebaseService.download(this.dataService.tree.meta.id).subscribe(binary => {
       try {
-        const password: string = this.dataService.password;
-        this.zipService.decrypt(binary, password);
-        const tree: Tree = this.dataService.tree;
-        const blocks: Uint8Array = this.dataService.blocks;
+        this.zipService.decrypt(binary, this.dataService.password);
         this.router.navigate(['/browser']);
-        this.destroy();
-        this.dataService.setTree(tree);
-        this.dataService.blocks = blocks;
-        this.dataService.password = password;
+        this.reloadServices();
+        this.dataService.setTree(this.dataService.tree);
         this.loadingService.loads--;
         this.notificationService.success('Reloaded');
       } catch (e) {
@@ -103,7 +98,7 @@ export class HeaderService {
   export(): void {
     this.close();
     setTimeout(() => {
-      this.zipService.export(this.dataService.tree.root, this.dataService.id);
+      this.zipService.export(this.dataService.tree.root, this.dataService.tree.meta.id);
     }, 0);
   }
 
@@ -127,17 +122,22 @@ export class HeaderService {
     this.menu.hide();
   }
 
-  destroy(): void {
+  reloadServices(): void {
     this.resetPopup();
+    this.resetSortTop();
     this.isSortGlobal = undefined;
-    this.dataService.destroy();
+    this.dataService.reload();
     this.clipboardService.destroy();
     this.eventService.destroy();
     this.searchService.destroy();
+    this.locationService.destroy();
+  }
+
+  destroy(): void {
+    this.reloadServices();
+    this.dataService.destroy();
     this.loadingService.destroy();
     this.notificationService.destroy();
-    this.locationService.destroy();
-    this.resetSortTop();
   }
 
   exit(): void {

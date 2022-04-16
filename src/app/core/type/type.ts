@@ -45,6 +45,7 @@ export interface Meta {
   updatedTimestamp: number;
   encryptorVersion: string; // E.g. '2.47'
   updateVersion: number; // E.g. 6438
+  writeKey: Uint8Array; // 256 bit token for server cloud updates
 }
 
 export class Tree {

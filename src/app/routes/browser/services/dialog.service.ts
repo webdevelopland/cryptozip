@@ -70,10 +70,6 @@ export class DialogService {
       data: node
     }).afterClosed().subscribe(index => {
       if (index !== undefined) {
-        if (-2147483648 > index || index > 2147483647) {
-          this.notificationService.error('Index is too big');
-          return;
-        }
         node.index = index;
         this.locationService.updateNodeAndAllParents(node);
         this.dataService.modify();
