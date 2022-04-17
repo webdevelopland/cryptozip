@@ -2,26 +2,26 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
-import { generateId } from '@/core/functions';
-import { EventService, DataService } from '@/core/services';
+import { EventService, DataService, NotificationService } from '@/core/services';
 
 @Component({
-  selector: 'id-dialog',
-  templateUrl: './id-dialog.component.html',
-  styleUrls: ['./id-dialog.component.scss'],
+  selector: 'pow-dialog',
+  templateUrl: './pow-dialog.component.html',
+  styleUrls: ['./pow-dialog.component.scss'],
 })
-export class IdDialogComponent implements OnDestroy {
-  id: string;
+export class PowDialogComponent implements OnDestroy {
+  newPow: number;
   keySubscription = new Subscription();
 
   constructor(
-    private dialogRef: MatDialogRef<IdDialogComponent>,
+    private dialogRef: MatDialogRef<PowDialogComponent>,
     private eventService: EventService,
     private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.eventService.isDialog = true;
+    this.newPow = this.dataService.pow;
     this.subscribeOnKeydown();
-    this.id = this.dataService.tree.meta.id;
   }
 
   private subscribeOnKeydown(): void {
@@ -32,12 +32,15 @@ export class IdDialogComponent implements OnDestroy {
     });
   }
 
-  randomize(): void {
-    this.id = generateId();
-  }
-
   save(): void {
-    this.dialogRef.close(this.id);
+    if (this.newPow && this.newPow > 0 && this.newPow < 21) {
+      this.dataService.pow = this.newPow;
+      this.dataService.modify();
+      this.notificationService.success('PoW updated');
+      this.dialogRef.close();
+    } else {
+      this.notificationService.warning('PoW invalid');
+    }
   }
 
   close(): void {

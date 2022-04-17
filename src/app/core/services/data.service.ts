@@ -3,19 +3,21 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { Tree, Node, File, Folder, NodeMap, StringMap, Parse, BinaryBlock } from '@/core/type';
-import { parsePath, getName, getRV } from '@/core/functions';
+import { parsePath, getName, getRV, getRandomKey } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { NodeService } from './node.service';
 import { META } from '@/environments/meta';
+
+const DEFAULT_POW = 12;
 
 @Injectable()
 export class DataService {
   isDecrypted: boolean = false;
   isModified: boolean = false;
   isFileModified: boolean = false;
-  id: string;
   password: string;
   rv: Uint8Array;
+  pow: number; // CostFactor N = 2^pow
   tree: Tree;
   nodeMap: NodeMap = {};
   pathMap: StringMap = {};
@@ -29,15 +31,42 @@ export class DataService {
     private nodeService: NodeService,
   ) { }
 
+  create(id: string, password: string): void {
+    this.password = password;
+    this.rv = getRV();
+    this.pow = DEFAULT_POW;
+    this.setTree(this.getNewTree(id));
+    this.router.navigate(['/browser']);
+  }
+
   setTree(tree: Tree): void {
     this.tree = tree;
     this.nodeMap = {};
     this.pathMap = {};
     this.refresh(this.tree.root);
     this.nodeService.getNodeInfo(this.tree.root);
-    this.id = tree.meta.id;
     this.dataChanges.next();
     this.isDecrypted = true;
+  }
+
+  private getNewTree(id: string): Tree {
+    const root = '/' + id;
+
+    const tree = new Tree();
+    tree.root = this.getFolder(root);
+    tree.root.path = '/';
+
+    const now: number = Date.now();
+    tree.meta = {
+      id: id,
+      encryptorVersion: META.version,
+      updateVersion: 1,
+      createdTimestamp: now,
+      updatedTimestamp: now,
+      writeKey: getRandomKey(),
+    };
+
+    return tree;
   }
 
   modifyAndRefresh(): void {
@@ -150,33 +179,6 @@ export class DataService {
     return now;
   }
 
-  create(id: string, password: string): void {
-    this.id = id;
-    this.password = password;
-    this.rv = getRV();
-    this.setTree(this.getNewTree(this.id));
-    this.router.navigate(['/browser']);
-  }
-
-  private getNewTree(id: string): Tree {
-    const root = '/' + id;
-
-    const tree = new Tree();
-    tree.root = this.getFolder(root);
-    tree.root.path = '/';
-
-    const now: number = Date.now();
-    tree.meta = {
-      id: id,
-      encryptorVersion: META.version,
-      updateVersion: 1,
-      createdTimestamp: now,
-      updatedTimestamp: now,
-    };
-
-    return tree;
-  }
-
   getFile(path: string, id?: string): File {
     const file = new File();
     if (id) {
@@ -237,15 +239,20 @@ export class DataService {
     }
   }
 
-  destroy(): void {
+  reload(): void {
     this.isDecrypted = false;
     this.isModified = false;
     this.isFileModified = false;
-    this.id = undefined;
-    this.password = undefined;
-    this.tree = undefined;
-    this.blocks = undefined;
     this.nodeMap = {};
     this.pathMap = {};
+  }
+
+  destroy(): void {
+    this.reload();
+    this.password = undefined;
+    this.rv = undefined;
+    this.pow = undefined;
+    this.tree = undefined;
+    this.blocks = undefined;
   }
 }

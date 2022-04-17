@@ -5,7 +5,7 @@
       [routerLink]="['/']"
       *ngIf="!dataService.isDecrypted"
     >Cryptozip {{ version }}</div>
-    <div *ngIf="dataService.isDecrypted">{{ dataService.id }}</div>
+    <div *ngIf="dataService.isDecrypted">{{ dataService.tree.meta.id }}</div>
   </div>
   <div class="loading" *ngIf="loadingService.loads > 0">
     <mat-spinner [diameter]="25"></mat-spinner>

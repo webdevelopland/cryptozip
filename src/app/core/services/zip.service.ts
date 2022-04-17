@@ -62,7 +62,10 @@ export class ZipService {
 
   enrypt(blocks: BinaryBlock[]): Blob {
     // Encrypt tree
-    const key: Uint8Array = this.cryptoService.getKey(this.dataService.password);
+    const key: Uint8Array = this.cryptoService.getKey(
+      this.dataService.password,
+      this.dataService.pow,
+    );
     const tree: Uint8Array = blocks.shift().binary;
     const treeRV = new Uint8Array([...this.dataService.rv, ...tree]);
     const paddingTree: Uint8Array = AES.padding.pkcs7.pad(treeRV);
@@ -85,11 +88,14 @@ export class ZipService {
     const czipTitleLen = new Uint8Array(1);
     czipTitleLen[0] = czipTitle.length;
     const treeSize: Uint8Array = this.encodingService.uint32ToUint8Array(treeLength);
+    const pow = new Uint8Array(1);
+    pow[0] = this.dataService.pow;
     // Download
-    // [8, "CZIP2.46", 9000, rv, tree, blocks]
+    // [8, "CZIP2.46", 12, 9000, rv, tree, blocks]
     return new Blob([
       czipTitleLen,
       czipTitle,
+      pow,
       treeSize,
       RVT,
       ...encrypted
@@ -101,12 +107,15 @@ export class ZipService {
     // Removes title. E.g. "CZIP2.46"
     const length: number = binary[0];
     i += length + 1;
+    // Get CostFactor (N=2^pow)
+    this.dataService.pow = binary[i];
+    i += 1;
     // Get size of tree
     const treeSize: Uint8Array = binary.slice(i, i + INT32BYTES);
     const treeLength: number = this.encodingService.uint8ArrayToUint32(treeSize);
     i += INT32BYTES;
     // Get rv
-    const key: Uint8Array = this.cryptoService.getKey(password);
+    const key: Uint8Array = this.cryptoService.getKey(password, this.dataService.pow);
     const iv: Uint8Array = getIV();
     const encryptedRV: Uint8Array = binary.slice(i, i + BLOCKSIZE);
     this.dataService.rv = this.cryptoService.decryptCBC(encryptedRV, key, iv);

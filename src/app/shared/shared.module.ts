@@ -11,6 +11,7 @@ import {
   ConfirmDialogComponent,
   PasswordDialogComponent,
   IdDialogComponent,
+  PowDialogComponent,
 } from './dialogs';
 import { HtmlDirective, FocusDirective } from './directives';
 
@@ -19,6 +20,7 @@ const ExportDeclarations = [
   InfoDialogComponent,
   PasswordDialogComponent,
   IdDialogComponent,
+  PowDialogComponent,
   HtmlDirective,
   FocusDirective,
 ];

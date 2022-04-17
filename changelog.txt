@@ -1,3 +1,7 @@
+17 Apr 2022
+Scrypt
+Write key
+
 13 Apr 2022
 Big UI update
 Pop-ups

@@ -31,6 +31,7 @@ message Meta {
   uint64 updated_timestamp = 3;
   string encryptor_version = 4;
   uint64 update_version = 5;
+  bytes write_key = 6;
 }
 
 message Grid {
