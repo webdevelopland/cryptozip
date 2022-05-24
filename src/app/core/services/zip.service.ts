@@ -5,7 +5,7 @@ import * as JSZip from 'jszip';
 import * as AES from 'src/third-party/aes';
 
 import { Node, File, Folder, BinaryBlock, ZipError } from '@/core/type';
-import { getIV } from '@/core/functions';
+import { getIV, mergeUint8Arrays } from '@/core/functions';
 import { CryptoService } from './crypto.service';
 import { MediaService } from './media.service';
 import { DataService } from './data.service';
@@ -52,15 +52,16 @@ export class ZipService {
   }
 
   zip(): void {
-    saveAs(this.pack(), this.dataService.tree.meta.id + '.czip');
+    const blob = new Blob([this.pack()]);
+    saveAs(blob, this.dataService.tree.meta.id + '.czip');
   }
 
-  pack(): Blob {
+  pack(): Uint8Array {
     this.dataService.tree.meta.encryptorVersion = META.version;
     return this.enrypt(this.protoService.getProto());
   }
 
-  enrypt(blocks: BinaryBlock[]): Blob {
+  enrypt(blocks: BinaryBlock[]): Uint8Array {
     // Encrypt tree
     const key: Uint8Array = this.cryptoService.getKey(
       this.dataService.password,
@@ -92,14 +93,14 @@ export class ZipService {
     pow[0] = this.dataService.pow;
     // Download
     // [8, "CZIP2.46", 12, 9000, rv, tree, blocks]
-    return new Blob([
+    return mergeUint8Arrays(
       czipTitleLen,
       czipTitle,
       pow,
       treeSize,
       RVT,
-      ...encrypted
-    ]);
+      ...encrypted,
+    );
   }
 
   decrypt(binary: Uint8Array, password: string): void {

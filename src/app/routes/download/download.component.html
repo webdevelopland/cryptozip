@@ -1,7 +1,7 @@
 <div class="page home-page">
   <div class="flex" *ngIf="!isLoading">
     <div class="id">
-      <input type="text" placeholder="id" [(ngModel)]="id">
+      <input type="text" placeholder="id" spellcheck=false [(ngModel)]="id">
     </div>
     <div class="button">
       <button (click)="download()">Download</button>

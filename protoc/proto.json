@@ -1,6 +1,7 @@
 {
   "exportPath": "src/proto",
   "protoList": [
-    "protoc/node.proto"
+    "protoc/node.proto",
+    "protoc/post.proto"
   ]
 }

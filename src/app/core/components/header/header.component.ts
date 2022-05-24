@@ -53,6 +53,10 @@ export class HeaderComponent {
         event.preventDefault();
         this.headerService.save();
       }
+      if (event.code === 'KeyS' && event.altKey) {
+        event.preventDefault();
+        this.askToSave();
+      }
       if (event.code === 'KeyQ' && event.altKey) {
         event.preventDefault();
         this.clear();
@@ -152,15 +156,30 @@ export class HeaderComponent {
     this.matDialog.open(PowDialogComponent);
   }
 
-  openIdDialog(): void {
+  askToChangeId(): void {
     this.headerService.close();
+    this.dataService.fileChanges.next();
+    if (this.dataService.isFileModified) {
+      this.matDialog.open(ConfirmDialogComponent, {
+        data: { message: 'You have unsaved file. Do you want change id now?' },
+        autoFocus: false,
+      }).afterClosed().subscribe(confirm => {
+        if (confirm) {
+          this.openIdDialog();
+        }
+      });
+    } else {
+      this.openIdDialog();
+    }
+  }
+
+  openIdDialog(): void {
     this.matDialog.open(IdDialogComponent).afterClosed().subscribe(newId => {
       if (newId) {
         const oldId: string = this.dataService.tree.meta.id;
         this.dataService.tree.meta.id = newId;
         this.dataService.tree.root.id = newId;
         this.dataService.tree.root.name = newId;
-        this.dataService.tree.meta.id = newId;
         this.dataService.modify();
         this.headerService.update(oldId);
       }
@@ -235,12 +254,25 @@ export class HeaderComponent {
     }
   }
 
+  askToUpdateKey(): void {
+    this.headerService.close();
+    this.matDialog.open(ConfirmDialogComponent, {
+      data: { message: 'Update Write Key?' },
+      autoFocus: false,
+    }).afterClosed().subscribe(confirm => {
+      if (confirm) {
+        this.headerService.updateKey();
+      }
+    });
+  }
+
   open(func: string): void {
     switch (func) {
       case 'clear': this.clear(); break;
       case 'askToRoot': this.askToRoot(); break;
-      case 'openIdDialog': this.openIdDialog(); break;
+      case 'changeId': this.askToChangeId(); break;
       case 'openPasswordDialog': this.openPasswordDialog(); break;
+      case 'updateKey': this.askToUpdateKey(); break;
       case 'openPowDialog': this.openPowDialog(); break;
       case 'decrypt': this.decrypt(); break;
       case 'print': this.print(); break;

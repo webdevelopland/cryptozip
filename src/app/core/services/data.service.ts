@@ -69,6 +69,10 @@ export class DataService {
     return tree;
   }
 
+  updateWriteKey(): void {
+    this.tree.meta.writeKey = getRandomKey();
+  }
+
   modifyAndRefresh(): void {
     this.nodeMap = {};
     this.pathMap = {};

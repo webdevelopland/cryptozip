@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 
-import { FirebaseService, NotificationService, EventService } from '@/core/services';
+import { NotificationService, EventService, ServerService } from '@/core/services';
 
 @Component({
   selector: 'page-download',
@@ -16,8 +16,8 @@ export class DownloadComponent implements OnDestroy {
 
   constructor(
     private notificationService: NotificationService,
-    private firebaseService: FirebaseService,
     private eventService: EventService,
+    private serverService: ServerService,
   ) {
     this.subscribeOnKeydown();
   }
@@ -33,7 +33,7 @@ export class DownloadComponent implements OnDestroy {
   download(): void {
     if (this.id && this.id.trim()) {
       this.isLoading = true;
-      this.firebaseService.download(this.id).subscribe(binary => {
+      this.serverService.load(this.id).subscribe(binary => {
         saveAs(new Blob([binary]), this.id + '.czip');
         this.isLoading = false;
       }, () => {

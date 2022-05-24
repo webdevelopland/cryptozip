@@ -1,8 +1,7 @@
 <div class="page home-page">
   <div class="flex">
     <div class="id">
-      <input type="text" readonly="true" [value]="id">
-      <button (click)="randomize()">Randomize</button>
+      <input type="text" placeholder="id" spellcheck=false [(ngModel)]="id">
     </div>
     <div class="pass">
       <input type="password" placeholder="Password" [(ngModel)]="password">

@@ -6,3 +6,4 @@ export * from './zero';
 export * from './timestamp';
 export * from './binary';
 export * from './rand';
+export * from './uint8array';

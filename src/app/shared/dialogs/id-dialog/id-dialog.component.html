@@ -1,7 +1,7 @@
 <div class="dialog">
   <div class="title">Change id</div>
   <div class="id">
-    <input type="text" readonly="true" [value]="id">
+    <input type="text" placeholder="id" spellcheck=false [(ngModel)]="id">
   </div>
   <div class="button">
     <button (click)="randomize()">Randomize</button>
