@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import * as Proto from 'src/proto';
 import { ServerResponse } from '@/core/type';
+import { mergeUint8Arrays } from '@/core/functions';
 import { ZipService } from './zip.service';
 import { NotificationService } from './notification.service';
 import { LoadingService } from './loading.service';
@@ -74,14 +75,21 @@ export class ServerService {
         body: blob,
         headers: { 'Content-Type': 'application/czip' },
       })
-        .then(async res => {
+        .then(res => {
           const reader = res.body.getReader();
-          const data = await reader.read();
-          if (data.value) {
-            observer.next(data.value);
-          } else {
-            observer.error();
-          }
+          let binary = new Uint8Array(0);
+          reader.read().then(function readData({ done, value }) {
+            if (done) {
+              if (binary.length > 0) {
+                observer.next(binary);
+              } else {
+                observer.error();
+              }
+            } else {
+              binary = mergeUint8Arrays(binary, value);
+              reader.read().then(readData);
+            }
+          });
         })
         .catch(err => {
           this.notificationService.error('Load error');
