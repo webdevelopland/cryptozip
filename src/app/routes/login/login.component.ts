@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import {
-  FirebaseService, ZipService, NotificationService, DataService, EventService
+  ZipService, NotificationService, DataService, EventService, ServerService
 } from '@/core/services';
 
 @Component({
@@ -19,11 +19,11 @@ export class LoginComponent implements OnDestroy {
 
   constructor(
     private router: Router,
-    private firebaseService: FirebaseService,
     private zipService: ZipService,
     private notificationService: NotificationService,
     private dataService: DataService,
     private eventService: EventService,
+    private serverService: ServerService,
   ) {
     this.subscribeOnKeydown();
   }
@@ -39,7 +39,7 @@ export class LoginComponent implements OnDestroy {
   login(): void {
     if (this.id && this.id.trim()) {
       this.isLoading = true;
-      this.firebaseService.download(this.id).subscribe(binary => {
+      this.serverService.load(this.id).subscribe(binary => {
         try {
           this.zipService.decrypt(binary, this.password);
           this.dataService.password = this.password;

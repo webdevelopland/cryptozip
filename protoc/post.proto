@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package wakka.common.post;
+
+message Post {
+  enum Type {
+    UNDEFINED = 0;
+    SAVE = 1;
+    DELETE = 2;
+    RENAME = 3;
+    LOAD = 4;
+  }
+  Type type = 1;
+  string id = 2;
+  bytes write_key = 3;
+  bytes data = 4;
+  string new_id = 5;
+}

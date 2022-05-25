@@ -14,7 +14,6 @@ import {
   DownloadComponent,
 } from '@/routes';
 import { CoreModule } from './core/core.module';
-import { FirebaseModule } from './import';
 import { SharedModule } from './shared';
 
 @NgModule({
@@ -33,7 +32,6 @@ import { SharedModule } from './shared';
     BrowserAnimationsModule,
     SharedModule,
     BrowserDataModule,
-    FirebaseModule,
     HttpClientModule,
   ],
   bootstrap: [AppComponent],

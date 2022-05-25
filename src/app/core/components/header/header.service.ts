@@ -5,7 +5,7 @@ import { Popup } from '@/core/type';
 import {
   DataService,
   ZipService,
-  FirebaseService,
+  ServerService,
   LoadingService,
   SearchService,
   NotificationService,
@@ -27,7 +27,7 @@ export class HeaderService {
     private router: Router,
     private dataService: DataService,
     private zipService: ZipService,
-    private firebaseService: FirebaseService,
+    private serverService: ServerService,
     private loadingService: LoadingService,
     private searchService: SearchService,
     private notificationService: NotificationService,
@@ -48,20 +48,27 @@ export class HeaderService {
 
   delete(): void {
     this.close();
-    this.firebaseService.remove(this.dataService.tree.meta.id);
+    this.serverService.delete();
   }
 
   save(): void {
     this.loadingService.loads++;
     this.dataService.update();
     setTimeout(() => {
-      this.firebaseService.upload(this.dataService.tree.meta.id);
+      this.serverService.upload();
     }, 0);
   }
 
   update(oldId: string): void {
     this.loadingService.loads++;
-    this.firebaseService.replace(this.dataService.tree.meta.id, oldId);
+    this.serverService.rename(oldId, this.dataService.tree.meta.id);
+  }
+
+  updateKey(): void {
+    this.close();
+    this.dataService.updateWriteKey();
+    this.dataService.modify();
+    this.notificationService.success('Write Key updated');
   }
 
   root(): void {
@@ -73,7 +80,7 @@ export class HeaderService {
 
   reload(): void {
     this.loadingService.loads++;
-    this.firebaseService.download(this.dataService.tree.meta.id).subscribe(binary => {
+    this.serverService.load(this.dataService.tree.meta.id).subscribe(binary => {
       try {
         this.zipService.decrypt(binary, this.dataService.password);
         this.router.navigate(['/browser']);

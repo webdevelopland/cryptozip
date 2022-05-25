@@ -174,3 +174,8 @@ export interface Location {
   path: string;
   node?: Node;
 }
+
+export interface ServerResponse {
+  status: string;
+  msg?: string;
+}

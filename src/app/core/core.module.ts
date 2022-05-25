@@ -10,13 +10,13 @@ import {
   MediaService,
   EventService,
   ClipboardService,
-  FirebaseService,
   ProtoService,
   LoadingService,
   NodeService,
   SearchService,
   EncodingService,
   LocationService,
+  ServerService,
 } from './services';
 import { HeaderModule } from './components/header';
 
@@ -37,13 +37,13 @@ import { HeaderModule } from './components/header';
     MediaService,
     EventService,
     ClipboardService,
-    FirebaseService,
     ProtoService,
     LoadingService,
     NodeService,
     SearchService,
     EncodingService,
     LocationService,
+    ServerService,
   ],
 })
 export class CoreModule { }
