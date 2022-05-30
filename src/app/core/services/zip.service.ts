@@ -137,14 +137,14 @@ export class ZipService {
   }
 
   export(node: Node, name: string): void {
-    this.loadingService.loads++;
+    this.loadingService.add();
     const jszip = new JSZip();
     if (node instanceof Folder) {
       const root: JSZip = jszip.folder(name);
       this.addFolderToZip(root, node);
       jszip.generateAsync({ type: 'blob' }).then(blob => {
         saveAs(blob, name + '.zip');
-        this.loadingService.loads--;
+        this.loadingService.pop();
       });
     } else if (node instanceof File) {
       this.dataService.decryptFile(node);
@@ -153,7 +153,7 @@ export class ZipService {
         { type: this.mediaService.getMimeType(node.name) },
       );
       saveAs(blob, node.name);
-      this.loadingService.loads--;
+      this.loadingService.pop();
     }
   }
 

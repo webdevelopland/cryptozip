@@ -1,3 +1,5 @@
+@import 'styles/variables';
+
 .page {
   display: flex;
   flex-direction: column;
@@ -7,7 +9,7 @@
       height: 100%;
       display: flex;
       align-items: center;
-      padding: 5px 10px;
+      padding: 1px 10px;
       box-sizing: border-box;
     }
     >.size {
@@ -23,6 +25,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    @media only screen and (min-width: $media-mobile + 1) {
+      >.name {
+        width: calc(100% - 50px - 100px - 100px);
+      }
+    }
+    @media only screen and (max-width: $media-mobile) {
+      >.name {
+        width: calc(100% - 50px - 100px);
+      }
+      >.size {
+        display: none;
+      }
     }
   }
 }

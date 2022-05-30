@@ -15,7 +15,8 @@ export class LoginComponent implements OnDestroy {
   id: string = '';
   password: string = '';
   isLoading: boolean = false;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
+  loadSub = new Subscription();
 
   constructor(
     private router: Router,
@@ -29,7 +30,7 @@ export class LoginComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.login();
       }
@@ -39,7 +40,7 @@ export class LoginComponent implements OnDestroy {
   login(): void {
     if (this.id && this.id.trim()) {
       this.isLoading = true;
-      this.serverService.load(this.id).subscribe(binary => {
+      this.loadSub = this.serverService.load(this.id).subscribe(binary => {
         try {
           this.zipService.decrypt(binary, this.password);
           this.dataService.password = this.password;
@@ -57,11 +58,12 @@ export class LoginComponent implements OnDestroy {
         this.isLoading = false;
       });
     } else {
-      this.notificationService.warning('id is empty');
+      this.notificationService.warning('Empty id is invalid');
     }
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
+    this.loadSub.unsubscribe();
   }
 }

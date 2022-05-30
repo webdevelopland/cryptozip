@@ -13,7 +13,7 @@ import { GetService } from '../../services/get.service';
 })
 export class IndexDialogComponent implements OnDestroy {
   index: number;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<IndexDialogComponent>,
@@ -29,7 +29,7 @@ export class IndexDialogComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.check();
       }
@@ -53,7 +53,7 @@ export class IndexDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
     this.eventService.isDialog = false;
   }
 }

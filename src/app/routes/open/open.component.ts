@@ -15,7 +15,7 @@ export class OpenComponent implements OnDestroy {
   name: string;
   password: string = '';
   isLoading: boolean = false;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private router: Router,
@@ -28,7 +28,7 @@ export class OpenComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.decrypt();
       }
@@ -67,6 +67,6 @@ export class OpenComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
   }
 }

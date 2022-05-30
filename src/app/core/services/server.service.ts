@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import * as Proto from 'src/proto';
 import { ServerResponse } from '@/core/type';
@@ -14,6 +14,8 @@ const SERVER_URL = 'https://czip-server.herokuapp.com/';
 
 @Injectable()
 export class ServerService {
+  subs: Subscription[] = [];
+
   constructor(
     private http: HttpClient,
     private zipService: ZipService,
@@ -25,16 +27,17 @@ export class ServerService {
   private post(url: string, post: Proto.Post, msg: string): void {
     const blob = new Blob([post.serializeBinary()]);
     const headers = new HttpHeaders({ 'Content-Type': 'application/czip' });
-    this.http.post(url, blob, { headers: headers }).subscribe((res: ServerResponse) => {
-      switch (res.status) {
-        case 'ok': this.notificationService.success(msg); break;
-        case 'error': this.notificationService.warning(res.msg); break;
-      }
-      this.loadingService.loads--;
-    }, error => {
-      this.loadingService.loads--;
-      this.notificationService.error(error.statusText);
-    });
+    this.subs.push(this.http.post(url, blob, { headers: headers })
+      .subscribe((res: ServerResponse) => {
+        switch (res.status) {
+          case 'ok': this.notificationService.success(msg); break;
+          case 'error': this.notificationService.warning(res.msg); break;
+        }
+        this.loadingService.pop();
+      }, error => {
+        this.loadingService.pop();
+        this.notificationService.error(error.statusText);
+      }));
   }
 
   upload(): void {
@@ -61,7 +64,7 @@ export class ServerService {
     post.setData(this.zipService.pack());
     post.setId(oldId);
     post.setNewId(newId);
-    this.post(SERVER_URL + 'rename', post, 'id updated');
+    this.post(SERVER_URL + 'rename', post, 'Updated: id');
   }
 
   load(id: string): Observable<Uint8Array> {
@@ -96,5 +99,10 @@ export class ServerService {
           console.error(err);
         });
     });
+  }
+
+  destroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
+    this.subs = [];
   }
 }
