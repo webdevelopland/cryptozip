@@ -30,6 +30,10 @@
         color: #555;
       }
     }
+    >.name {
+      word-break: break-all;
+      overflow-y: hidden;
+    }
     &.selected {
       background: $color-hover;
       >.icon {

@@ -11,7 +11,7 @@ import { EventService } from '@/core/services';
 })
 export class PasswordDialogComponent implements OnDestroy {
   newPass: string = '';
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<PasswordDialogComponent>,
@@ -22,7 +22,7 @@ export class PasswordDialogComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.save();
       }
@@ -38,7 +38,7 @@ export class PasswordDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
     this.eventService.isDialog = false;
   }
 }

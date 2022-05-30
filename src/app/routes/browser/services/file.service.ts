@@ -269,5 +269,6 @@ export class FileService {
 
   destroy(): void {
     this.subs.forEach(sub => sub.unsubscribe());
+    this.subs = [];
   }
 }

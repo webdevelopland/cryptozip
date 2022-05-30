@@ -1,7 +1,14 @@
 <div class="dialog">
   <div class="title">Change id</div>
   <div class="id">
-    <input type="text" placeholder="id" spellcheck=false [(ngModel)]="id">
+    <input
+      type="text"
+      [ngClass]="{ error: isError }"
+      placeholder="id"
+      spellcheck=false
+      [(ngModel)]="id"
+      (input)="onChange()"
+    >
   </div>
   <div class="button">
     <button (click)="randomize()">Randomize</button>

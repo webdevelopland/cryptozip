@@ -47,7 +47,7 @@ export class ClipboardService {
   }
 
   copyNode(nodes: Node[]): Observable<boolean> {
-    this.loadingService.loads++;
+    this.loadingService.add();
     return new Observable(observer => {
       timer(1).subscribe(() => {
         const transfer: Proto.Transfer = this.protoService.getTransfer(nodes);
@@ -55,11 +55,11 @@ export class ClipboardService {
         const base64: string = this.encodingService.uint8ArrayToBase64(binary);
         navigator.clipboard.writeText(base64)
           .then(() => {
-            this.loadingService.loads--;
+            this.loadingService.pop();
             observer.next(true);
           })
           .catch(() => {
-            this.loadingService.loads--;
+            this.loadingService.pop();
             observer.next(false);
           });
       });
@@ -67,16 +67,16 @@ export class ClipboardService {
   }
 
   pasteNode(base64: string): Observable<Node[]> {
-    this.loadingService.loads++;
+    this.loadingService.add();
     return new Observable(observer => {
       timer(1).subscribe(() => {
         try {
           const binary: Uint8Array = this.encodingService.base64ToUint8Array(base64);
           const transfer: Proto.Transfer = Proto.Transfer.deserializeBinary(binary);
-          this.loadingService.loads--;
+          this.loadingService.pop();
           observer.next(this.protoService.readTransfer(transfer));
         } catch (e) {
-          this.loadingService.loads--;
+          this.loadingService.pop();
           observer.error();
         }
       });

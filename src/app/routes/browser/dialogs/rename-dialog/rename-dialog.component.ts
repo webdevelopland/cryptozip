@@ -13,7 +13,7 @@ import { GetService } from '../../services/get.service';
 })
 export class RenameDialogComponent implements OnDestroy {
   newName: string;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<RenameDialogComponent>,
@@ -30,7 +30,7 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.check();
       }
@@ -89,7 +89,7 @@ export class RenameDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
     this.eventService.isDialog = false;
   }
 }

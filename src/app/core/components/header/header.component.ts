@@ -81,10 +81,10 @@ export class HeaderComponent {
 
   decrypt(): void {
     this.headerService.close();
-    this.loadingService.loads++;
+    this.loadingService.add();
     setTimeout(() => {
       this.dataService.decryptAllFiles(true);
-      this.loadingService.loads--;
+      this.loadingService.pop();
       this.notificationService.success('Decrypted');
     }, 0);
   }
@@ -146,7 +146,7 @@ export class HeaderComponent {
       if (newPass !== undefined) {
         this.dataService.password = newPass;
         this.dataService.modify();
-        this.notificationService.success('Password updated');
+        this.notificationService.success('Updated: password');
       }
     });
   }

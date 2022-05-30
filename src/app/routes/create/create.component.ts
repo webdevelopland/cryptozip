@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { generateId } from '@/core/functions';
-import { DataService, EventService } from '@/core/services';
+import { DataService, EventService, NotificationService } from '@/core/services';
 
 @Component({
   selector: 'page-create',
@@ -13,19 +13,20 @@ import { DataService, EventService } from '@/core/services';
 export class CreateComponent implements OnDestroy {
   id: string;
   password: string = '';
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private router: Router,
     public dataService: DataService,
     public eventService: EventService,
+    private notificationService: NotificationService,
   ) {
     this.subscribeOnKeydown();
     this.randomize();
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.create();
       }
@@ -37,10 +38,14 @@ export class CreateComponent implements OnDestroy {
   }
 
   create(): void {
-    this.dataService.create(this.id, this.password);
+    if (this.id && this.id.trim()) {
+      this.dataService.create(this.id, this.password);
+    } else {
+      this.notificationService.warning('Empty id is invalid');
+    }
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
   }
 }

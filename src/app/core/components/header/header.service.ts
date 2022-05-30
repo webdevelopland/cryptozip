@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { Popup } from '@/core/type';
 import {
@@ -22,6 +23,7 @@ export class HeaderService {
   sortTop: number = SORT_TOP;
   menu = new Popup();
   sort = new Popup();
+  loadSub = new Subscription();
 
   constructor(
     private router: Router,
@@ -38,12 +40,10 @@ export class HeaderService {
 
   download(): void {
     this.close();
-    this.loadingService.loads++;
+    this.loadingService.add();
     this.dataService.update();
-    setTimeout(() => {
-      this.zipService.zip();
-      this.loadingService.loads--;
-    }, 0);
+    this.zipService.zip();
+    this.loadingService.pop();
   }
 
   delete(): void {
@@ -52,15 +52,14 @@ export class HeaderService {
   }
 
   save(): void {
-    this.loadingService.loads++;
+    this.loadingService.add();
     this.dataService.update();
-    setTimeout(() => {
-      this.serverService.upload();
-    }, 0);
+    this.serverService.upload();
   }
 
   update(oldId: string): void {
-    this.loadingService.loads++;
+    this.loadingService.add();
+    this.dataService.update();
     this.serverService.rename(oldId, this.dataService.tree.meta.id);
   }
 
@@ -68,7 +67,7 @@ export class HeaderService {
     this.close();
     this.dataService.updateWriteKey();
     this.dataService.modify();
-    this.notificationService.success('Write Key updated');
+    this.notificationService.success('Updated: Write Key');
   }
 
   root(): void {
@@ -79,14 +78,14 @@ export class HeaderService {
   }
 
   reload(): void {
-    this.loadingService.loads++;
-    this.serverService.load(this.dataService.tree.meta.id).subscribe(binary => {
+    this.loadingService.add();
+    this.loadSub = this.serverService.load(this.dataService.tree.meta.id).subscribe(binary => {
       try {
         this.zipService.decrypt(binary, this.dataService.password);
         this.router.navigate(['/browser']);
         this.reloadServices();
         this.dataService.setTree(this.dataService.tree);
-        this.loadingService.loads--;
+        this.loadingService.pop();
         this.notificationService.success('Reloaded');
       } catch (e) {
         if (e.message === 'Invalid password') {
@@ -94,19 +93,17 @@ export class HeaderService {
         } else {
           this.notificationService.error('Error');
         }
-        this.loadingService.loads--;
+        this.loadingService.pop();
       }
     }, () => {
       this.notificationService.warning('Not found');
-      this.loadingService.loads--;
+      this.loadingService.pop();
     });
   }
 
   export(): void {
     this.close();
-    setTimeout(() => {
-      this.zipService.export(this.dataService.tree.root, this.dataService.tree.meta.id);
-    }, 0);
+    this.zipService.export(this.dataService.tree.root, this.dataService.tree.meta.id);
   }
 
   resetSortTop(): void {
@@ -144,7 +141,9 @@ export class HeaderService {
     this.reloadServices();
     this.dataService.destroy();
     this.loadingService.destroy();
+    this.serverService.destroy();
     this.notificationService.destroy();
+    this.loadSub.unsubscribe();
   }
 
   exit(): void {

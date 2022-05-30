@@ -13,7 +13,7 @@ import { GetService } from '../../services/get.service';
 })
 export class TagDialogComponent implements OnDestroy {
   tags: string;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<TagDialogComponent>,
@@ -29,7 +29,7 @@ export class TagDialogComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.save();
       }
@@ -45,7 +45,7 @@ export class TagDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
     this.eventService.isDialog = false;
   }
 }

@@ -11,7 +11,7 @@ import { EventService, DataService, NotificationService } from '@/core/services'
 })
 export class PowDialogComponent implements OnDestroy {
   newPow: number;
-  keySubscription = new Subscription();
+  keySub = new Subscription();
 
   constructor(
     private dialogRef: MatDialogRef<PowDialogComponent>,
@@ -25,7 +25,7 @@ export class PowDialogComponent implements OnDestroy {
   }
 
   private subscribeOnKeydown(): void {
-    this.keySubscription = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
+    this.keySub = this.eventService.keydown.subscribe((event: KeyboardEvent) => {
       switch (event.key) {
         case 'Enter': this.save();
       }
@@ -36,7 +36,7 @@ export class PowDialogComponent implements OnDestroy {
     if (this.newPow && this.newPow > 0 && this.newPow < 21) {
       this.dataService.pow = this.newPow;
       this.dataService.modify();
-      this.notificationService.success('PoW updated');
+      this.notificationService.success('Updated: PoW');
       this.dialogRef.close();
     } else {
       this.notificationService.warning('PoW invalid');
@@ -48,7 +48,7 @@ export class PowDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.keySubscription.unsubscribe();
+    this.keySub.unsubscribe();
     this.eventService.isDialog = false;
   }
 }
