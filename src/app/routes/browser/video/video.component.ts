@@ -28,7 +28,7 @@ export class VideoComponent {
       this.locationService.updateParent(this.locationService.file);
       this.updateBase64();
     } else {
-      this.notificationService.error('Invalid image');
+      this.notificationService.error('Invalid video');
       this.locationService.cancel();
       this.close();
     }
