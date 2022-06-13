@@ -4,6 +4,7 @@ import { SharedModule } from '@/shared';
 import { BrowserComponent } from './browser.component';
 import { TextComponent } from './text';
 import { ImageComponent } from './image';
+import { VideoComponent } from './video';
 import { GridModule } from './grid';
 import { SearchComponent } from './search';
 import {
@@ -40,6 +41,7 @@ import {
     ContextPopupComponent,
     TextComponent,
     ImageComponent,
+    VideoComponent,
     SearchComponent,
   ],
   providers: [

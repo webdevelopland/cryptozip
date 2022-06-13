@@ -11,6 +11,7 @@ import {
   DownloadComponent,
   TextComponent,
   ImageComponent,
+  VideoComponent,
   GridViewComponent, GridEditComponent,
   SearchComponent,
 } from '@/routes';
@@ -29,6 +30,7 @@ const appRoutes: Routes = [
       { path: 'browser', component: BrowserComponent },
       { path: 'browser/text', component: TextComponent },
       { path: 'browser/image', component: ImageComponent },
+      { path: 'browser/video', component: VideoComponent },
       { path: 'browser/grid', component: GridViewComponent },
       { path: 'browser/grid-edit', component: GridEditComponent },
       { path: 'browser/search', component: SearchComponent },

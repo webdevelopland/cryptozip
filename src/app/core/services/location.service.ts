@@ -166,6 +166,10 @@ export class LocationService {
           this.openFile(this.file);
           this.router.navigate(['/browser/image']);
           break;
+        case 'video':
+          this.openFile(this.file);
+          this.router.navigate(['/browser/video']);
+          break;
         case 'grid':
           this.openFile(this.file);
           this.router.navigate(['/browser/grid']);
