@@ -31,6 +31,14 @@ export class MediaService {
     }
   }
 
+  isVideo(filename: string): boolean {
+    switch (this.getExtension(filename)) {
+      case 'mp4':
+      case 'webm': return true;
+      default: return false;
+    }
+  }
+
   isText(filename: string): boolean {
     switch (this.getExtension(filename)) {
       // Text
@@ -78,9 +86,11 @@ export class MediaService {
       case 'ico': return 'image/x-icon';
       case 'webp': return 'image/webp';
       case 'webm': return 'video/webm';
+      case 'mp4': return 'video/mp4';
       case 'mp3': return 'audio/mpeg';
       case 'wav': return 'audio/wav';
       case 'zip': return 'application/zip';
+      case 'czip': return 'application/czip';
       case 'grid': return 'application/grid';
       // Text
       case 'json': return 'application/json';
@@ -99,6 +109,8 @@ export class MediaService {
       return 'text';
     } else if (this.isImage(filename)) {
       return 'image';
+    } else if (this.isVideo(filename)) {
+      return 'video';
     } else if (this.getExtension(filename) === 'grid') {
       return 'grid';
     } else if (this.getExtension(filename) === 'link') {
@@ -116,6 +128,8 @@ export class MediaService {
         case 'text': return 'insert_drive_file';
         case 'grid': return 'grid_view';
         case 'link': return 'file_open';
+        case 'image': return 'image';
+        case 'video': return 'movie';
         default: return 'category';
       }
     }

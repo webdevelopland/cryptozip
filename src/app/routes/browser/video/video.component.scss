@@ -1,0 +1,15 @@
+@import 'styles/variables';
+
+.page {
+  >.video {
+    height: calc(100% - 81px);
+    background: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    >video {
+      max-width: calc(100% - 20px);
+      max-height: calc(100% - 20px);
+    }
+  }
+}
