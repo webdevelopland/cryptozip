@@ -27,7 +27,6 @@ export class SearchComponent implements OnDestroy {
   ) {
     this.locationService.updatePath(this.searchService.folder, false);
     this.dataService.unselectAll();
-    this.headerService.sortTop = 202;
     this.keyboardEvents();
   }
 
@@ -73,7 +72,6 @@ export class SearchComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.headerService.resetSortTop();
     this.keySub.unsubscribe();
   }
 }

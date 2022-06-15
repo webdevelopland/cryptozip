@@ -25,11 +25,10 @@ export class SortPopupComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.popupRef.nativeElement.style.top = this.headerService.sort.overlay.point.y + 'px';
+    this.popupRef.nativeElement.style.left = this.headerService.sort.overlay.point.x + 'px';
     this.headerService.sort.overlay = {
-      point: {
-        x: this.popupRef.nativeElement.offsetLeft,
-        y: this.popupRef.nativeElement.offsetTop,
-      },
+      point: this.headerService.sort.overlay.point,
       width: this.popupRef.nativeElement.offsetWidth,
       height: this.popupRef.nativeElement.offsetHeight,
     };

@@ -15,12 +15,9 @@ import {
   LocationService,
 } from '@/core/services';
 
-const SORT_TOP = 138;
-
 @Injectable()
 export class HeaderService {
   isSortGlobal: boolean;
-  sortTop: number = SORT_TOP;
   menu = new Popup();
   sort = new Popup();
   loadSub = new Subscription();
@@ -106,10 +103,6 @@ export class HeaderService {
     this.zipService.export(this.dataService.tree.root, this.dataService.tree.meta.id);
   }
 
-  resetSortTop(): void {
-    this.sortTop = SORT_TOP;
-  }
-
   resetPopup(): void {
     this.menu.destroy();
     this.sort.destroy();
@@ -120,6 +113,7 @@ export class HeaderService {
   sortAll(): void {
     this.isSortGlobal = true;
     this.sort.click();
+    this.sort.overlay.point = { x: this.eventService.width - 353, y: 266 };
   }
 
   close(): void {
@@ -128,7 +122,6 @@ export class HeaderService {
 
   reloadServices(): void {
     this.resetPopup();
-    this.resetSortTop();
     this.isSortGlobal = undefined;
     this.dataService.reload();
     this.clipboardService.destroy();

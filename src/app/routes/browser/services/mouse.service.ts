@@ -37,7 +37,6 @@ export class MouseService {
   }
 
   dblclick(node: Node): void {
-    this.dataService.unselectAll();
     this.locationService.openNode(node);
   }
 

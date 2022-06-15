@@ -1,19 +1,21 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 import { EventService, NotificationService, DataService, LocationService } from '@/core/services';
 import { Node } from '@/core/type';
-import { GetService } from '../../services/get.service';
+import { getName } from '@/core/functions';
+import { GetService } from 'browser/services/get.service';
 
 @Component({
   selector: 'rename-dialog',
   templateUrl: './rename-dialog.component.html',
   styleUrls: ['./rename-dialog.component.scss'],
 })
-export class RenameDialogComponent implements OnDestroy {
+export class RenameDialogComponent implements AfterViewInit, OnDestroy {
   newName: string;
   keySub = new Subscription();
+  @ViewChild('input') input: ElementRef<HTMLInputElement>;
 
   constructor(
     private dialogRef: MatDialogRef<RenameDialogComponent>,
@@ -27,6 +29,13 @@ export class RenameDialogComponent implements OnDestroy {
     this.eventService.isDialog = true;
     this.newName = node.name;
     this.subscribeOnKeydown();
+  }
+
+  ngAfterViewInit() {
+    // Select node name
+    const name: string = getName(this.node.name, this.node.isFolder);
+    this.input.nativeElement.value = this.newName;
+    this.input.nativeElement.setSelectionRange(0, name.length);
   }
 
   private subscribeOnKeydown(): void {

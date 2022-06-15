@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import * as AES from 'src/third-party/aes';
 
 import { Node, File, Folder, Location, LocationType } from '@/core/type';
@@ -15,6 +16,9 @@ export class LocationService {
   folder: Folder; // Current folder (open in browser)
   file: File; // Current file (open in editor)
   history: Location[] = [];
+  bookmarks: Location[] = [];
+  isBookmark: boolean = false;
+  fileChanges = new Subject<LocationType>();
 
   constructor(
     private router: Router,
@@ -47,6 +51,7 @@ export class LocationService {
     switch (this.mediaService.getMediaType(file.name)) {
       case 'text': locationType = LocationType.Text; break;
       case 'image': locationType = LocationType.Image; break;
+      case 'video': locationType = LocationType.Video; break;
       case 'grid': locationType = LocationType.Grid; break;
     }
     this.add({
@@ -65,23 +70,33 @@ export class LocationService {
 
   add(location: Location): void {
     this.history.push(location);
+    this.checkBookmark(location);
   }
 
   back(): void {
     if (this.history.length > 1) {
       this.history.pop();
       const last: Location = this.history[this.history.length - 1];
+      this.checkBookmark(last);
       switch (last.type) {
         case LocationType.Text:
           this.file = last.node as File;
+          this.fileChanges.next(last.type);
           this.router.navigate(['/browser/text']);
           break;
         case LocationType.Image:
           this.file = last.node as File;
+          this.fileChanges.next(last.type);
           this.router.navigate(['/browser/image']);
+          break;
+        case LocationType.Video:
+          this.file = last.node as File;
+          this.fileChanges.next(last.type);
+          this.router.navigate(['/browser/video']);
           break;
         case LocationType.Grid:
           this.file = last.node as File;
+          this.fileChanges.next(last.type);
           this.router.navigate(['/browser/grid']);
           break;
         case LocationType.Folder:
@@ -151,6 +166,7 @@ export class LocationService {
   }
 
   openNode(node: Node): void {
+    this.dataService.unselectAll();
     node.isSelected = true;
     if (node instanceof Folder) {
       this.updatePath(node);
@@ -160,18 +176,22 @@ export class LocationService {
       switch (this.mediaService.getMediaType(node.name)) {
         case 'text':
           this.openFile(this.file);
+          this.fileChanges.next(LocationType.Text);
           this.router.navigate(['/browser/text']);
           break;
         case 'image':
           this.openFile(this.file);
+          this.fileChanges.next(LocationType.Image);
           this.router.navigate(['/browser/image']);
           break;
         case 'video':
           this.openFile(this.file);
+          this.fileChanges.next(LocationType.Video);
           this.router.navigate(['/browser/video']);
           break;
         case 'grid':
           this.openFile(this.file);
+          this.fileChanges.next(LocationType.Grid);
           this.router.navigate(['/browser/grid']);
           break;
         case 'link': this.openLink(this.file); break;
@@ -191,6 +211,85 @@ export class LocationService {
     }
   }
 
+  addBookmark(): void {
+    const currentLocation: Location = this.history[this.history.length - 1];
+    const bookmark: Location = Object.assign({}, currentLocation);
+    this.updateBookmarkPath(bookmark);
+    this.bookmarks.push(bookmark);
+  }
+
+  updateBookmarkPath(bookmark: Location): void {
+    const nodes: string[] = bookmark.node.path.split('/');
+    bookmark.path = nodes.pop();
+    bookmark.path = '/' + bookmark.path;
+    if (nodes.length > 0) {
+      bookmark.path = nodes.pop() + bookmark.path;
+    }
+    if (nodes.length === 1) {
+      bookmark.path = '/' + bookmark.path;
+    }
+  }
+
+  updateBookmarksPath(): void {
+    this.bookmarks.forEach(bookmark => this.updateBookmarkPath(bookmark));
+  }
+
+  deleteBookmark(): void {
+    const currentLocation: Location = this.history[this.history.length - 1];
+    this.bookmarks.some((bookmark, i) => {
+      if (bookmark.node.id === currentLocation.node.id) {
+        this.bookmarks.splice(i, 1);
+        return false;
+      }
+    });
+  }
+
+  checkBookmark(location: Location): void {
+    if (location.node) {
+      this.isBookmark = false;
+      for (const bookmark of this.bookmarks) {
+        if (bookmark.node.id === location.node.id) {
+          this.isBookmark = true;
+          break;
+        }
+      }
+    }
+  }
+
+  clear(): void {
+    this.clearDeletedLocations(this.history);
+    this.clearDeletedLocations(this.bookmarks);
+  }
+
+  private clearDeletedLocations(locations: Location[]): void {
+    const deleteMe: number[] = [];
+    locations.forEach((location, i) => {
+      if (!location.node) {
+        return;
+      }
+      let isFound: boolean = false;
+      for (const node of Object.values(this.dataService.nodeMap)) {
+        if (node.id === location.node.id) {
+          isFound = true;
+          if (node.path !== location.node.path || node.path !== location.path) {
+            // Update link to a variable, if node was cut-pasted
+            location.path = node.path;
+            location.node = node;
+          }
+          break;
+        }
+      }
+      if (!isFound) {
+        deleteMe.push(i);
+      }
+    });
+    let deleted: number = 0;
+    deleteMe.forEach(i => {
+      // Clear deleted files
+      locations.splice(i - deleted++, 1);
+    });
+  }
+
   cancel(): void {
     this.history.pop();
   }
@@ -200,5 +299,7 @@ export class LocationService {
     this.folder = undefined;
     this.file = undefined;
     this.history = [];
+    this.bookmarks = [];
+    this.isBookmark = false;
   }
 }

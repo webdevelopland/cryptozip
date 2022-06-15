@@ -167,6 +167,7 @@ export enum LocationType {
   Text = 3,
   Grid = 4,
   Image = 5,
+  Video = 6,
 }
 
 export interface Location {

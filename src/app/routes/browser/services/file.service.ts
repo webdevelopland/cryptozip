@@ -86,6 +86,7 @@ export class FileService {
     });
     this.locationService.updateNodeAndAllParents(this.locationService.folder);
     this.dataService.modifyAndRefresh();
+    this.locationService.clear();
   }
 
   copy(): void {
@@ -169,6 +170,7 @@ export class FileService {
     }
     this.locationService.updateNodeAndAllParents(this.locationService.folder);
     this.dataService.modifyAndRefresh();
+    this.locationService.clear();
   }
 
   transferTo(): void {

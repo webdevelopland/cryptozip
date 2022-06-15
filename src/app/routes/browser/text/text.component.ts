@@ -4,9 +4,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import * as AES from 'src/third-party/aes';
 
+import { LocationType } from '@/core/type';
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
+import { ControlsService } from 'browser/services';
 
 @Component({
   selector: 'page-text',
@@ -17,6 +19,7 @@ export class TextComponent implements OnDestroy {
   content: string;
   keySub = new Subscription();
   fileSub = new Subscription();
+  reloadSub = new Subscription();
 
   constructor(
     public router: Router,
@@ -25,6 +28,7 @@ export class TextComponent implements OnDestroy {
     private notificationService: NotificationService,
     private eventService: EventService,
     public locationService: LocationService,
+    public controlsService: ControlsService,
   ) {
     this.eventService.isEditing = true;
     this.start();
@@ -32,16 +36,20 @@ export class TextComponent implements OnDestroy {
 
   start(): void {
     if (this.locationService.file) {
-      this.dataService.decryptFile(this.locationService.file);
-      this.locationService.updateParent(this.locationService.file);
-      this.content = AES.utils.utf8.fromBytes(this.locationService.file.block.binary);
-      this.keyboardEvents();
+      this.update();
+      this.events();
       this.checkModified();
     } else {
       this.notificationService.error('File not found');
       this.locationService.cancel();
       this.close();
     }
+  }
+
+  update(): void {
+    this.dataService.decryptFile(this.locationService.file);
+    this.locationService.updateParent(this.locationService.file);
+    this.content = AES.utils.utf8.fromBytes(this.locationService.file.block.binary);
   }
 
   save(): void {
@@ -96,11 +104,16 @@ export class TextComponent implements OnDestroy {
     }
   }
 
-  keyboardEvents(): void {
+  events(): void {
     this.keySub = this.eventService.keydown.subscribe(event => {
       if (event.code === 'KeyS' && event.ctrlKey) {
         event.preventDefault();
         this.save();
+      }
+    });
+    this.reloadSub = this.locationService.fileChanges.subscribe(type => {
+      if (type === LocationType.Text) {
+        this.update();
       }
     });
   }
@@ -115,5 +128,6 @@ export class TextComponent implements OnDestroy {
     this.dataService.isFileModified = false;
     this.keySub.unsubscribe();
     this.fileSub.unsubscribe();
+    this.reloadSub.unsubscribe();
   }
 }

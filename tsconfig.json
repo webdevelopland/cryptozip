@@ -17,7 +17,8 @@
     ],
     "paths": {
       "@/*": ["src/app/*"],
-      "src/*": ["src/*"]
+      "src/*": ["src/*"],
+      "browser/*": ["src/app/routes/browser/*"]
     }
   }
 }

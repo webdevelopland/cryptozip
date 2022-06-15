@@ -13,6 +13,7 @@ import {
   IndexDialogComponent,
   IndexPopupComponent,
   ControlsPopupComponent,
+  FilePopupModule,
   AddPopupComponent,
   ContextPopupComponent,
 } from './dialogs';
@@ -29,6 +30,7 @@ import {
   imports: [
     SharedModule,
     GridModule,
+    FilePopupModule,
   ],
   declarations: [
     BrowserComponent,

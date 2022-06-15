@@ -10,10 +10,13 @@
       <button (click)="controlsService.add.click()">
         <mat-icon>add</mat-icon>
       </button>
-      <div class="placeholder"></div>
       <button (click)="controlsService.controls.click()">
-        <mat-icon *ngIf="!controlsService.isControlsMenu">more_vert</mat-icon>
-        <mat-icon *ngIf="controlsService.isControlsMenu">more_horiz</mat-icon>
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <div class="placeholder"></div>
+      <button (click)="controlsService.file.click()">
+        <mat-icon *ngIf="locationService.isBookmark">bookmark</mat-icon>
+        <mat-icon *ngIf="!locationService.isBookmark">bookmark_border</mat-icon>
       </button>
     </div>
     <div class="path">
@@ -56,3 +59,4 @@
 <add-popup *ngIf="controlsService.add.isClicked"></add-popup>
 <index-popup *ngIf="controlsService.index.isClicked"></index-popup>
 <context-popup *ngIf="controlsService.context.isActivated"></context-popup>
+<file-popup *ngIf="controlsService.file.isClicked"></file-popup>

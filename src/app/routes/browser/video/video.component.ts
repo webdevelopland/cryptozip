@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
+import { LocationType } from '@/core/type';
 import { DataService, MediaService, NotificationService, LocationService } from '@/core/services';
+import { ControlsService } from 'browser/services';
 
 @Component({
   selector: 'page-video',
   templateUrl: './video.component.html',
   styleUrls: ['./video.component.scss'],
 })
-export class VideoComponent {
-  base64: string;
-  mime: string;
+export class VideoComponent implements AfterViewInit, OnDestroy {
+  reloadSub = new Subscription();
+  @ViewChild('video') video: ElementRef<HTMLVideoElement>;
 
   constructor(
     public router: Router,
@@ -18,15 +21,22 @@ export class VideoComponent {
     public mediaService: MediaService,
     private notificationService: NotificationService,
     public locationService: LocationService,
+    public controlsService: ControlsService,
   ) {
+    this.reloadSub = this.locationService.fileChanges.subscribe(type => {
+      if (type === LocationType.Video) {
+        this.update();
+      }
+    });
+  }
+
+  ngAfterViewInit() {
     this.start();
   }
 
   start(): void {
     if (this.locationService.file) {
-      this.dataService.decryptFile(this.locationService.file);
-      this.locationService.updateParent(this.locationService.file);
-      this.updateBase64();
+      this.update();
     } else {
       this.notificationService.error('Invalid video');
       this.locationService.cancel();
@@ -34,10 +44,16 @@ export class VideoComponent {
     }
   }
 
-  updateBase64(): void {
-    this.mime = this.mediaService.getMimeType(this.locationService.file.name);
+  update(): void {
+    this.dataService.decryptFile(this.locationService.file);
+    this.locationService.updateParent(this.locationService.file);
+    this.updateSource();
+  }
+
+  updateSource(): void {
+    const mime: string = this.mediaService.getMimeType(this.locationService.file.name);
     const base64: string = this.uint8ArrayToBase64(this.locationService.file.block.binary);
-    this.base64 = `data:${this.mime};base64,` + base64;
+    this.video.nativeElement.src = `data:${mime};base64,` + base64;
   }
 
   // Converts uint8array binary to base64 string
@@ -50,5 +66,9 @@ export class VideoComponent {
   close(): void {
     this.locationService.updatePath(this.locationService.folder);
     this.router.navigate(['/browser']);
+  }
+
+  ngOnDestroy() {
+    this.reloadSub.unsubscribe();
   }
 }
