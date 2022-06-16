@@ -33,6 +33,7 @@ export class ControlsPopupComponent implements AfterViewInit {
   sort(): void {
     this.headerService.isSortGlobal = false;
     this.headerService.sort.click();
+    this.headerService.sort.overlay.point = { x: 42, y: 135 };
   }
 
   search(): void {

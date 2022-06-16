@@ -37,7 +37,7 @@ export class IndexPopupComponent implements AfterViewInit {
     this.controlsService.index.hide();
   }
 
-  children(): void {
+  all(): void {
     this.askToIndex(true);
     this.controlsService.index.hide();
   }

@@ -13,6 +13,7 @@ export class ControlsService {
   controls = new Popup();
   add = new Popup();
   index = new Popup();
+  file = new Popup();
   context = new Context();
   eventSub = new Subscription();
   keySub = new Subscription();
@@ -25,24 +26,25 @@ export class ControlsService {
     private dataService: DataService,
     private locationService: LocationService,
     private eventService: EventService,
-  ) { }
-
-  events(): void {
+  ) {
     this.eventSub = this.eventService.click
       .pipe(debounceTime(1))
       .subscribe(point => {
         this.controls.boxTest(point);
+        this.file.boxTest(point);
         this.add.boxTest(point);
         this.index.boxTest(point);
         this.context.boxTest(point);
       });
     this.keySub = this.eventService.keydown.subscribe(() => {
       this.controls.hide();
+      this.file.hide();
       this.add.hide();
       this.index.hide();
       this.context.hide();
     });
     this.controls.subscribe();
+    this.file.subscribe();
     this.add.subscribe();
     this.index.subscribe();
     this.context.subscribe();
@@ -121,11 +123,10 @@ export class ControlsService {
   }
 
   destroy() {
-    this.controls.destroy();
-    this.add.destroy();
-    this.index.destroy();
-    this.context.destroy();
-    this.eventSub.unsubscribe();
-    this.keySub.unsubscribe();
+    this.controls.hide();
+    this.file.hide();
+    this.add.hide();
+    this.index.hide();
+    this.context.hide();
   }
 }

@@ -7,6 +7,11 @@
       <button (click)="close()">
         <mat-icon>expand_less</mat-icon>
       </button>
+      <div class="placeholder"></div>
+      <button (click)="controlsService.file.click()">
+        <mat-icon *ngIf="locationService.isBookmark">bookmark</mat-icon>
+        <mat-icon *ngIf="!locationService.isBookmark">bookmark_border</mat-icon>
+      </button>
     </div>
     <div class="path">
       <input type="text" readonly="true" [value]="locationService.file.path">
@@ -16,3 +21,4 @@
     <img [src]="base64">
   </div>
 </div>
+<file-popup *ngIf="controlsService.file.isClicked"></file-popup>

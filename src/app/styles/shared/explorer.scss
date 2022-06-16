@@ -32,6 +32,7 @@
     }
     >.name {
       word-break: break-all;
+      white-space: pre-wrap;
       overflow-y: hidden;
     }
     &.selected {

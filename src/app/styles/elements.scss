@@ -3,8 +3,6 @@
 body {
   @mixin dark-input() {
     padding: 4px 10px 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 2px;
     outline: none;
     border: none;
     font-family: $default-font;

@@ -8,10 +8,12 @@ import {
   DragService,
   PopupService,
 } from './grid-edit/services';
+import { FilePopupModule } from 'browser/dialogs';
 
 @NgModule({
   imports: [
     SharedModule,
+    FilePopupModule,
   ],
   declarations: [
     GridEditComponent,

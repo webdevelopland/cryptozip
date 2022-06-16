@@ -1,11 +1,12 @@
 <div class="dialog">
-  <div class="title">{{ node.name }}</div>
+  <div class="title ellipsis">{{ node.name }}</div>
   <div class="name">
     <input
       type="text"
       placeholder="New name"
       [(ngModel)]="newName"
       spellcheck=false
+      #input
     >
   </div>
   <div class="button">

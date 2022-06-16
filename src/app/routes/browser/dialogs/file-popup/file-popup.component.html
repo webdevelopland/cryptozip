@@ -1,0 +1,9 @@
+<div class="popup" #popup>
+  <div class="option button" (click)="add()" *ngIf="!locationService.isBookmark">Add</div>
+  <div class="option button" (click)="delete()" *ngIf="locationService.isBookmark">Delete</div>
+  <div
+    class="option bookmark"
+    *ngFor="let bookmark of locationService.bookmarks"
+    (click)="select(bookmark)"
+  >{{ bookmark.path }}</div>
+</div>

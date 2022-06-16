@@ -7,6 +7,7 @@ import { GridType } from '@/core/type';
 import { DataService, NotificationService, EventService, LocationService } from '@/core/services';
 import { compareBinary } from '@/core/functions';
 import { ConfirmDialogComponent } from '@/shared/dialogs';
+import { ControlsService } from 'browser/services';
 import { GridService, DragService, PopupService } from './services';
 
 @Component({
@@ -32,6 +33,7 @@ export class GridEditComponent implements AfterViewInit, OnDestroy {
     public gridService: GridService,
     public dragService: DragService,
     public popupService: PopupService,
+    public controlsService: ControlsService,
   ) {
     this.eventService.isEditing = true;
     this.start();

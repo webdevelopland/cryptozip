@@ -51,7 +51,6 @@ export class BrowserComponent implements OnDestroy {
     public controlsService: ControlsService,
   ) {
     this.keyboardEvents();
-    this.controlsService.events();
   }
 
   up(): void {
@@ -169,6 +168,5 @@ export class BrowserComponent implements OnDestroy {
     this.subs.forEach(sub => sub.unsubscribe());
     this.mouseService.destroy();
     this.fileService.destroy();
-    this.controlsService.destroy();
   }
 }
