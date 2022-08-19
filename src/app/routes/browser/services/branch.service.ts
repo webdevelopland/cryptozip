@@ -97,7 +97,7 @@ export class BranchService {
       // NOTE: update, when webkitRelativePath will be standard.
       // https://developer.mozilla.org/en-US/docs/Web/API/File/webkitRelativePath
       const path: string = bitFile['webkitRelativePath'] || '';
-      if (bitFile.size > 30000000) {
+      if (bitFile.size > 200000000) {
         sizeLimitFileList.push(path || bitFile.name);
         continue;
       }
@@ -114,7 +114,7 @@ export class BranchService {
         };
       }));
     }
-    this.displaySizeLimitFiles(sizeLimitFileList, '30Mb');
+    this.displaySizeLimitFiles(sizeLimitFileList, '200Mb');
     if (observableList.length > 0) {
       return zip(...observableList);
     } else {
