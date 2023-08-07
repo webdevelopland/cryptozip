@@ -10,7 +10,7 @@ import { NotificationService } from './notification.service';
 import { LoadingService } from './loading.service';
 import { DataService } from './data.service';
 
-const SERVER_URL = 'https://czip-server.herokuapp.com/';
+const SERVER_URL = 'http://srv408061.hstgr.cloud/czip/';
 
 @Injectable()
 export class ServerService {
@@ -26,7 +26,7 @@ export class ServerService {
 
   private post(url: string, post: Proto.Post, msg: string): void {
     const blob = new Blob([post.serializeBinary()]);
-    const headers = new HttpHeaders({ 'Content-Type': 'application/czip' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/proto' });
     this.subs.push(this.http.post(url, blob, { headers: headers })
       .subscribe((res: ServerResponse) => {
         switch (res.status) {
@@ -76,7 +76,7 @@ export class ServerService {
       fetch(SERVER_URL + 'load', {
         method: 'post',
         body: blob,
-        headers: { 'Content-Type': 'application/czip' },
+        headers: { 'Content-Type': 'application/proto' },
       })
         .then(res => {
           const reader = res.body.getReader();
