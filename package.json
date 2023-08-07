@@ -3,7 +3,7 @@
   "description": "Browser app for file encryption",
   "scripts": {
     "start": "ng build --configuration dev --watch",
-    "live": "ng serve",
+    "live": "ng serve --live-reload=false",
     "build": "ng build --configuration prod",
     "test": "ng test",
     "lint": "ng lint",

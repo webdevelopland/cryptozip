@@ -45,6 +45,7 @@ export class HeaderService {
 
   delete(): void {
     this.close();
+    this.loadingService.add();
     this.serverService.delete();
   }
 
