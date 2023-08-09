@@ -10,7 +10,7 @@ import { NotificationService } from './notification.service';
 import { LoadingService } from './loading.service';
 import { DataService } from './data.service';
 
-const SERVER_URL = 'http://srv408061.hstgr.cloud/czip/';
+const SERVER_URL = 'https://wd-srv.online/czip/';
 
 @Injectable()
 export class ServerService {
